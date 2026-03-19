@@ -1,0 +1,19 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--config",
+        "./config/playwright-mcp.config.json"
+      ]
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic-ai/mcp-server-sequential-thinking"
+      ]
+    }
+  }
+}

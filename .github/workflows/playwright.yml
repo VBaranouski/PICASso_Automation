@@ -1,0 +1,104 @@
+name: Playwright Tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'packages/pw-autotest/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'packages/pw-autotest/**'
+  workflow_dispatch:
+    inputs:
+      test_env:
+        description: 'Target environment'
+        required: true
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - dev
+          - ppr
+      test_role:
+        description: 'User role for test execution'
+        required: true
+        default: 'process_quality_leader'
+        type: choice
+        options:
+          - process_quality_leader
+          - product_owner
+          - security_manager
+          - security_and_data_protection_advisor
+          - it_owner
+          - project_manager
+          - docl
+          - drl
+          - dedicated_privacy_advisor
+      test_grep:
+        description: 'Test filter (e.g. @smoke, @regression, or test name)'
+        required: false
+        default: ''
+        type: string
+
+defaults:
+  run:
+    working-directory: packages/pw-autotest
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: packages/pw-autotest/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.project }}
+
+      - name: Run tests
+        run: |
+          GREP_ARG=""
+          if [ -n "${{ inputs.test_grep }}" ]; then
+            GREP_ARG="--grep '${{ inputs.test_grep }}'"
+          fi
+          npx playwright test --project=${{ matrix.project }} $GREP_ARG
+        env:
+          TEST_ENV: ${{ inputs.test_env || 'qa' }}
+          TEST_ROLE: ${{ inputs.test_role || 'process_quality_leader' }}
+          CI: true
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.project }}
+          path: packages/pw-autotest/allure-results/
+          retention-days: 30
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.project }}
+          path: packages/pw-autotest/playwright-report/
+          retention-days: 30
+
+      - name: Upload traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: traces-${{ matrix.project }}
+          path: packages/pw-autotest/test-results/
+          retention-days: 7

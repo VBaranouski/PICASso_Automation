@@ -1,0 +1,22 @@
+node_modules/
+dist/
+test-results/
+allure-results/
+allure-report/
+playwright-report/
+traces/
+storage/
+blob-report/
+.DS_Store
+
+# Environment files (contain URLs, secrets)
+config/.env.*
+*.env.local
+
+# User credentials per environment
+config/users/qa.users.ts
+config/users/dev.users.ts
+config/users/ppr.users.ts
+
+# Playwright MCP console logs
+.playwright-mcp/

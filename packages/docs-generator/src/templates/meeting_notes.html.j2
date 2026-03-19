@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meeting Notes — {{ summary.title }}</title>
+  <style>
+    :root {
+      --mn-primary:   {{ branding.primary_color }};
+      --mn-dark:      {{ branding.dark_color }};
+      --mn-text:      {{ branding.text_color }};
+      --mn-border:    {{ branding.border_color }};
+      --mn-row-alt:   {{ branding.row_alt_color }};
+      --mn-hover:     {{ branding.hover_color }};
+      --mn-font:      {{ branding.font_family }};
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--mn-font);
+      font-size: 13px;
+      color: #1a1a1a;
+      background: #f4f6f2;
+      padding: 24px 16px;
+    }
+    .document {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+
+    /* -- Header banner -- */
+    .header {
+      background: var(--mn-dark);
+      padding: 28px 40px 24px 40px;
+    }
+    .header-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      color: var(--mn-primary);
+      margin-bottom: 6px;
+    }
+    .header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+      margin-bottom: 14px;
+    }
+    .header-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .header-meta span {
+      font-size: 12px;
+      color: var(--mn-border);
+    }
+    .header-meta strong { color: #ffffff; }
+
+    /* -- Body -- */
+    .body { padding: 32px 40px 40px 40px; }
+
+    /* -- Section headings -- */
+    h2 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.9px;
+      color: var(--mn-dark);
+      border-bottom: 2px solid var(--mn-dark);
+      padding-bottom: 5px;
+      margin: 32px 0 14px 0;
+    }
+    h2:first-child { margin-top: 0; }
+
+    h3 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a1a1a;
+      border-left: 3px solid var(--mn-dark);
+      padding-left: 9px;
+      margin: 20px 0 6px 0;
+    }
+
+    /* -- Attendees table -- */
+    table.attendees {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 0 0;
+    }
+    table.attendees th {
+      background: var(--mn-dark);
+      color: #ffffff;
+      padding: 6px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: left;
+    }
+    table.attendees td {
+      padding: 5px 12px;
+      border-bottom: 1px solid #eaeae8;
+      vertical-align: top;
+      font-size: 12px;
+      color: #333;
+    }
+    table.attendees tr:last-child td { border-bottom: none; }
+    table.attendees tr:nth-child(even) td { background: var(--mn-row-alt); }
+
+    /* -- Executive summary -- */
+    .summary-box {
+      background: var(--mn-row-alt);
+      border-left: 4px solid var(--mn-primary);
+      border-radius: 0 4px 4px 0;
+      padding: 14px 16px;
+      margin: 8px 0 0 0;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    /* -- Agenda list -- */
+    .agenda-list {
+      padding-left: 20px;
+      margin: 0;
+      line-height: 2;
+    }
+
+    /* -- Discussion points (topic cards) -- */
+    .topic {
+      margin: 0 0 18px 0;
+      padding: 14px 16px;
+      border-left: 3px solid var(--mn-primary);
+      background: var(--mn-row-alt);
+      border-radius: 0 4px 4px 0;
+    }
+    .topic h3 {
+      border-left: none;
+      padding-left: 0;
+      margin: 0 0 7px 0;
+      color: var(--mn-dark);
+      font-size: 13px;
+    }
+    .topic p {
+      margin: 0 0 7px 0;
+      line-height: 1.65;
+      color: #333;
+    }
+    .topic p:last-child { margin-bottom: 0; }
+    .topic ul {
+      padding-left: 20px;
+      margin: 4px 0 0 0;
+    }
+    .topic li {
+      margin-bottom: 4px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* -- Decisions -- */
+    .decision {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 8px;
+      align-items: flex-start;
+    }
+    .decision-badge {
+      flex-shrink: 0;
+      background: var(--mn-dark);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      margin-top: 2px;
+    }
+    .decision p { margin: 0; line-height: 1.6; color: #333; }
+
+    /* -- Action items table -- */
+    table.actions {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 0 0;
+    }
+    table.actions th {
+      background: var(--mn-dark);
+      color: #fff;
+      padding: 7px 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-align: left;
+    }
+    table.actions td {
+      padding: 7px 12px;
+      border-bottom: 1px solid #eaeae8;
+      vertical-align: top;
+      font-size: 12px;
+      line-height: 1.5;
+      color: #333;
+    }
+    table.actions tr:last-child td { border-bottom: none; }
+    table.actions tr:nth-child(even) td { background: var(--mn-row-alt); }
+    .owner { font-weight: 700; color: var(--mn-dark); white-space: nowrap; }
+    .due { color: #888; font-size: 11px; white-space: nowrap; }
+
+    /* -- Open items / parking lot -- */
+    .risk-item {
+      padding: 8px 12px 8px 14px;
+      border-left: 3px solid #f0b840;
+      background: #fefdf4;
+      margin-bottom: 8px;
+      border-radius: 0 4px 4px 0;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    /* -- Next steps / next meeting box -- */
+    .next-box {
+      background: var(--mn-row-alt);
+      border: 1px solid var(--mn-border);
+      border-radius: 4px;
+      padding: 14px 16px;
+      margin-top: 8px;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #333;
+    }
+    .next-box ul {
+      padding-left: 18px;
+      margin: 0;
+    }
+
+    /* -- Footer -- */
+    .footer {
+      margin-top: 36px;
+      padding-top: 14px;
+      border-top: 1px solid #e0e0e0;
+      font-size: 11px;
+      color: #aaa;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="document">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-label">Meeting Notes</div>
+    <h1>{{ summary.title }}</h1>
+    <div class="header-meta">
+      <span><strong>Date:</strong> {{ summary.date }}</span>
+      {% if summary.time != "Not specified" %}
+      <span><strong>Time:</strong> {{ summary.time }}</span>
+      {% endif %}
+      {% if summary.duration != "Not specified" %}
+      <span><strong>Duration:</strong> {{ summary.duration }}</span>
+      {% endif %}
+      {% if summary.format != "Not specified" %}
+      <span><strong>Format:</strong> {{ summary.format }}</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- EXECUTIVE SUMMARY -->
+    {% if summary.summary %}
+    <h2>Executive Summary</h2>
+    <div class="summary-box">{{ summary.summary }}</div>
+    {% endif %}
+
+    <!-- ATTENDEES -->
+    {% if summary.attendees %}
+    <h2>Attendees</h2>
+    <table class="attendees">
+      <thead><tr><th>Name</th><th>Role / Team</th></tr></thead>
+      <tbody>
+        {% for person in summary.attendees %}
+        <tr><td>{{ person.name }}</td><td>{{ person.role }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <!-- AGENDA -->
+    {% if summary.agenda_items %}
+    <h2>Agenda</h2>
+    <ul class="agenda-list">
+      {% for item in summary.agenda_items %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <!-- DISCUSSION POINTS -->
+    {% if summary.discussion_points %}
+    <h2>Discussion Points</h2>
+    {% for dp in summary.discussion_points %}
+    <div class="topic">
+      <h3>{{ dp.title }}</h3>
+      {% if dp.description %}
+      <p>{{ dp.description }}</p>
+      {% endif %}
+      {% if dp.details %}
+      <ul>
+        {% for detail in dp.details %}
+        <li>{{ detail }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- DECISIONS -->
+    {% if summary.key_decisions %}
+    <h2>Decisions Made</h2>
+    {% for decision in summary.key_decisions %}
+    <div class="decision">
+      <span class="decision-badge">DECIDED</span>
+      <p>{{ decision }}</p>
+    </div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- ACTION ITEMS -->
+    {% if summary.action_items %}
+    <h2>Action Items</h2>
+    <table class="actions">
+      <thead>
+        <tr><th>#</th><th>Action</th><th>Owner</th><th>Due</th></tr>
+      </thead>
+      <tbody>
+        {% for ai in summary.action_items %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ ai.item }}</td>
+          <td class="owner">{{ ai.owner }}</td>
+          <td class="due">{{ ai.due_date }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    <!-- OPEN ITEMS / PARKING LOT -->
+    {% if summary.open_items %}
+    <h2>Open Items / Parking Lot</h2>
+    {% for item in summary.open_items %}
+    <div class="risk-item">{{ item }}</div>
+    {% endfor %}
+    {% endif %}
+
+    <!-- NEXT STEPS -->
+    {% if summary.next_steps %}
+    <h2>Next Steps</h2>
+    <div class="next-box">
+      <ul>
+        {% for step in summary.next_steps %}
+        <li>{{ step }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
+    <!-- NEXT MEETING -->
+    {% if summary.next_meeting and summary.next_meeting != "Not scheduled" %}
+    <h2>Next Meeting</h2>
+    <div class="next-box">{{ summary.next_meeting }}</div>
+    {% endif %}
+
+    <div class="footer">
+      Generated from meeting recording transcript  |  {{ summary.date }}  |  {{ branding.company_name }}
+    </div>
+
+  </div><!-- /body -->
+</div><!-- /document -->
+</body>
+</html>

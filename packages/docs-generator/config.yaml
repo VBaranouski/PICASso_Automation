@@ -1,0 +1,55 @@
+jira:
+  project_key: "PIC"
+  issue_types:
+    - "Bug"
+    - "Story"
+    - "Task"
+    - "Improvement"
+  fields_to_fetch:
+    - "summary"
+    - "description"
+    - "issuetype"
+    - "status"
+    - "assignee"
+    - "reporter"
+    - "created"
+    - "fixVersions"
+    - "priority"
+    - "parent"
+    - "issuelinks"
+    - "customfield_10016"      # Story Points — adjust to your JIRA instance
+    - "customfield_10014"      # Acceptance Criteria — adjust to your JIRA instance
+
+confluence:
+  space_key: "SE"
+  release_notes_parent_page_id: ""   # Optional parent page ID
+
+ai:
+  model: "claude-sonnet-4-6"
+  max_tokens: 4096
+
+paths:
+  input_transcripts: "../../input/transcripts"
+  input_full_release_notes: "../../input/full_release_notes"
+  output_release_notes: "../../output/release_notes"
+  output_meeting_notes: "../../output/meeting_notes"
+  output_test_cases: "../../output/test_cases"
+  output_full_release_notes: "../../output/full_release_notes"
+  output_bug_reports: "../../output/bug_reports"
+  templates_dir: "src/templates"
+
+output:
+  date_format: "%Y-%m-%d"
+  release_notes_filename_pattern: "{project}_{version}_{date}"
+  meeting_notes_filename_pattern: "{transcript_stem}_{date}"
+  test_cases_filename_pattern: "{story_id}_test_cases_{date}"
+
+branding:
+  company_name: "Schneider Electric"
+  primary_color: "#3DCD58"
+  dark_color: "#009530"
+  text_color: "#333333"
+  border_color: "#C8E6C9"
+  row_alt_color: "#F0FBF2"
+  hover_color: "#E8F5E9"
+  font_family: "'Nunito Sans', Arial, sans-serif"

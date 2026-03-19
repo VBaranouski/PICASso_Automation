@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bug &amp; Defect Report &mdash; {{ generated_date }}</title>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700");
+  :root{--bg-base:#080c10;--bg-panel:#0d1117;--bg-header:#0a0f16;--bg-row-alt:#0d1520;--border:#1e2d3d;--border-glow:#1e4060;--cyan:#39c5cf;--cyan-dim:#1a5a60;--cyan-glow:rgba(57,197,207,.13);--green:#3dcf6e;--green-dim:#1a5530;--orange:#e8943a;--orange-dim:#6a3a10;--orange-glow:rgba(232,148,58,.12);--red:#f05252;--red-dim:#6a1818;--red-glow:rgba(240,82,82,.13);--yellow:#e8c73a;--purple:#a371f7;--text:#c9d1d9;--text-dim:#6e7681;--text-faint:#2d3440;--mono:'JetBrains Mono',Consolas,monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--mono);background:var(--bg-base);color:var(--text);font-size:12.5px;line-height:1.6;}
+  .page{max-width:1200px;margin:28px auto;background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px var(--border),0 12px 50px rgba(0,0,0,.7);}
+  .titlebar{background:#10161e;border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:8px;}
+  .tb-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+  .tb-red{background:#f05252;box-shadow:0 0 4px #f05252;}.tb-yellow{background:#e8c73a;box-shadow:0 0 4px #e8c73a;}.tb-green{background:#3dcf6e;box-shadow:0 0 4px #3dcf6e;}
+  .tb-title{margin-left:10px;font-size:10.5px;color:var(--text-dim);letter-spacing:0.5px;}
+  .tb-spacer{flex:1;}.tb-pill{font-size:9.5px;color:var(--cyan-dim);border:1px solid var(--border-glow);padding:1px 9px;border-radius:3px;letter-spacing:0.8px;text-transform:uppercase;}
+  .header{padding:30px 36px 22px;border-bottom:1px solid var(--border);background:var(--bg-header);position:relative;overflow:hidden;}
+  .header::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(57,197,207,.018) 3px,rgba(57,197,207,.018) 4px);pointer-events:none;}
+  .hdr-prompt{font-size:10px;color:var(--green);letter-spacing:0.8px;margin-bottom:10px;opacity:.85;}
+  .hdr-prompt span{color:var(--text-dim);}
+  .header h1{font-size:28px;font-weight:700;color:var(--cyan);letter-spacing:-0.5px;text-shadow:0 0 28px rgba(57,197,207,.55);line-height:1;margin-bottom:10px;}
+  .hdr-meta{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--text-dim);}
+  .hdr-meta .sep{color:var(--border-glow);}.hdr-meta .val{color:var(--text);}
+  .summary-strip{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--border);}
+  .s-card{padding:18px 26px;border-right:1px solid var(--border);display:flex;align-items:center;gap:18px;position:relative;overflow:hidden;transition:background .15s;}
+  .s-card:hover{background:rgba(255,255,255,.015);}.s-card:last-child{border-right:none;}
+  .s-card::after{content:"";position:absolute;bottom:0;left:0;right:0;height:2px;}
+  .s-card.sit::after{background:var(--cyan);box-shadow:0 0 10px var(--cyan);}
+  .s-card.uat::after{background:var(--orange);box-shadow:0 0 10px var(--orange);}
+  .s-card.prod::after{background:var(--red);box-shadow:0 0 10px var(--red);}
+  .s-icon{font-size:18px;line-height:1;flex-shrink:0;}
+  .s-card.sit  .s-icon{color:var(--cyan);  filter:drop-shadow(0 0 5px var(--cyan));}
+  .s-card.uat  .s-icon{color:var(--orange);filter:drop-shadow(0 0 5px var(--orange));}
+  .s-card.prod .s-icon{color:var(--red);   filter:drop-shadow(0 0 5px var(--red));}
+  .s-count{font-size:32px;font-weight:700;line-height:1;}
+  .s-card.sit  .s-count{color:var(--cyan);  text-shadow:0 0 16px rgba(57,197,207,.55);}
+  .s-card.uat  .s-count{color:var(--orange);text-shadow:0 0 16px rgba(232,148,58,.55);}
+  .s-card.prod .s-count{color:var(--red);   text-shadow:0 0 16px rgba(240,82,82,.55);}
+  .s-label{font-size:9.5px;color:var(--text-dim);letter-spacing:1.2px;margin-top:4px;text-transform:uppercase;}
+  .section{padding:28px 36px;border-bottom:1px solid var(--border);}
+  .section:last-of-type{border-bottom:none;}
+  .section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .sec-icon{font-size:11px;flex-shrink:0;}
+  .section.sit  .sec-icon{color:var(--cyan);}
+  .section.uat  .sec-icon{color:var(--orange);}
+  .section.prod .sec-icon{color:var(--red);}
+  .section-header h2{font-size:12.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+  .section.sit  .section-header h2{color:var(--cyan);  text-shadow:0 0 10px rgba(57,197,207,.4);}
+  .section.uat  .section-header h2{color:var(--orange);text-shadow:0 0 10px rgba(232,148,58,.4);}
+  .section.prod .section-header h2{color:var(--red);   text-shadow:0 0 10px rgba(240,82,82,.4);}
+  .sec-period{font-size:9.5px;color:var(--text-dim);border:1px solid var(--border);padding:1px 8px;border-radius:3px;letter-spacing:0.4px;white-space:nowrap;}
+  .sec-count{margin-left:auto;font-size:9.5px;font-weight:700;letter-spacing:1px;padding:2px 10px;border-radius:3px;text-transform:uppercase;white-space:nowrap;}
+  .section.sit  .sec-count{background:var(--cyan-glow);  color:var(--cyan);  border:1px solid var(--cyan-dim);}
+  .section.uat  .sec-count{background:var(--orange-glow);color:var(--orange);border:1px solid var(--orange-dim);}
+  .section.prod .sec-count{background:var(--red-glow);   color:var(--red);   border:1px solid var(--red-dim);}
+  .reporters-line{font-size:10px;color:var(--text-dim);margin-bottom:16px;padding:7px 12px;background:rgba(255,255,255,.018);border:1px solid var(--border);border-radius:4px;letter-spacing:0.3px;word-break:break-word;}
+  .reporters-line .prompt{color:var(--green);margin-right:4px;}.reporters-line strong{color:var(--text);}
+  .table-wrap{border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;}
+  thead tr{background:#111d2b;}
+  th{text-align:left;padding:9px 12px;font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--border-glow);}
+  .section.sit  th{color:var(--cyan);}
+  .section.uat  th{color:var(--orange);}
+  .section.prod th{color:var(--red);}
+  tbody tr{border-bottom:1px solid var(--border);}
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:nth-child(even) td{background:var(--bg-row-alt);}
+  tbody tr:hover td{background:rgba(57,197,207,.035);}
+  td{padding:9px 12px;vertical-align:top;color:var(--text);}
+  .col-num{width:38px;text-align:center;} td.col-num{color:var(--text-faint);font-size:10px;}
+  .col-key{width:95px;white-space:nowrap;}
+  .col-key a{color:var(--cyan);text-decoration:none;font-weight:600;font-size:11px;}
+  .col-key a:hover{text-shadow:0 0 8px rgba(57,197,207,.6);text-decoration:underline;}
+  .col-type{width:80px;}.col-pri{width:90px;}.col-status{width:115px;}.col-reporter{width:145px;}.col-date{width:96px;white-space:nowrap;}
+  td.col-date,td.col-type,td.col-reporter{color:var(--text-dim);font-size:10.5px;}
+  .badge{display:inline-block;padding:1px 8px;font-size:9.5px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;border-radius:3px;white-space:nowrap;border:1px solid transparent;}
+  .badge-blocker {background:rgba(240,82,82,.18);color:#ff5555;border-color:var(--red-dim);box-shadow:0 0 6px rgba(240,82,82,.25);}
+  .badge-critical{background:rgba(240,82,82,.12);color:#f07060;border-color:var(--red-dim);}
+  .badge-high    {background:rgba(232,148,58,.13);color:var(--orange);border-color:var(--orange-dim);}
+  .badge-medium  {background:rgba(57,197,207,.10);color:var(--cyan);  border-color:var(--cyan-dim);}
+  .badge-low     {background:rgba(110,118,129,.08);color:var(--text-dim);border-color:#2d3440;}
+  .status-pill{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;font-size:9.5px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;border-radius:3px;border:1px solid transparent;white-space:nowrap;}
+  .status-pill .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+  .status-open  {background:rgba(232,199,58,.10);color:var(--yellow);border-color:#6a5a10;}
+  .status-open   .dot{background:var(--yellow);box-shadow:0 0 4px var(--yellow);}
+  .status-inprog{background:rgba(163,113,247,.12);color:var(--purple);border-color:#4a2a8a;}
+  .status-inprog .dot{background:var(--purple);box-shadow:0 0 4px var(--purple);}
+  .status-closed{background:rgba(61,207,110,.10);color:var(--green);border-color:var(--green-dim);}
+  .status-closed .dot{background:var(--green);box-shadow:0 0 4px var(--green);}
+  .status-grey{background:rgba(110,118,129,.10);color:var(--text-dim);border-color:#2d3440;}
+  .status-grey .dot{background:var(--text-dim);box-shadow:0 0 4px var(--text-dim);}
+  .status-fail{background:rgba(240,82,82,.12);color:var(--red);border-color:var(--red-dim);}
+  .status-fail .dot{background:var(--red);box-shadow:0 0 4px var(--red);}
+  .no-data{padding:26px;text-align:center;color:var(--text-faint);font-size:11px;letter-spacing:0.5px;border:1px solid var(--border);border-radius:4px;}
+  .no-data::before{content:'// ';}
+  .footer{background:#08090d;border-top:1px solid var(--border);padding:12px 36px;display:flex;align-items:center;justify-content:space-between;font-size:10px;color:var(--text-dim);letter-spacing:0.5px;}
+  .footer-logo{color:var(--cyan-dim);font-weight:600;}
+  .footer-logo::before{content:'▶ ';color:var(--green);}
+  .footer-right{color:var(--text-faint);}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="titlebar">
+    <div class="tb-dot tb-red"></div>
+    <div class="tb-dot tb-yellow"></div>
+    <div class="tb-dot tb-green"></div>
+    <span class="tb-title">terminal &mdash; bug_defect_report &mdash; {{ generated_date }}</span>
+    <span class="tb-spacer"></span>
+    <span class="tb-pill">SE-DevTools</span>
+  </div>
+
+  <div class="header">
+    <div class="hdr-prompt"><span>$ </span>python main.py bug-report <span>--sort=priority --format=html</span></div>
+    <h1>Bug &amp; Defect Report</h1>
+    <div class="hdr-meta">
+      <span>Schneider Electric</span><span class="sep">//</span><span class="val">PICASso Project</span>
+      <span class="sep">//</span><span>Generated</span><span class="sep">:</span><span class="val">{{ generated_date }}</span>
+    </div>
+  </div>
+
+  <div class="summary-strip">
+    <div class="s-card sit"><div class="s-icon">&#9670;</div><div><div class="s-count">{{ sit_issues | length }}</div><div class="s-label">SIT Defects</div></div></div>
+    <div class="s-card uat"><div class="s-icon">&#9670;</div><div><div class="s-count">{{ uat_issues | length }}</div><div class="s-label">UAT Defects</div></div></div>
+    <div class="s-card prod"><div class="s-icon">&#9670;</div><div><div class="s-count">{{ prod_issues | length }}</div><div class="s-label">Prod Defects</div></div></div>
+  </div>
+
+  {# ---- MACROS ---- #}
+
+  {% macro pri_badge(p) %}
+  {%- set pl = p | lower -%}
+  {%- if pl == 'blocker'   -%}<span class="badge badge-blocker">{{ p }}</span>
+  {%- elif pl == 'critical' -%}<span class="badge badge-critical">{{ p }}</span>
+  {%- elif pl == 'high'    -%}<span class="badge badge-high">{{ p }}</span>
+  {%- elif pl == 'medium'  -%}<span class="badge badge-medium">{{ p }}</span>
+  {%- else -%}<span class="badge badge-low">{{ p }}</span>
+  {%- endif -%}
+  {% endmacro %}
+
+  {% macro status_badge(s) %}
+  {%- set sl = s | lower -%}
+  {%- if 'failed' in sl -%}
+    <span class="status-pill status-fail"><span class="dot"></span>{{ s }}</span>
+  {%- elif 'progress' in sl or 'review' in sl or 'development' in sl -%}
+    <span class="status-pill status-inprog"><span class="dot"></span>{{ s }}</span>
+  {%- elif sl in ('open', 'to do', 'todo', 'reopened', 'new', 'assigned') -%}
+    <span class="status-pill status-open"><span class="dot"></span>{{ s }}</span>
+  {%- elif 'pending' in sl or 'on hold' in sl or 'change request' in sl -%}
+    <span class="status-pill status-grey"><span class="dot"></span>{{ s }}</span>
+  {%- else -%}
+    <span class="status-pill status-closed"><span class="dot"></span>{{ s }}</span>
+  {%- endif -%}
+  {% endmacro %}
+
+  {% macro issue_table(issues) %}
+  {% if issues %}
+  <div class="table-wrap"><table>
+    <thead><tr>
+      <th class="col-num">#</th>
+      <th class="col-summary">Summary</th>
+      <th class="col-type">Type</th>
+      <th class="col-pri">Priority</th>
+      <th class="col-status">Status</th>
+      <th class="col-reporter">Reporter</th>
+      <th class="col-date">Created</th>
+    </tr></thead>
+    <tbody>
+      {% for issue in issues %}
+      <tr>
+        <td class="col-num">{{ loop.index }}</td>
+        <td class="col-summary">{{ issue.summary }}</td>
+        <td class="col-type">{{ issue.issue_type }}</td>
+        <td class="col-pri">{{ pri_badge(issue.priority) }}</td>
+        <td class="col-status">{{ status_badge(issue.status) }}</td>
+        <td class="col-reporter">{{ issue.reporter or '&mdash;' }}</td>
+        <td class="col-date">{{ issue.created or '&mdash;' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table></div>
+  {% else %}
+  <div class="no-data">no issues found for this period</div>
+  {% endif %}
+  {% endmacro %}
+
+  <!-- SECTION 1: SIT -->
+  <div class="section sit">
+    <div class="section-header">
+      <span class="sec-icon">&#9654;</span>
+      <h2>SIT Testing Defects</h2>
+      <span class="sec-period">{{ sit_period }} &ndash; present</span>
+      <span class="sec-count">{{ sit_issues | length }} issue{{ 's' if sit_issues | length != 1 else '' }}</span>
+    </div>
+    <div class="reporters-line"><span class="prompt">$</span> reporters: <strong>{{ sit_reporters | join(' | ') }}</strong></div>
+    {{ issue_table(sit_issues) }}
+  </div>
+
+  <!-- SECTION 2: UAT -->
+  <div class="section uat">
+    <div class="section-header">
+      <span class="sec-icon">&#9654;</span>
+      <h2>UAT Defects</h2>
+      <span class="sec-period">{{ uat_period }} &ndash; present</span>
+      <span class="sec-count">{{ uat_issues | length }} issue{{ 's' if uat_issues | length != 1 else '' }}</span>
+    </div>
+    <div class="reporters-line"><span class="prompt">$</span> reporters: <strong>{{ uat_reporters | join(' | ') }}</strong></div>
+    {{ issue_table(uat_issues) }}
+  </div>
+
+  <!-- SECTION 3: Production -->
+  <div class="section prod">
+    <div class="section-header">
+      <span class="sec-icon">&#9654;</span>
+      <h2>Production Defects</h2>
+      <span class="sec-period">{{ prod_period }} &ndash; present</span>
+      <span class="sec-count">{{ prod_issues | length }} issue{{ 's' if prod_issues | length != 1 else '' }}</span>
+    </div>
+    <div class="reporters-line"><span class="prompt">$</span> reporters: <strong>{{ prod_reporters | join(' | ') }}</strong></div>
+    {{ issue_table(prod_issues) }}
+  </div>
+
+  <div class="footer">
+    <span class="footer-logo">Schneider Electric &mdash; SE-DevTools</span>
+    <span class="footer-right">total: {{ (sit_issues | length) + (uat_issues | length) + (prod_issues | length) }} issue(s) // {{ generated_date }}</span>
+  </div>
+
+</div>
+</body>
+</html>

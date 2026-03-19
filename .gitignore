@@ -1,0 +1,45 @@
+# Python
+.env
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+*.log
+
+# Node.js
+node_modules/
+
+# Test artifacts
+test-results/
+allure-results/
+allure-report/
+playwright-report/
+traces/
+storage/
+blob-report/
+
+# Generated output (keep templates, ignore generated files)
+output/release_notes/*.txt
+output/release_notes/*.html
+output/release_notes/*.pdf
+output/meeting_notes/*.txt
+output/meeting_notes/*.html
+output/test_cases/*.html
+output/full_release_notes/*.html
+output/full_release_notes/*.pptx
+output/bug_reports/*.html
+
+# Environment & secrets
+packages/pw-autotest/config/.env.*
+*.env.local
+packages/pw-autotest/config/users/qa.users.ts
+packages/pw-autotest/config/users/dev.users.ts
+packages/pw-autotest/config/users/ppr.users.ts
+
+# IDE & OS
+.DS_Store
+.playwright-mcp/
+.vscode/
