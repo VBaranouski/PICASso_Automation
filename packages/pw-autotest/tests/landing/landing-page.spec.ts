@@ -2,6 +2,7 @@ import { test, expect } from '../../src/fixtures';
 import { LoginPage, LandingPage } from '../../src/pages';
 import type { LandingTab } from '../../src/pages';
 import * as allure from 'allure-js-commons';
+import { waitForOSScreenLoad } from '../../src/helpers/wait.helper';
 
 test.describe('Landing Page @smoke', () => {
   test.setTimeout(90_000);
@@ -15,8 +16,10 @@ test.describe('Landing Page @smoke', () => {
     await loginPage.goto();
     await loginPage.waitForPageLoad();
     await loginPage.login(userCredentials.login, userCredentials.password);
-    await expect(page).toHaveURL(/.*GRC_PICASso/, { timeout: 60_000 });
-    await expect(landingPage.pageTitle).toBeVisible({ timeout: 60_000 });
+
+    // OutSystems login redirect is slow — wait for page title as readiness signal
+    await landingPage.pageTitle.waitFor({ timeout: 60_000 });
+    await expect(page).toHaveURL(/.*GRC_PICASso/);
   });
 
   test('should display all tabs on landing page', async () => {
@@ -60,7 +63,7 @@ test.describe('Landing Page @smoke', () => {
         await landingPage.clickTab(tabName);
         await expect(landingPage.getTab(tabName)).toHaveAttribute('aria-selected', 'true');
         await expect(page.getByRole('tabpanel')).toBeVisible();
-        await expect(landingPage.grid).toBeVisible({ timeout: 60_000 });
+        await landingPage.grid.waitFor({ timeout: 60_000 });
 
         // Verify grid has at least a header row
         const headers = await landingPage.getColumnHeaders();
@@ -82,8 +85,10 @@ test.describe('Landing Page - My Tasks Tab @regression', () => {
     await loginPage.goto();
     await loginPage.waitForPageLoad();
     await loginPage.login(userCredentials.login, userCredentials.password);
-    await expect(page).toHaveURL(/.*GRC_PICASso/, { timeout: 60_000 });
-    await expect(landingPage.pageTitle).toBeVisible({ timeout: 60_000 });
+
+    // OutSystems login redirect is slow — wait for page title as readiness signal
+    await landingPage.pageTitle.waitFor({ timeout: 60_000 });
+    await expect(page).toHaveURL(/.*GRC_PICASso/);
   });
 
   test('should display correct grid columns for My Tasks', async () => {
@@ -138,9 +143,8 @@ test.describe('Landing Page - My Tasks Tab @regression', () => {
 
     await test.step('Toggle Show Closed Tasks checkbox', async () => {
       await landingPage.tasksShowClosedCheckbox.click();
-      await page.waitForLoadState('domcontentloaded');
-      // Wait for grid data to potentially update
-      await expect(landingPage.grid).toBeVisible({ timeout: 60_000 });
+      await waitForOSScreenLoad(page);
+      await expect(landingPage.grid).toBeVisible();
     });
 
     await test.step('Verify record count changed', async () => {
@@ -165,8 +169,8 @@ test.describe('Landing Page - My Tasks Tab @regression', () => {
 
     await test.step('Change to 20 per page', async () => {
       await landingPage.perPageCombobox.selectOption({ label: '20' });
-      await page.waitForLoadState('domcontentloaded');
-      await expect(landingPage.grid).toBeVisible({ timeout: 60_000 });
+      await waitForOSScreenLoad(page);
+      await expect(landingPage.grid).toBeVisible();
     });
 
     await test.step('Verify row count changed', async () => {
@@ -183,7 +187,7 @@ test.describe('Landing Page - My Tasks Tab @regression', () => {
 
     await test.step('Click next page button', async () => {
       await landingPage.clickNextPage();
-      await page.waitForLoadState('domcontentloaded');
+      await waitForOSScreenLoad(page);
     });
 
     await test.step('Verify pagination updated', async () => {
@@ -210,8 +214,10 @@ test.describe('Landing Page - My Products Tab @regression', () => {
     await loginPage.goto();
     await loginPage.waitForPageLoad();
     await loginPage.login(userCredentials.login, userCredentials.password);
-    await expect(page).toHaveURL(/.*GRC_PICASso/, { timeout: 60_000 });
-    await expect(landingPage.pageTitle).toBeVisible({ timeout: 60_000 });
+
+    // OutSystems login redirect is slow — wait for page title as readiness signal
+    await landingPage.pageTitle.waitFor({ timeout: 60_000 });
+    await expect(page).toHaveURL(/.*GRC_PICASso/);
     await landingPage.clickTab('My Products');
   });
 
@@ -252,16 +258,10 @@ test.describe('Landing Page - My Products Tab @regression', () => {
     await allure.tag('regression');
     await allure.description('Verify unchecking Show Active Only shows inactive products too');
 
-    let initialCount: string;
-
-    await test.step('Get initial record count', async () => {
-      initialCount = await landingPage.getRecordCount();
-    });
-
     await test.step('Uncheck Show Active Only', async () => {
       await landingPage.productsShowActiveOnlyCheckbox.click();
-      await page.waitForLoadState('domcontentloaded');
-      await expect(landingPage.grid).toBeVisible({ timeout: 60_000 });
+      await waitForOSScreenLoad(page);
+      await expect(landingPage.grid).toBeVisible();
     });
 
     await test.step('Verify record count changed', async () => {
@@ -277,17 +277,17 @@ test.describe('Landing Page - My Products Tab @regression', () => {
     await allure.description('Verify changing per-page dropdown on My Products updates visible rows');
 
     await test.step('Wait for grid data to load', async () => {
-      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible({ timeout: 60_000 });
+      await landingPage.grid.getByRole('row').nth(1).waitFor({ timeout: 60_000 });
     });
 
     await test.step('Change to 20 per page', async () => {
       await landingPage.perPageCombobox.selectOption({ label: '20' });
-      await page.waitForLoadState('domcontentloaded');
-      await expect(landingPage.grid).toBeVisible({ timeout: 60_000 });
+      await waitForOSScreenLoad(page);
+      await expect(landingPage.grid).toBeVisible();
     });
 
     await test.step('Verify grid still has rows', async () => {
-      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible({ timeout: 60_000 });
+      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible();
     });
   });
 });
@@ -304,8 +304,10 @@ test.describe('Landing Page - My Releases Tab @regression', () => {
     await loginPage.goto();
     await loginPage.waitForPageLoad();
     await loginPage.login(userCredentials.login, userCredentials.password);
-    await expect(page).toHaveURL(/.*GRC_PICASso/, { timeout: 60_000 });
-    await expect(landingPage.pageTitle).toBeVisible({ timeout: 60_000 });
+
+    // OutSystems login redirect is slow — wait for page title as readiness signal
+    await landingPage.pageTitle.waitFor({ timeout: 60_000 });
+    await expect(page).toHaveURL(/.*GRC_PICASso/);
     await landingPage.clickTab('My Releases');
   });
 
@@ -350,8 +352,8 @@ test.describe('Landing Page - My Releases Tab @regression', () => {
 
     await test.step('Uncheck Show Active Only', async () => {
       await landingPage.releasesShowActiveOnlyCheckbox.click();
-      await page.waitForLoadState('domcontentloaded');
-      await expect(landingPage.grid).toBeVisible({ timeout: 60_000 });
+      await waitForOSScreenLoad(page);
+      await expect(landingPage.grid).toBeVisible();
     });
 
     await test.step('Verify record count changed', async () => {
@@ -368,7 +370,7 @@ test.describe('Landing Page - My Releases Tab @regression', () => {
 
     await test.step('Click next page', async () => {
       await landingPage.clickNextPage();
-      await page.waitForLoadState('domcontentloaded');
+      await waitForOSScreenLoad(page);
     });
 
     await test.step('Verify page 2 is current', async () => {
@@ -389,8 +391,10 @@ test.describe('Landing Page - My DOCs Tab @regression', () => {
     await loginPage.goto();
     await loginPage.waitForPageLoad();
     await loginPage.login(userCredentials.login, userCredentials.password);
-    await expect(page).toHaveURL(/.*GRC_PICASso/, { timeout: 60_000 });
-    await expect(landingPage.pageTitle).toBeVisible({ timeout: 60_000 });
+
+    // OutSystems login redirect is slow — wait for page title as readiness signal
+    await landingPage.pageTitle.waitFor({ timeout: 60_000 });
+    await expect(page).toHaveURL(/.*GRC_PICASso/);
     await landingPage.clickTab('My DOCs');
   });
 
@@ -454,8 +458,10 @@ test.describe('Landing Page - Reports & Dashboards Tab @regression', () => {
     await loginPage.goto();
     await loginPage.waitForPageLoad();
     await loginPage.login(userCredentials.login, userCredentials.password);
-    await expect(page).toHaveURL(/.*GRC_PICASso/, { timeout: 60_000 });
-    await expect(landingPage.pageTitle).toBeVisible({ timeout: 60_000 });
+
+    // OutSystems login redirect is slow — wait for page title as readiness signal
+    await landingPage.pageTitle.waitFor({ timeout: 60_000 });
+    await expect(page).toHaveURL(/.*GRC_PICASso/);
     await landingPage.clickTab('Reports & Dashboards');
   });
 
@@ -525,17 +531,17 @@ test.describe('Landing Page - Reports & Dashboards Tab @regression', () => {
     await allure.description('Verify changing per-page dropdown on Reports & Dashboards updates visible rows');
 
     await test.step('Wait for grid data to load', async () => {
-      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible({ timeout: 60_000 });
+      await landingPage.grid.getByRole('row').nth(1).waitFor({ timeout: 60_000 });
     });
 
     await test.step('Change to 20 per page', async () => {
       await landingPage.perPageCombobox.selectOption({ label: '20' });
-      await page.waitForLoadState('domcontentloaded');
-      await expect(landingPage.grid).toBeVisible({ timeout: 60_000 });
+      await waitForOSScreenLoad(page);
+      await expect(landingPage.grid).toBeVisible();
     });
 
     await test.step('Verify grid still has rows', async () => {
-      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible({ timeout: 60_000 });
+      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible();
     });
   });
 });

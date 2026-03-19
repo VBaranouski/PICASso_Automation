@@ -3,22 +3,28 @@ import { LoginPage, NewProductPage } from '../../src/pages';
 import * as allure from 'allure-js-commons';
 
 test.describe('Products - New Product Creation @regression', () => {
+  // Extended timeout: filling all 4 team roles requires OutSystems search API calls,
+  // each with up to 240s wait for the edit link widget to appear.
   test.setTimeout(360_000);
 
   let loginPage: LoginPage;
   let newProductPage: NewProductPage;
 
-  test.beforeEach(async ({ page, getUserByRole }) => {
-    const creds = getUserByRole('process_quality_leader');
+  test.beforeEach(async ({ page, userCredentials }) => {
     loginPage = new LoginPage(page);
     newProductPage = new NewProductPage(page);
 
     await loginPage.goto();
     await loginPage.waitForPageLoad();
-    await loginPage.login(creds.login, creds.password);
-    await expect(page).toHaveURL(/.*GRC_PICASso/, { timeout: 60_000 });
-    // Wait for landing page content to fully render
-    await expect(page.getByRole('button', { name: 'New Product' })).toBeVisible({ timeout: 120_000 });
+    await loginPage.login(userCredentials.login, userCredentials.password);
+
+    // OutSystems login redirect is slow — wait for landing page button as readiness signal
+    await page.getByRole('button', { name: 'New Product' }).waitFor({ timeout: 120_000 });
+    await expect(page).toHaveURL(/.*GRC_PICASso/);
+
+    // Navigate to New Product form — common precondition for all tests
+    await page.getByRole('button', { name: 'New Product' }).click();
+    await newProductPage.productNameInput.waitFor({ timeout: 60_000 });
   });
 
   test('should create a new product with all required fields filled', async ({ page }) => {
@@ -31,13 +37,6 @@ test.describe('Products - New Product Creation @regression', () => {
     );
 
     const productName = `Power Switch - Life is On ${Math.floor(Math.random() * 10000) + 1}`;
-
-    await test.step('Navigate to New Product form', async () => {
-      const newProductButton = page.getByRole('button', { name: 'New Product' });
-      await expect(newProductButton).toBeVisible({ timeout: 60_000 });
-      await newProductButton.click();
-      await expect(newProductPage.productNameInput).toBeVisible({ timeout: 60_000 });
-    });
 
     await test.step('Fill Product Information', async () => {
       await newProductPage.fillProductInformation({
@@ -77,7 +76,7 @@ test.describe('Products - New Product Creation @regression', () => {
     await test.step('Save Product and verify creation', async () => {
       await newProductPage.clickSave();
 
-      // Verify product ID was assigned (PIC-XXXX format)
+      // Verify product ID was assigned (PIC-XXXX format) — user-visible text
       await expect(page.getByText(/ID:PIC-(?!0)\d+/)).toBeVisible();
 
       // Verify product is in Active state after save
@@ -95,13 +94,6 @@ test.describe('Products - New Product Creation @regression', () => {
     await allure.description(
       'Verify that the form prevents saving when required fields are empty and shows appropriate indicators.',
     );
-
-    await test.step('Navigate to New Product form', async () => {
-      const newProductButton = page.getByRole('button', { name: 'New Product' });
-      await expect(newProductButton).toBeVisible({ timeout: 60_000 });
-      await newProductButton.click();
-      await expect(newProductPage.productNameInput).toBeVisible({ timeout: 60_000 });
-    });
 
     await test.step('Attempt to save without filling required fields', async () => {
       await newProductPage.clickSave();
@@ -123,24 +115,13 @@ test.describe('Products - New Product Creation @regression', () => {
       'Verify that clicking Cancel on the new product form returns to the landing page without saving.',
     );
 
-    await test.step('Navigate to New Product form', async () => {
-      const newProductButton = page.getByRole('button', { name: 'New Product' });
-      await expect(newProductButton).toBeVisible({ timeout: 60_000 });
-      await newProductButton.click();
-      await expect(newProductPage.productNameInput).toBeVisible({ timeout: 60_000 });
-    });
-
     await test.step('Fill some product information', async () => {
       await newProductPage.fillProductName('Temporary Product - Should Not Be Saved');
     });
 
     await test.step('Click Cancel and confirm leaving the page', async () => {
-      await newProductPage.clickCancel();
-
-      // OutSystems shows a custom "Leave Page" modal dialog
-      const leaveButton = page.getByRole('button', { name: 'Leave' });
-      await expect(leaveButton).toBeVisible({ timeout: 20_000 });
-      await leaveButton.click();
+      // POM handles both the Cancel click and the OutSystems "Leave Page" modal
+      await newProductPage.clickCancelAndConfirmLeave();
     });
   });
 
@@ -152,13 +133,6 @@ test.describe('Products - New Product Creation @regression', () => {
       'Verify that Org Level 2 and Org Level 3 dropdowns are disabled until their parent level is selected, ' +
       'and they become enabled with correct options after parent selection.',
     );
-
-    await test.step('Navigate to New Product form', async () => {
-      const newProductButton = page.getByRole('button', { name: 'New Product' });
-      await expect(newProductButton).toBeVisible({ timeout: 60_000 });
-      await newProductButton.click();
-      await expect(newProductPage.productNameInput).toBeVisible({ timeout: 60_000 });
-    });
 
     await test.step('Verify all Org Levels are initially disabled', async () => {
       await expect(newProductPage.orgLevel1Select).toBeDisabled();

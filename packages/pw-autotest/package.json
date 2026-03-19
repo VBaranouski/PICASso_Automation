@@ -4,6 +4,7 @@
   "description": "AI-Powered Playwright MCP Test Automation Framework",
   "scripts": {
     "test": "npx playwright test",
+    "posttest": "npx allure generate allure-results -o allure-report --clean && npx allure open allure-report",
     "test:chromium": "npx playwright test --project=chromium",
     "test:firefox": "npx playwright test --project=firefox",
     "test:webkit": "npx playwright test --project=webkit",

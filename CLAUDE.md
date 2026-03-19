@@ -74,3 +74,25 @@ Root `.claude/settings.json` provides Playwright MCP and sequential-thinking ser
 - `.github/workflows/docs.yml` — Python lint & validation (triggered by docs-generator changes)
 - `.github/workflows/claude.yml` — Claude GitHub Action (@claude mentions)
 - `.github/workflows/claude-code-review.yml` — Automated PR code review
+
+## Coding Standards
+
+All code generated in this project MUST follow the conventions defined in these files.
+Read them before writing any TypeScript or test code.
+
+### TypeScript Conventions
+→ `.claude/conventions/typescript-conventions.md`
+Covers: naming, class structure, type safety, imports, async/await, error handling.
+
+### Testing Patterns
+→ `.claude/conventions/testing-patterns.md`
+Covers: four-layer architecture, locators, page objects, components (OSDropdown, Modal),
+fixtures, test structure, assertions, wait strategies, OutSystems-specific rules.
+
+### Rules Summary
+- Locators → `src/locators/*.locators.ts` only, factory function pattern
+- Page Objects → actions + assertions only, no inline locators
+- Components → for any UI pattern used in 2+ pages
+- Fixtures → page object initialization, never inside test files
+- Tests → business logic only, no `expect()`, no `page.locator()` calls
+- Never use `waitForTimeout()`, `selectOption()`, XPath, or CSS class selectors

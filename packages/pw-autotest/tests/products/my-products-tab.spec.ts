@@ -9,20 +9,21 @@ test.describe('My Products Tab - Exploratory @regression', () => {
   let loginPage: LoginPage;
   let landingPage: LandingPage;
 
-  test.beforeEach(async ({ page, getUserByRole }) => {
-    const creds = getUserByRole('process_quality_leader');
+  test.beforeEach(async ({ page, userCredentials }) => {
     loginPage = new LoginPage(page);
     landingPage = new LandingPage(page);
 
     await loginPage.goto();
     await loginPage.waitForPageLoad();
-    await loginPage.login(creds.login, creds.password);
-    await expect(page).toHaveURL(/.*GRC_PICASso/, { timeout: 60_000 });
-    await expect(landingPage.pageTitle).toBeVisible({ timeout: 60_000 });
+    await loginPage.login(userCredentials.login, userCredentials.password);
+
+    // OutSystems login redirect is slow — wait for landing page title as readiness signal
+    await landingPage.pageTitle.waitFor({ timeout: 60_000 });
+    await expect(page).toHaveURL(/.*GRC_PICASso/);
 
     // Navigate to My Products tab
     await landingPage.clickTab('My Products');
-    await expect(landingPage.grid).toBeVisible({ timeout: 30_000 });
+    await landingPage.grid.waitFor({ timeout: 30_000 });
   });
 
   test('should search products by name using combobox filter', async () => {
@@ -147,7 +148,6 @@ test.describe('My Products Tab - Exploratory @regression', () => {
     await test.step('Verify "Show active only" is re-checked after reset', async () => {
       await expect(landingPage.productsShowActiveOnlyCheckbox).toBeChecked();
     });
-
   });
 
   test('should navigate through pages using pagination', async ({ page }) => {
@@ -169,7 +169,7 @@ test.describe('My Products Tab - Exploratory @regression', () => {
     await test.step('Navigate to page 2', async () => {
       await landingPage.clickNextPage();
       await waitForOSScreenLoad(page);
-      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible({ timeout: 30_000 });
+      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible();
     });
 
     await test.step('Verify we are on page 2', async () => {
@@ -180,7 +180,7 @@ test.describe('My Products Tab - Exploratory @regression', () => {
     await test.step('Navigate back to page 1', async () => {
       await landingPage.clickPreviousPage();
       await waitForOSScreenLoad(page);
-      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible({ timeout: 30_000 });
+      await expect(landingPage.grid.getByRole('row').nth(1)).toBeVisible();
     });
 
     await test.step('Verify we are back on page 1', async () => {
@@ -211,11 +211,10 @@ test.describe('My Products Tab - Exploratory @regression', () => {
     });
 
     await test.step('Verify Product Detail page is displayed', async () => {
-      // Verify we navigated to a product detail page
-      await expect(page).toHaveURL(/.*ProductDetail/, { timeout: 30_000 });
-
-      // Verify key elements of the Product Detail page are visible
-      await expect(page.getByRole('button', { name: 'Edit Product' })).toBeVisible({ timeout: 30_000 });
+      // Wait for Edit Product button as readiness signal for the detail page
+      await page.getByRole('button', { name: 'Edit Product' }).waitFor({ timeout: 30_000 });
+      await expect(page).toHaveURL(/.*ProductDetail/);
+      await expect(page.getByRole('button', { name: 'Edit Product' })).toBeVisible();
     });
 
     await test.step('Verify product name is displayed on the detail page', async () => {
