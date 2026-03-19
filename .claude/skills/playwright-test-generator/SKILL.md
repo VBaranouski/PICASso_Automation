@@ -11,6 +11,10 @@ AI-powered test generation agent that reads human-readable test scenarios, explo
 
 **Core principle:** Never guess locators — always explore the real DOM via MCP snapshots first, then generate tests using actual element structure.
 
+**Coding conventions:** Two additional files define TypeScript and testing standards for this project. Read them before generating any code:
+- `packages/pw-autotest/.claude/conventions/typescript-conventions.md` — naming, types, class structure, imports
+- `packages/pw-autotest/.claude/conventions/testing-patterns.md` — four-layer architecture, locator factories, POMs, components, fixtures, assertion rules
+
 ## When to Use
 
 - User provides test scenarios or specs (markdown, verbal, or structured)
@@ -66,65 +70,129 @@ digraph test_gen {
 
 ## Project Conventions (MUST FOLLOW)
 
+### Four-Layer Architecture
+
+```
+src/locators/     → element selectors ONLY — factory functions, zero logic
+src/pages/        → actions and assertions — NO inline locators
+src/components/   → reusable UI patterns used in 2+ pages (OSDropdown, ModalComponent)
+src/fixtures/     → page object initialization and shared auth state
+tests/            → describe blocks and test cases ONLY
+```
+
+**Never mix responsibilities.** A test file must never contain a locator. A page file must never call `page.locator()` directly.
+
 ### Imports
+
+Use path aliases from `tsconfig.json` — never relative paths that go up more than one level:
 ```typescript
-import { test, expect } from '../../src/fixtures';
-import { PageName } from '../../src/pages';
-import type { TypeName } from '../../src/pages';
+// ✅ Correct — path aliases
+import { test, expect } from '@fixtures/index';
+import { LandingPage } from '@pages/index';
+import type { UserRole } from '@pages/index';
 import * as allure from 'allure-js-commons';
+
+// ❌ Wrong — deep relative paths
+import { test, expect } from '../../src/fixtures';
+import { LandingPage } from '../../src/pages';
+```
+
+### Locator Factory
+
+All locators live in `src/locators/` as factory functions. Never define locators inside a page class.
+
+```typescript
+// src/locators/feature.locators.ts
+import { Page } from '@playwright/test';
+
+export const featureLocators = (page: Page) => ({
+  pageTitle:     page.getByRole('heading', { name: 'Feature Title' }),
+  submitButton:  page.getByRole('button', { name: 'Submit' }),
+  nameInput:     page.getByLabel('Name'),
+  statusText:    page.getByTestId('status-message'),
+});
+
+export type FeatureLocators = ReturnType<typeof featureLocators>;
+```
+
+### Page Object Model
+
+Page classes extend `BasePage`. They use a private `l` holding the locator factory result. Class members follow this order: private fields → constructor → public actions → public assertions → private helpers.
+
+```typescript
+// src/pages/feature.page.ts
+import { Page, expect } from '@playwright/test';
+import { BasePage } from '@pages/base.page';
+import { featureLocators } from '@locators/feature.locators';
+
+export class FeaturePage extends BasePage {
+  private readonly l;
+
+  constructor(page: Page) {
+    super(page);
+    this.l = featureLocators(page);
+  }
+
+  // --- Actions ---
+
+  async waitForLoad(): Promise<void> {
+    await this.l.pageTitle.waitFor({ timeout: 60_000 });
+    await this.waitForOSLoad();
+  }
+
+  async fillName(name: string): Promise<void> {
+    await this.l.nameInput.fill(name);
+  }
+
+  async submit(): Promise<void> {
+    await this.l.submitButton.click();
+    await this.waitForOSLoad();
+  }
+
+  // --- Assertions ---
+
+  async expectSuccess(message: string): Promise<void> {
+    await expect(this.l.statusText).toContainText(message);
+  }
+}
 ```
 
 ### Test Structure
+
+Tests receive page objects from fixtures — never instantiate POMs inside a test or `beforeEach`. All assertions go through POM assertion methods — never call `expect()` directly in a test file.
+
 ```typescript
-test.describe('Feature Area @tag', () => {
+// tests/feature/feature.spec.ts
+import { test } from '@fixtures/index';
+import * as allure from 'allure-js-commons';
+
+test.describe('Feature Area @smoke', () => {
   test.setTimeout(90_000); // OutSystems apps are slow
-  let loginPage: LoginPage;
-  let targetPage: TargetPage;
 
-  test.beforeEach(async ({ page, userCredentials }) => {
-    loginPage = new LoginPage(page);
-    targetPage = new TargetPage(page);
-
+  test.beforeEach(async ({ featurePage, loginPage, userCredentials }) => {
+    // POMs come from fixtures — do NOT instantiate here
     await loginPage.goto();
     await loginPage.waitForPageLoad();
     await loginPage.login(userCredentials.login, userCredentials.password);
-    await expect(page).toHaveURL(/.*GRC_PICASso/, { timeout: 30_000 });
-    await expect(targetPage.pageTitle).toBeVisible({ timeout: 30_000 });
+    await featurePage.waitForLoad(); // POM method, not raw expect()
   });
 
-  test('should [expected behavior] when [action/condition]', async ({ page }) => {
+  test('should [expected behavior] when [action/condition]', async ({ featurePage }) => {
     await allure.suite('Feature Area');
     await allure.severity('critical'); // critical | normal | minor
     await allure.tag('smoke');         // smoke | regression
     await allure.description('Human-readable description');
 
     await test.step('Step description', async () => {
-      // actions and assertions
+      await featurePage.fillName('Example');
+      await featurePage.submit();
+      await featurePage.expectSuccess('Saved successfully');
     });
   });
 });
 ```
 
-### Page Object Model
-```typescript
-import { type Page, type Locator } from '@playwright/test';
-import { BasePage } from './BasePage';
-
-export class PageName extends BasePage {
-  readonly url = '/path';
-
-  // Group locators by section with comments
-  readonly elementName: Locator;
-
-  constructor(page: Page) {
-    super(page);
-    this.elementName = page.getByRole('button', { name: 'Submit' });
-  }
-
-  // Action methods
-  async doSomething(): Promise<void> { ... }
-}
-```
+**Note on transitional pattern:** Existing tests may still instantiate POMs manually in `beforeEach` using `{ page, userCredentials }` fixture. This is acceptable during migration. New code must follow the fixture-injection pattern above.
 
 ## Critical Rules — OutSystems App Gotchas
 
@@ -712,6 +780,22 @@ Does it have visible text (button label, link text, heading)?
 
 Before presenting generated tests to user:
 
+**Architecture (four-layer rule):**
+- [ ] Locators in `src/locators/*.locators.ts` as factory functions — NOT inline in POM constructor
+- [ ] Page objects use `private readonly l` with `this.l = featureLocators(page)` — no raw `page.locator()` inside POM
+- [ ] Components created for any UI pattern used in 2+ pages (`OSDropdown`, `ModalComponent`)
+- [ ] No `expect()` called directly in test files — all assertions via POM assertion methods
+- [ ] POMs injected via fixtures — not instantiated inside tests or `beforeEach`
+- [ ] Class member order: private fields → constructor → public actions → public assertions → private helpers
+
+**TypeScript conventions:**
+- [ ] Imports use path aliases (`@pages/`, `@fixtures/`, `@locators/`, `@helpers/`) — not deep relative paths
+- [ ] No `import * as` wildcard imports
+- [ ] No `any` type — use `unknown` with narrowing or define a proper interface
+- [ ] All public POM methods have explicit return types
+- [ ] `const` used over `let` everywhere possible
+
+**Test quality:**
 - [ ] Explored all target pages/tabs via MCP snapshots
 - [ ] Used exact locator text from DOM (not guessed)
 - [ ] Scoped grid elements to `tabpanel`
@@ -759,3 +843,10 @@ Before presenting generated tests to user:
 | `page.locator('#Input_Username')` | `getByPlaceholder()` or scope to `[data-block]` |
 | `page.locator('#b3-Button')` OutSystems block ID | `getByRole('button', { name: '...' })` |
 | Missing `waitForOSScreenLoad()` after navigation | Add `waitForOSScreenLoad(page)` before interacting with loaded content |
+| `this.element = page.getByRole(...)` inline in POM constructor | Move to `src/locators/feature.locators.ts` factory function; use `this.l.element` |
+| `expect(locator).toBeVisible()` directly in test | Create `async expectX(): Promise<void>` in POM and call that instead |
+| `new LoginPage(page)` inside `test()` or `test.beforeEach()` | Inject via fixture: `async ({ loginPage }, use) => use(new LoginPage(page))` |
+| `import { test } from '@playwright/test'` in test file | `import { test } from '@fixtures/index'` — always use project fixture |
+| `import * as playwright from '@playwright/test'` | Import only named exports you need |
+| `import { LoginPage } from '../../src/pages'` deep relative | `import { LoginPage } from '@pages/index'` — use path alias |
+| `const x: any = ...` | Define a proper interface or use `unknown` with narrowing |

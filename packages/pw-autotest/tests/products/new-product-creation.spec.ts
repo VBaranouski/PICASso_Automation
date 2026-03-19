@@ -1,5 +1,4 @@
-import { test, expect } from '../../src/fixtures';
-import { LoginPage, NewProductPage } from '../../src/pages';
+import { test } from '../../src/fixtures';
 import * as allure from 'allure-js-commons';
 
 test.describe('Products - New Product Creation @regression', () => {
@@ -7,27 +6,17 @@ test.describe('Products - New Product Creation @regression', () => {
   // each with up to 240s wait for the edit link widget to appear.
   test.setTimeout(360_000);
 
-  let loginPage: LoginPage;
-  let newProductPage: NewProductPage;
-
-  test.beforeEach(async ({ page, userCredentials }) => {
-    loginPage = new LoginPage(page);
-    newProductPage = new NewProductPage(page);
-
+  test.beforeEach(async ({ loginPage, landingPage, newProductPage, userCredentials }) => {
     await loginPage.goto();
     await loginPage.waitForPageLoad();
     await loginPage.login(userCredentials.login, userCredentials.password);
 
-    // OutSystems login redirect is slow — wait for landing page button as readiness signal
-    await page.getByRole('button', { name: 'New Product' }).waitFor({ timeout: 120_000 });
-    await expect(page).toHaveURL(/.*GRC_PICASso/);
-
-    // Navigate to New Product form — common precondition for all tests
-    await page.getByRole('button', { name: 'New Product' }).click();
-    await newProductPage.productNameInput.waitFor({ timeout: 60_000 });
+    // OutSystems login redirect is slow — wait for New Product button as readiness signal
+    await landingPage.clickNewProduct();
+    await newProductPage.expectNewProductFormLoaded();
   });
 
-  test('should create a new product with all required fields filled', async ({ page }) => {
+  test('should create a new product with all required fields filled', async ({ newProductPage }) => {
     await allure.suite('Products');
     await allure.severity('critical');
     await allure.tag('regression');
@@ -75,19 +64,11 @@ test.describe('Products - New Product Creation @regression', () => {
 
     await test.step('Save Product and verify creation', async () => {
       await newProductPage.clickSave();
-
-      // Verify product ID was assigned (PIC-XXXX format) — user-visible text
-      await expect(page.getByText(/ID:PIC-(?!0)\d+/)).toBeVisible();
-
-      // Verify product is in Active state after save
-      await expect(page.getByText('Active')).toBeVisible();
-
-      // Verify the Edit Product button appears (confirming read-only saved state)
-      await expect(newProductPage.editProductButton).toBeVisible();
+      await newProductPage.expectProductSaved();
     });
   });
 
-  test('should display validation when saving without required fields', async ({ page }) => {
+  test('should display validation when saving without required fields', async ({ newProductPage }) => {
     await allure.suite('Products');
     await allure.severity('normal');
     await allure.tag('regression');
@@ -97,17 +78,14 @@ test.describe('Products - New Product Creation @regression', () => {
 
     await test.step('Attempt to save without filling required fields', async () => {
       await newProductPage.clickSave();
-
-      // The page should remain on ProductId=0 (not saved)
     });
 
     await test.step('Verify required fields are still present on the page', async () => {
-      await expect(newProductPage.productNameInput).toBeVisible();
-      await expect(newProductPage.sectionTitle).toBeVisible();
+      await newProductPage.expectFormVisible();
     });
   });
 
-  test('should cancel product creation and return to landing page', async ({ page }) => {
+  test('should cancel product creation and return to landing page', async ({ newProductPage }) => {
     await allure.suite('Products');
     await allure.severity('normal');
     await allure.tag('regression');
@@ -125,7 +103,7 @@ test.describe('Products - New Product Creation @regression', () => {
     });
   });
 
-  test('should show cascading org level dropdowns', async ({ page }) => {
+  test('should show cascading org level dropdowns', async ({ newProductPage }) => {
     await allure.suite('Products');
     await allure.severity('normal');
     await allure.tag('regression');
@@ -135,19 +113,17 @@ test.describe('Products - New Product Creation @regression', () => {
     );
 
     await test.step('Verify all Org Levels are initially disabled', async () => {
-      await expect(newProductPage.orgLevel1Select).toBeDisabled();
-      await expect(newProductPage.orgLevel2Select).toBeDisabled();
-      await expect(newProductPage.orgLevel3Select).toBeDisabled();
+      await newProductPage.expectOrgLevelsDisabled();
     });
 
     await test.step('Select Org Level 1 and verify Org Level 2 becomes enabled', async () => {
       await newProductPage.selectOrgLevel1('Energy Management');
-      await expect(newProductPage.orgLevel2Select).toBeEnabled({ timeout: 40_000 });
+      await newProductPage.expectOrgLevel2Enabled();
     });
 
     await test.step('Select Org Level 2 and verify Org Level 3 becomes enabled', async () => {
       await newProductPage.selectOrgLevel2('Home & Distribution');
-      await expect(newProductPage.orgLevel3Select).toBeEnabled({ timeout: 40_000 });
+      await newProductPage.expectOrgLevel3Enabled();
     });
   });
 });

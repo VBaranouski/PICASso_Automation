@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@pages/*": ["src/pages/*"],
+      "@locators/*": ["src/locators/*"],
       "@fixtures/*": ["src/fixtures/*"],
       "@helpers/*": ["src/helpers/*"],
       "@types/*": ["src/types/*"]

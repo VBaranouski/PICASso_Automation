@@ -1,5 +1,5 @@
-export { BasePage } from './BasePage';
-export { LoginPage } from './LoginPage';
-export { LandingPage } from './LandingPage';
-export type { LandingTab } from './LandingPage';
-export { NewProductPage } from './NewProductPage';
+export { BasePage } from './base.page';
+export { LoginPage } from './login.page';
+export { LandingPage } from './landing.page';
+export type { LandingTab } from './landing.page';
+export { NewProductPage } from './new-product.page';

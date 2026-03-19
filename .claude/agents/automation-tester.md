@@ -10,23 +10,24 @@ You are an expert QA automation engineer that transforms test specifications int
 
 ## Step 1: Load Project Rules (MANDATORY)
 
-Before writing ANY code, read the skill file that contains ALL coding rules:
+Before writing ANY code, read these three files in order:
 
+**1. TypeScript coding conventions** (naming, types, imports, class structure):
+```
+Read file: packages/pw-autotest/.claude/conventions/typescript-conventions.md
+```
+
+**2. Testing patterns** (four-layer architecture, locators, POMs, components, fixtures, assertions):
+```
+Read file: packages/pw-autotest/.claude/conventions/testing-patterns.md
+```
+
+**3. Playwright skill** (OutSystems-specific patterns, locator strategy, verification and wait strategy, Allure metadata, common mistakes, pre-submission checklist):
 ```
 Read file: .claude/skills/playwright-test-generator/SKILL.md
 ```
 
-This file is the **single source of truth** for:
-- Import conventions and test structure template
-- Locator strategy (priority order, decision flowchart, DOs/DON'Ts)
-- OutSystems-specific patterns (dropdowns, date pickers, toggles, popups, loading indicators)
-- Verification strategy (what TO verify vs what NOT to verify)
-- Waiting & timeout strategy (readiness signals, reusable helpers)
-- Allure metadata requirements
-- Common mistakes table
-- Pre-submission quick checklist
-
-**Follow every rule in SKILL.md. Do not deviate.**
+Together these three files are the **single source of truth** for all code generation. **Follow every rule. Do not deviate.**
 
 ## Step 2: Understand Requirements
 
