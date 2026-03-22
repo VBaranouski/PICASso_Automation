@@ -16,16 +16,17 @@ Usage:
   python main.py pptx-release-notes --spec "spec.json"
   python main.py meeting-notes --file "standup.txt" | --all
   python main.py test-cases --story PROJ-452 [--story PROJ-453 ...]
-  python main.py user-stories --confluence-url "https://..." [--figma-url "https://..."] [--example-story PROJ-123] [--epic PROJ-800]
+  python main.py user-stories --confluence-url "https://..." [--fetch-only]
+  python main.py user-stories --spec-data PATH --stories-json PATH
 """
 
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 import click
 
-from src.ai.claude_client import ClaudeClient
 from src.clients.confluence_client import ConfluenceClient
 from src.clients.figma_client import FigmaClient
 from src.clients.jira_client import JiraClient
@@ -140,59 +141,81 @@ def release_notes_cmd(
 # ---------------------------------------------------------------------------
 
 @cli.command("meeting-notes")
-@click.option(
-    "--file", "-f",
-    "filename",
-    default=None,
-    help="Specific transcript filename inside input/transcripts/ (e.g. 'standup.txt').",
-)
-@click.option(
-    "--all",
-    "process_all",
-    is_flag=True,
-    default=False,
-    help="Process ALL transcript .txt files in input/transcripts/.",
-)
+@click.option("--file", "-f", "filename", default=None, help="Transcript filename in input/transcripts/ (e.g. 'standup.txt').")
+@click.option("--all", "process_all", is_flag=True, default=False, help="Fetch ALL transcripts in input/transcripts/.")
+@click.option("--fetch-only", is_flag=True, default=False, help="Read transcript(s) and write transcript_data JSON. No AI, no HTML.")
+@click.option("--summary-json", default=None, help="Path to summary JSON (render mode, single transcript).")
+@click.option("--stem", default=None, help="Transcript stem used for output filename (required with --summary-json).")
 @click.pass_context
-def meeting_notes_cmd(ctx: click.Context, filename: str | None, process_all: bool) -> None:
-    """Generate meeting notes from transcript files using Claude AI."""
+def meeting_notes_cmd(
+    ctx: click.Context,
+    filename: str | None,
+    process_all: bool,
+    fetch_only: bool,
+    summary_json: str | None,
+    stem: str | None,
+) -> None:
+    """Read transcript(s) (--fetch-only) or render HTML/TXT from summary (--summary-json)."""
+    import json as _json
+    from src.utils.file_utils import ensure_dir
+    from src.utils.date_utils import today_str
+
     settings = ctx.obj["settings"]
+    generator = MeetingNotesGenerator(settings)
 
-    if not filename and not process_all:
-        click.echo(
-            click.style(
-                "\n  Please provide --file <filename> or --all to process all transcripts.\n",
-                fg="yellow",
-            ),
-            err=True,
-        )
-        sys.exit(1)
+    # ------------------------------------------------------------------ #
+    # Mode 1: --fetch-only — read transcript(s), write JSON               #
+    # ------------------------------------------------------------------ #
+    if fetch_only:
+        click.echo(click.style("\n[SE-DevTools] Reading Transcript(s)", bold=True))
+        try:
+            if process_all:
+                transcripts = generator.read_all_transcripts()
+            elif filename:
+                transcripts = [generator.read_transcript(filename)]
+            else:
+                click.echo(click.style("  [ERROR] Provide --file or --all with --fetch-only", fg="red"), err=True)
+                sys.exit(1)
 
-    click.echo(click.style("\n[SE-DevTools] Generating Meeting Notes", bold=True))
+            out_dir = ensure_dir(settings.paths.output_meeting_notes)
+            date_str = today_str(settings.output.date_format)
+            paths = []
+            for t in transcripts:
+                data_path = out_dir / f"transcript_data_{t['stem']}_{date_str}.json"
+                data_path.write_text(_json.dumps(t, ensure_ascii=False, indent=2), encoding="utf-8")
+                paths.append(str(data_path))
+            click.echo(click.style(f"\n  Done! {len(paths)} transcript(s) ready.", fg="green", bold=True))
+            for p in paths:
+                click.echo(f"  TRANSCRIPT_DATA -> {p}")
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
 
-    claude = ClaudeClient(settings.ai)
-    generator = MeetingNotesGenerator(claude, settings)
-
-    try:
-        if process_all:
-            results = generator.generate_all()
-            if results:
-                click.echo(click.style(f"\n  Done! Processed {len(results)} transcript(s).", fg="green", bold=True))
-                for txt_path, html_path in results:
-                    click.echo(f"  TXT  -> {txt_path}")
-                    click.echo(f"  HTML -> {html_path}")
-        else:
-            txt_path, html_path = generator.generate(filename)
+    # ------------------------------------------------------------------ #
+    # Mode 2: --summary-json — render HTML + TXT                          #
+    # ------------------------------------------------------------------ #
+    if summary_json:
+        if not stem:
+            click.echo(click.style("  [ERROR] --stem is required with --summary-json", fg="red"), err=True)
+            sys.exit(1)
+        click.echo(click.style("\n[SE-DevTools] Rendering Meeting Notes", bold=True))
+        try:
+            summary_data = _json.loads(Path(summary_json).read_text(encoding="utf-8"))
+            txt_path, html_path = generator.render_from_summary(summary_data, stem)
             click.echo(click.style("\n  Done!", fg="green", bold=True))
             click.echo(f"  TXT  -> {txt_path}")
             click.echo(f"  HTML -> {html_path}")
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
 
-    except FileNotFoundError as exc:
-        click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
-        sys.exit(1)
-    except Exception as exc:
-        click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
-        sys.exit(1)
+    click.echo(click.style(
+        "\n  [ERROR] Use --fetch-only [--file|--all] to read transcripts, "
+        "or --summary-json PATH --stem STEM to render HTML.", fg="red",
+    ), err=True)
+    sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -200,38 +223,73 @@ def meeting_notes_cmd(ctx: click.Context, filename: str | None, process_all: boo
 # ---------------------------------------------------------------------------
 
 @cli.command("test-cases")
-@click.option(
-    "--story", "-s",
-    "story_ids",
-    multiple=True,
-    required=True,
-    help="JIRA story ID to generate test cases for. Repeatable: -s PROJ-1 -s PROJ-2.",
-)
+@click.option("--story", "-s", "story_ids", multiple=True, help="JIRA story ID (repeatable). Required for --fetch-only.")
+@click.option("--fetch-only", is_flag=True, default=False, help="Fetch story data and write story_data JSON. No AI, no HTML.")
+@click.option("--story-data", default=None, help="Path to story_data JSON (render mode, single story).")
+@click.option("--test-cases-json", default=None, help="Path to test cases JSON array (render mode).")
 @click.pass_context
-def test_cases_cmd(ctx: click.Context, story_ids: tuple[str, ...]) -> None:
-    """Generate test cases from JIRA user stories using Claude AI."""
+def test_cases_cmd(
+    ctx: click.Context,
+    story_ids: tuple[str, ...],
+    fetch_only: bool,
+    story_data: str | None,
+    test_cases_json: str | None,
+) -> None:
+    """Fetch story data (--fetch-only) or render HTML from test cases (--story-data + --test-cases-json)."""
+    import json as _json
+    from src.utils.date_utils import today_str
+    from src.utils.file_utils import ensure_dir
+
     settings = ctx.obj["settings"]
+    generator = TestCasesGenerator(JiraClient(settings.jira), settings)
 
-    click.echo(
-        click.style(
-            f"\n[SE-DevTools] Generating Test Cases for {len(story_ids)} story(s): "
-            + ", ".join(story_ids),
-            bold=True,
-        )
-    )
+    # ------------------------------------------------------------------ #
+    # Mode 1: --fetch-only — fetch JIRA stories, write JSON               #
+    # ------------------------------------------------------------------ #
+    if fetch_only:
+        if not story_ids:
+            click.echo(click.style("  [ERROR] --story is required with --fetch-only", fg="red"), err=True)
+            sys.exit(1)
+        click.echo(click.style(f"\n[SE-DevTools] Fetching story data for: {', '.join(story_ids)}", bold=True))
+        try:
+            out_dir = ensure_dir(settings.paths.output_test_cases)
+            date_str = today_str(settings.output.date_format)
+            paths = []
+            for sid in story_ids:
+                data = generator.fetch_story(sid)
+                data_path = out_dir / f"story_data_{sid}_{date_str}.json"
+                data_path.write_text(_json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+                paths.append(str(data_path))
+            click.echo(click.style(f"\n  Done! {len(paths)} story(s) fetched.", fg="green", bold=True))
+            for p in paths:
+                click.echo(f"  STORY_DATA -> {p}")
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
 
-    jira = JiraClient(settings.jira)
-    claude = ClaudeClient(settings.ai)
-    generator = TestCasesGenerator(jira, claude, settings)
-
-    try:
-        html_paths = generator.generate_multiple(list(story_ids))
-        click.echo(click.style(f"\n  Done! Generated {len(html_paths)} file(s).", fg="green", bold=True))
-        for html_path in html_paths:
+    # ------------------------------------------------------------------ #
+    # Mode 2: --story-data + --test-cases-json — render HTML              #
+    # ------------------------------------------------------------------ #
+    if story_data and test_cases_json:
+        click.echo(click.style("\n[SE-DevTools] Rendering Test Cases HTML", bold=True))
+        try:
+            sd = _json.loads(Path(story_data).read_text(encoding="utf-8"))
+            tc = _json.loads(Path(test_cases_json).read_text(encoding="utf-8"))
+            html_path = generator.render_from_test_cases(sd, tc)
+            click.echo(click.style("\n  Done!", fg="green", bold=True))
             click.echo(f"  HTML -> {html_path}")
-    except Exception as exc:
-        click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
-        sys.exit(1)
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
+
+    click.echo(click.style(
+        "\n  [ERROR] Use --fetch-only --story PROJ-123 to fetch story data, "
+        "or --story-data PATH --test-cases-json PATH to render HTML.",
+        fg="red",
+    ), err=True)
+    sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -239,58 +297,79 @@ def test_cases_cmd(ctx: click.Context, story_ids: tuple[str, ...]) -> None:
 # ---------------------------------------------------------------------------
 
 @cli.command("release-notes-detailed")
-@click.option(
-    "--version", "-v",
-    required=True,
-    help="JIRA version / release name (e.g. 'PIC-2026-RC-9.1-hotfix').",
-)
-@click.option(
-    "--project", "-p",
-    default=None,
-    help="JIRA project key. Overrides the value in config.yaml.",
-)
-@click.option(
-    "--spec", "-s",
-    "spec_filename",
-    default=None,
-    help="Spec file in input/release_notes_detailed/ with feature descriptions (auto-detected if omitted).",
-)
-@click.option(
-    "--publish",
-    is_flag=True,
-    default=False,
-    help="Publish generated HTML to Confluence after creation.",
-)
+@click.option("--version", "-v", default=None, help="JIRA version name. Required for --fetch-only.")
+@click.option("--project", "-p", default=None, help="JIRA project key. Overrides the value in config.yaml.")
+@click.option("--spec", "-s", "spec_filename", default=None, help="Spec file in input/release_notes_detailed/ (auto-detected if omitted).")
+@click.option("--fetch-only", is_flag=True, default=False, help="Fetch JIRA data and write release_data JSON. No AI, no HTML.")
+@click.option("--release-data", default=None, help="Path to release_data JSON (render mode).")
+@click.option("--html-body", default=None, help="Path to .html file with AI-generated body content (render mode).")
+@click.option("--publish", is_flag=True, default=False, help="Publish generated HTML to Confluence after creation.")
 @click.pass_context
 def full_release_notes_cmd(
     ctx: click.Context,
-    version: str,
+    version: str | None,
     project: str | None,
     spec_filename: str | None,
+    fetch_only: bool,
+    release_data: str | None,
+    html_body: str | None,
     publish: bool,
 ) -> None:
-    """Generate a full AI-powered release notes document (PICASso format) from JIRA data."""
+    """Fetch JIRA data (--fetch-only) or render HTML from AI body (--release-data + --html-body)."""
+    import json as _json
+    from src.utils.date_utils import today_str
+    from src.utils.file_utils import ensure_dir, sanitize_filename
+
     settings = ctx.obj["settings"]
 
-    click.echo(click.style(f"\n[SE-DevTools] Generating Full Release Notes for version '{version}'", bold=True))
+    # ------------------------------------------------------------------ #
+    # Mode 1: --fetch-only — fetch JIRA version + issues, write JSON      #
+    # ------------------------------------------------------------------ #
+    if fetch_only:
+        if not version:
+            click.echo(click.style("  [ERROR] --version is required with --fetch-only", fg="red"), err=True)
+            sys.exit(1)
+        click.echo(click.style(f"\n[SE-DevTools] Fetching release data for version '{version}'", bold=True))
+        try:
+            confluence = ConfluenceClient(settings.confluence) if publish else None
+            generator = FullReleaseNotesGenerator(JiraClient(settings.jira), settings, confluence=confluence)
+            data = generator.fetch_data(version_name=version, project_key=project, spec_filename=spec_filename)
+            out_dir = ensure_dir(settings.paths.output_release_notes_detailed)
+            date_str = today_str(settings.output.date_format)
+            safe_ver = sanitize_filename(version)
+            data_path = out_dir / f"release_data_{safe_ver}_{date_str}.json"
+            data_path.write_text(_json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            click.echo(click.style("\n  Done!", fg="green", bold=True))
+            click.echo(f"  RELEASE_DATA -> {data_path}")
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
 
-    jira = JiraClient(settings.jira)
-    claude = ClaudeClient(settings.ai)
-    confluence = ConfluenceClient(settings.confluence) if publish else None
-    generator = FullReleaseNotesGenerator(jira, claude, settings, confluence=confluence)
+    # ------------------------------------------------------------------ #
+    # Mode 2: --release-data + --html-body — render HTML shell            #
+    # ------------------------------------------------------------------ #
+    if release_data and html_body:
+        click.echo(click.style("\n[SE-DevTools] Rendering Full Release Notes HTML", bold=True))
+        try:
+            rd = _json.loads(Path(release_data).read_text(encoding="utf-8"))
+            body = Path(html_body).read_text(encoding="utf-8")
+            confluence = ConfluenceClient(settings.confluence) if publish else None
+            generator = FullReleaseNotesGenerator(JiraClient(settings.jira), settings, confluence=confluence)
+            html_path = generator.render_from_body(rd, body, publish_to_confluence=publish)
+            click.echo(click.style("\n  Done!", fg="green", bold=True))
+            click.echo(f"  HTML -> {html_path}")
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
 
-    try:
-        html_path = generator.generate(
-            version_name=version,
-            project_key=project,
-            spec_filename=spec_filename,
-            publish_to_confluence=publish,
-        )
-        click.echo(click.style("\n  Done!", fg="green", bold=True))
-        click.echo(f"  HTML -> {html_path}")
-    except Exception as exc:
-        click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
-        sys.exit(1)
+    click.echo(click.style(
+        "\n  [ERROR] Use --fetch-only --version NAME to fetch release data, "
+        "or --release-data PATH --html-body PATH to render HTML.",
+        fg="red",
+    ), err=True)
+    sys.exit(1)
 
 
 # ---------------------------------------------------------------------------
@@ -406,73 +485,101 @@ def story_coverage_cmd(ctx: click.Context) -> None:
 # ---------------------------------------------------------------------------
 
 @cli.command("user-stories")
+@click.option("--confluence-url", default=None, help="Confluence page URL (required for --fetch-only).")
+@click.option("--figma-url", default=None, help="Figma design URL (optional, used with --fetch-only).")
+@click.option("--example-story", "example_stories", multiple=True, help="JIRA story ID for format reference (repeatable).")
+@click.option("--epic", default=None, help="Parent Epic/Feature JIRA key for context (e.g. PIC-8802).")
+@click.option("--project", "-p", default=None, help="JIRA project key. Overrides config.yaml default.")
+@click.option("--fetch-only", is_flag=True, default=False, help="Fetch spec data and write spec_data.json. No AI, no HTML.")
+@click.option("--spec-data", default=None, help="Path to spec_data.json (render mode).")
+@click.option("--stories-json", default=None, help="Path to stories JSON array (render mode).")
 @click.option(
-    "--confluence-url",
-    required=True,
-    help="Full Confluence page URL containing the functional specification.",
-)
-@click.option(
-    "--figma-url",
-    default=None,
-    help="Figma design URL (file + node-id). Screenshot will be embedded in HTML output.",
-)
-@click.option(
-    "--example-story",
-    "example_stories",
-    multiple=True,
-    help="JIRA story ID to use as a writing-format reference. Repeatable: --example-story PROJ-1 --example-story PROJ-2.",
-)
-@click.option(
-    "--epic",
-    default=None,
-    help="Parent Epic/Feature JIRA key for additional context (e.g. PIC-8802).",
-)
-@click.option(
-    "--project", "-p",
-    default=None,
-    help="JIRA project key. Overrides the value in config.yaml.",
+    "--style",
+    default="default",
+    show_default=True,
+    type=click.Choice(["default", "hacker"], case_sensitive=False),
+    help="Visual style for the HTML output.",
 )
 @click.pass_context
 def user_stories_cmd(
     ctx: click.Context,
-    confluence_url: str,
+    confluence_url: str | None,
     figma_url: str | None,
     example_stories: tuple[str, ...],
     epic: str | None,
     project: str | None,
+    fetch_only: bool,
+    spec_data: str | None,
+    stories_json: str | None,
+    style: str,
 ) -> None:
-    """Generate User Stories from a Confluence spec and optional Figma mockups using Claude AI."""
+    """Fetch spec data (--fetch-only) or render HTML from stories (--spec-data + --stories-json)."""
+    import json as _json
+    from src.utils.date_utils import today_str
+    from src.utils.file_utils import ensure_dir
+
     settings = ctx.obj["settings"]
 
-    click.echo(click.style("\n[SE-DevTools] Generating User Stories", bold=True))
-    click.echo(f"  Spec:  {confluence_url}")
-    if figma_url:
-        click.echo(f"  Figma: {figma_url}")
-    if example_stories:
-        click.echo(f"  Examples: {', '.join(example_stories)}")
-    if epic:
-        click.echo(f"  Epic:  {epic}")
+    # ------------------------------------------------------------------ #
+    # Mode 1: --fetch-only — fetch Confluence/JIRA/Figma, write JSON      #
+    # ------------------------------------------------------------------ #
+    if fetch_only:
+        if not confluence_url:
+            click.echo(click.style("  [ERROR] --confluence-url is required with --fetch-only", fg="red"), err=True)
+            sys.exit(1)
 
-    confluence = ConfluenceClient(settings.confluence)
-    figma = FigmaClient(settings.figma) if (figma_url and settings.figma.api_token) else None
-    jira = JiraClient(settings.jira) if (example_stories or epic) else None
-    claude = ClaudeClient(settings.ai)
+        click.echo(click.style("\n[SE-DevTools] Fetching User Stories spec data", bold=True))
+        click.echo(f"  Spec:  {confluence_url}")
 
-    generator = UserStoriesGenerator(confluence, figma, jira, claude, settings)
+        confluence = ConfluenceClient(settings.confluence)
+        figma = FigmaClient(settings.figma) if (figma_url and settings.figma.api_token) else None
+        jira = JiraClient(settings.jira) if (example_stories or epic) else None
 
-    try:
-        html_path = generator.generate(
-            confluence_url=confluence_url,
-            figma_url=figma_url,
-            example_story_ids=list(example_stories) if example_stories else None,
-            epic_key=epic,
-            project_key=project,
-        )
-        click.echo(click.style("\n  Done!", fg="green", bold=True))
-        click.echo(f"  HTML -> {html_path}")
-    except Exception as exc:
-        click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
-        import sys; sys.exit(1)
+        generator = UserStoriesGenerator(confluence, figma, jira, settings)
+        try:
+            data = generator.fetch_data(
+                confluence_url=confluence_url,
+                figma_url=figma_url,
+                example_story_ids=list(example_stories) if example_stories else None,
+                epic_key=epic,
+            )
+            out_dir = ensure_dir(settings.paths.output_user_stories)
+            date_str = today_str(settings.output.date_format)
+            from src.utils.file_utils import sanitize_filename
+            safe_title = sanitize_filename(data["page_title"])[:40]
+            spec_data_path = out_dir / f"spec_data_{safe_title}_{date_str}.json"
+            spec_data_path.write_text(_json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            click.echo(click.style("\n  Done!", fg="green", bold=True))
+            click.echo(f"  SPEC_DATA -> {spec_data_path}")
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
+
+    # ------------------------------------------------------------------ #
+    # Mode 2: --spec-data + --stories-json — render HTML                  #
+    # ------------------------------------------------------------------ #
+    if spec_data and stories_json:
+        click.echo(click.style("\n[SE-DevTools] Rendering User Stories HTML", bold=True))
+        try:
+            spec = _json.loads(Path(spec_data).read_text(encoding="utf-8"))
+            stories = _json.loads(Path(stories_json).read_text(encoding="utf-8"))
+            confluence = ConfluenceClient(settings.confluence)
+            generator = UserStoriesGenerator(confluence, None, None, settings)
+            html_path = generator.render_from_stories(spec, stories, style=style)
+            click.echo(click.style("\n  Done!", fg="green", bold=True))
+            click.echo(f"  HTML -> {html_path}")
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
+
+    click.echo(click.style(
+        "\n  [ERROR] Use --fetch-only to fetch spec data, "
+        "or --spec-data + --stories-json to render HTML.",
+        fg="red",
+    ), err=True)
+    sys.exit(1)
 
 
 # ---------------------------------------------------------------------------

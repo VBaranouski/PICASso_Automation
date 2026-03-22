@@ -263,6 +263,19 @@ class JiraClient:
             parent_story_summary=parent_story_summary,
         )
 
+    def get_issue_attachments(self, issue_key: str) -> list[dict]:
+        """Return list of attachments for a JIRA issue."""
+        url = f"{self.base_url}/rest/api/2/issue/{issue_key}?fields=attachment"
+        r = self._session.get(url)
+        r.raise_for_status()
+        return r.json().get("fields", {}).get("attachment", [])
+
+    def download_attachment(self, content_url: str) -> bytes:
+        """Download attachment bytes by content URL."""
+        r = self._session.get(content_url)
+        r.raise_for_status()
+        return r.content
+
     def _extract_text(self, field_value) -> Optional[str]:
         """
         Extract plain text from a JIRA Atlassian Document Format (ADF) field

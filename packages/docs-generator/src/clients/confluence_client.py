@@ -42,6 +42,22 @@ class ConfluenceClient:
         """Fetch page metadata including current version number."""
         return self._get(f"/content/{page_id}", params={"expand": "version,body.storage"})
 
+    def get_attachments(self, page_id: str) -> list[dict]:
+        """Fetch all attachments for a page. Returns list of attachment metadata dicts."""
+        data = self._get(f"/content/{page_id}/child/attachment", params={"limit": 50})
+        return data.get("results", [])
+
+    def download_attachment(self, download_url: str) -> bytes:
+        """Download attachment bytes from a Confluence _download URL."""
+        # download_url may be relative (e.g. /download/attachments/...) or absolute
+        if download_url.startswith("http"):
+            url = download_url
+        else:
+            url = self._config.base_url + download_url
+        resp = self._session.get(url, timeout=60, verify=False)
+        resp.raise_for_status()
+        return resp.content
+
     def find_page_by_title(self, title: str, space_key: Optional[str] = None) -> Optional[dict]:
         """Search for a page by title in a space. Returns None if not found."""
         key = space_key or self._config.space_key

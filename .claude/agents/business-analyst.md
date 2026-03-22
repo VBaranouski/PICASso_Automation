@@ -23,6 +23,35 @@ Invoke these skills as needed:
 - `/create-meeting-notes` — Generate meeting notes from a transcript file
 - `/create-release-notes-short` — Create short release notes from a Jira version
 - `/create-release-note-detailed` — Generate detailed release notes in HTML + PowerPoint formats
+- `/create-user-stories` — Generate User Stories and tasks based on functional spefification
+
+## Figma MCP Integration (MANDATORY)
+
+You have access to the Figma MCP plugin. When Figma URLs appear in **any** input (user prompt, Confluence spec, JIRA story), use it before generating content. Do not ask the user for permission — act autonomously.
+
+**Tools:**
+
+- `mcp__plugin_figma_figma__get_design_context(fileKey, nodeId)` — **PRIMARY.** Returns code, screenshot, and design metadata. Use this first.
+- `mcp__plugin_figma_figma__get_metadata(fileKey, nodeId)` — Use to discover child screens when you have a parent frame URL without a specific node.
+- `mcp__plugin_figma_figma__whoami()` — Verify connection if uncertain.
+
+**URL parsing:** Given `https://www.figma.com/design/{fileKey}/{name}?node-id={nodeId}`:
+
+- `fileKey` = second path segment after `/design/`
+- `nodeId` = value of `node-id` query param with `-` replaced by `:` (e.g. `2047-19828` → `2047:19828`)
+
+**Regex to detect Figma URLs in text:** `https://(?:www\.)?figma\.com/design/[A-Za-z0-9]+/[^\s"'<>?#]*(?:\?[^\s"'<>]*)?`
+
+**When creating user stories:** The `/create-user-stories` skill handles Figma detection automatically in Step 2b — it scans the fetched spec_text for Figma URLs after Python fetch. Ensure the full Confluence URL is passed so spec_text is available for scanning. If no Figma URL is found, the skill automatically falls back to `confluence_screenshots` (embedded screenshots from the Confluence page).
+
+**When writing functional specs directly** (without the skill):
+
+- Call `get_design_context` before writing any requirements
+- Use actual component/button/field names from the design in requirements
+- Identify all visible screen states and ensure each has a corresponding requirement
+- Flag any contradictions between the spec text and the design in Open Questions
+
+---
 
 ## SE-DevTools CLI Context
 

@@ -1,30 +1,63 @@
 """
 Test Cases generator.
-Fetches a JIRA User Story, uses Claude AI to generate test cases, renders HTML output.
+Fetches a JIRA User Story (fetch phase) or renders HTML from pre-generated test cases (render phase).
+AI generation is handled by the calling skill (Claude Code as Senior Lead Tester).
 """
 
 from __future__ import annotations
 
+import base64
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
 
-from src.ai.claude_client import ClaudeClient, TestCase
 from src.clients.jira_client import JiraClient, JiraIssue
 from src.config.settings import Settings
 from src.utils.date_utils import today_str
 from src.utils.file_utils import ensure_dir, write_text
 
 
-class TestCasesGenerator:
-    """Orchestrates JIRA story fetch → Claude AI → render → HTML output for Test Cases."""
+# ---------------------------------------------------------------------------
+# Domain model
+# ---------------------------------------------------------------------------
 
-    def __init__(
-        self, jira: JiraClient, claude: ClaudeClient, settings: Settings
-    ) -> None:
+@dataclass
+class TestCase:
+    id: str               # e.g. "TC-001"
+    title: str
+    preconditions: str
+    test_steps: list[str]
+    expected_result: str
+    priority: str         # "High" | "Medium" | "Low"
+    test_type: str        # "Positive" | "Negative" | "Edge Case"
+
+    @classmethod
+    def from_dict(cls, data: dict, index: int = 0) -> "TestCase":
+        return cls(
+            id=data.get("id", f"TC-{index + 1:03d}"),
+            title=data.get("title", ""),
+            preconditions=data.get("preconditions", ""),
+            test_steps=data.get("test_steps", []),
+            expected_result=data.get("expected_result", ""),
+            priority=data.get("priority", "Medium"),
+            test_type=data.get("test_type", "Positive"),
+        )
+
+
+# ---------------------------------------------------------------------------
+# Generator
+# ---------------------------------------------------------------------------
+
+class TestCasesGenerator:
+    """
+    Two-phase pipeline:
+      Phase 1 — fetch_story(): JIRA story fetch → story_data dict
+      Phase 2 — render_from_test_cases(): story_data + test cases list → HTML file
+    """
+
+    def __init__(self, jira: JiraClient, settings: Settings) -> None:
         self._jira = jira
-        self._claude = claude
         self._settings = settings
         self._jinja = Environment(
             loader=FileSystemLoader(settings.paths.templates_dir),
@@ -32,47 +65,62 @@ class TestCasesGenerator:
         )
 
     # ------------------------------------------------------------------
-    # Public API
+    # Phase 1: Fetch story data
     # ------------------------------------------------------------------
 
-    def generate(self, story_id: str) -> str:
-        """
-        Full pipeline for a single story: fetch → Claude AI → render → write HTML.
-        Returns html_filepath.
-        """
+    def fetch_story(self, story_id: str) -> dict:
+        """Fetch a JIRA story. Returns a JSON-serialisable dict."""
         print(f"  Fetching story '{story_id}' from JIRA...")
         story = self._jira.get_story(story_id)
         print(f"  Story: {story.summary}")
 
-        print(f"  Generating test cases via Claude AI...")
-        test_cases = self._claude.generate_test_cases(
-            story_id=story.key,
-            story_summary=story.summary,
-            description=story.description or "",
-            acceptance_criteria=story.acceptance_criteria or "",
-        )
-        print(f"  Generated {len(test_cases)} test cases.")
+        story_screenshots: list[list[str]] = []
+        try:
+            attachments = self._jira.get_issue_attachments(story_id)
+            for att in attachments:
+                if att.get("mimeType", "").startswith("image/"):
+                    content = self._jira.download_attachment(att["content"])
+                    b64 = base64.b64encode(content).decode()
+                    story_screenshots.append([att["filename"], f"data:{att['mimeType']};base64,{b64}"])
+            if story_screenshots:
+                print(f"  Attachments: {len(story_screenshots)} image(s) found")
+        except Exception:
+            pass  # Attachments are optional — never block story fetch
 
+        return {
+            "key": story.key,
+            "summary": story.summary,
+            "description": story.description or "",
+            "acceptance_criteria": story.acceptance_criteria or "",
+            "status": story.status,
+            "priority": story.priority,
+            "assignee": story.assignee,
+            "story_screenshots": story_screenshots,
+        }
+
+    def fetch_stories(self, story_ids: list[str]) -> list[dict]:
+        """Fetch multiple JIRA stories. Returns list of story dicts."""
+        return [self.fetch_story(sid) for sid in story_ids]
+
+    # ------------------------------------------------------------------
+    # Phase 2: Render from AI-generated test cases
+    # ------------------------------------------------------------------
+
+    def render_from_test_cases(self, story_data: dict, test_cases_raw: list[dict]) -> str:
+        """
+        Render HTML from story_data and test cases list generated by the skill.
+        Returns the html_filepath.
+        """
+        story = _dict_to_jira_issue(story_data)
+        test_cases = [TestCase.from_dict(tc, i) for i, tc in enumerate(test_cases_raw)]
+        print(f"  Rendering {len(test_cases)} test case(s) for {story.key}...")
         html_content = self._render_html(story, test_cases)
         html_path = self._write_output(story, html_content)
-
         print(f"  Written: {html_path}")
         return str(html_path)
 
-    def generate_multiple(self, story_ids: list[str]) -> list[str]:
-        """
-        Process multiple story IDs sequentially.
-        Returns list of html filepaths.
-        """
-        results: list[str] = []
-        for story_id in story_ids:
-            print(f"\n  Processing story: {story_id}")
-            html_path = self.generate(story_id)
-            results.append(html_path)
-        return results
-
     # ------------------------------------------------------------------
-    # Internal steps
+    # Internal rendering
     # ------------------------------------------------------------------
 
     def _render_html(self, story: JiraIssue, test_cases: list[TestCase]) -> str:
@@ -87,9 +135,30 @@ class TestCasesGenerator:
     def _write_output(self, story: JiraIssue, html: str) -> Path:
         date_str = today_str(self._settings.output.date_format)
         base_name = self._settings.output.test_cases_filename_pattern.format(
-            story_id=story.key,
-            date=date_str,
+            story_id=story.key, date=date_str,
         )
-
         out_dir = ensure_dir(self._settings.paths.output_test_cases)
         return write_text(html, out_dir / f"{base_name}.html")
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _dict_to_jira_issue(data: dict) -> JiraIssue:
+    """Convert a story_data dict back to a JiraIssue for template rendering."""
+    return JiraIssue(
+        key=data.get("key", ""),
+        summary=data.get("summary", ""),
+        status=data.get("status", ""),
+        priority=data.get("priority", ""),
+        issue_type="Story",
+        assignee=data.get("assignee", ""),
+        story_points=None,
+        description=data.get("description", ""),
+        acceptance_criteria=data.get("acceptance_criteria", ""),
+        reporter="",
+        created="",
+        parent_story_key=None,
+        parent_story_summary=None,
+    )

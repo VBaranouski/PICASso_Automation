@@ -1,20 +1,21 @@
 """
 User Stories generator.
-Fetches a Confluence functional specification and optional Figma mockups,
-uses Claude AI to generate JIRA-ready User Stories, renders HTML output.
+Fetches data from Confluence, JIRA, and Figma — pure data layer, no AI.
+AI generation is handled by the calling skill (Claude Code as Business Analyst).
 """
 
 from __future__ import annotations
 
 import base64
+import json
 import re
+from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Optional
 
 from jinja2 import Environment, FileSystemLoader
 
-from src.ai.claude_client import ClaudeClient, UserStory
 from src.clients.confluence_client import ConfluenceClient
 from src.clients.figma_client import FigmaClient
 from src.clients.jira_client import JiraClient, JiraIssue
@@ -24,12 +25,24 @@ from src.utils.file_utils import ensure_dir, sanitize_filename, write_text
 
 
 # ---------------------------------------------------------------------------
+# Domain model
+# ---------------------------------------------------------------------------
+
+@dataclass
+class UserStory:
+    title: str
+    as_a: str
+    i_want: str
+    so_that: str
+    acceptance_criteria: list[str]
+    source_requirement: str
+
+
+# ---------------------------------------------------------------------------
 # HTML → plain text helper
 # ---------------------------------------------------------------------------
 
 class _HTMLStripper(HTMLParser):
-    """Strips HTML tags and extracts plain text from Confluence storage format."""
-
     def __init__(self) -> None:
         super().__init__()
         self._parts: list[str] = []
@@ -44,18 +57,12 @@ class _HTMLStripper(HTMLParser):
 
 
 def _html_to_text(html_str: str) -> str:
-    """Extract plain text from an HTML/XHTML string."""
     stripper = _HTMLStripper()
     stripper.feed(html_str)
     return stripper.get_text()
 
 
 def _extract_confluence_page_id(url: str) -> str:
-    """
-    Parse a Confluence page ID from a URL.
-    Supports /pages/<id>/ and /pages/<id> patterns.
-    Raises ValueError if no numeric page ID is found.
-    """
     match = re.search(r"/pages/(\d+)", url)
     if not match:
         raise ValueError(
@@ -66,11 +73,7 @@ def _extract_confluence_page_id(url: str) -> str:
 
 
 def _format_story_for_prompt(story: JiraIssue) -> str:
-    """Format a JIRA story as text for the Claude prompt (example reference)."""
-    lines = [
-        f"  Key: {story.key}",
-        f"  Title: {story.summary}",
-    ]
+    lines = [f"  Key: {story.key}", f"  Title: {story.summary}"]
     if story.description:
         lines.append(f"  Description: {story.description[:500]}")
     if story.acceptance_criteria:
@@ -84,9 +87,9 @@ def _format_story_for_prompt(story: JiraIssue) -> str:
 
 class UserStoriesGenerator:
     """
-    Orchestrates:
-      Confluence spec fetch → Figma screenshot (optional) → JIRA examples (optional)
-      → Claude AI → Jinja2 render → HTML output.
+    Two-phase pipeline:
+      Phase 1 — fetch_data(): Confluence + JIRA + Figma → spec_data dict (JSON-serialisable)
+      Phase 2 — render_from_stories(): stories JSON + spec_data → HTML file
     """
 
     def __init__(
@@ -94,13 +97,11 @@ class UserStoriesGenerator:
         confluence: ConfluenceClient,
         figma: Optional[FigmaClient],
         jira: Optional[JiraClient],
-        claude: ClaudeClient,
         settings: Settings,
     ) -> None:
         self._confluence = confluence
         self._figma = figma
         self._jira = jira
-        self._claude = claude
         self._settings = settings
         self._jinja = Environment(
             loader=FileSystemLoader(settings.paths.templates_dir),
@@ -108,24 +109,23 @@ class UserStoriesGenerator:
         )
 
     # ------------------------------------------------------------------
-    # Public API
+    # Phase 1: Data fetching
     # ------------------------------------------------------------------
 
-    def generate(
+    def fetch_data(
         self,
         confluence_url: str,
         figma_url: Optional[str] = None,
         example_story_ids: Optional[list[str]] = None,
         epic_key: Optional[str] = None,
-        project_key: Optional[str] = None,
-    ) -> str:
+    ) -> dict:
         """
-        Full pipeline: fetch → AI generate → render → write HTML.
-        Returns the html_filepath as a string.
+        Fetch all data needed to generate and render user stories.
+        Returns a JSON-serialisable dict — write it to spec_data.json and pass to the skill.
         """
         out_dir = ensure_dir(self._settings.paths.output_user_stories)
 
-        # --- 1. Fetch Confluence spec ---
+        # --- Confluence spec ---
         print("  Fetching Confluence specification...")
         page_id = _extract_confluence_page_id(confluence_url)
         page_data = self._confluence.get_page(page_id)
@@ -134,10 +134,39 @@ class UserStoriesGenerator:
         spec_text = _html_to_text(body_html)
         print(f"  Page: {page_title} ({len(spec_text)} chars)")
 
-        # --- 2. Fetch Figma screenshot (optional) ---
-        figma_screenshot_data_url: Optional[str] = None
-        figma_deep_link: Optional[str] = figma_url
+        # --- Confluence attachments ---
+        confluence_screenshots: list[list[str]] = []  # [[title, data_url], ...]
+        image_names: list[str] = []
+        _IMAGE_MIMES = {"image/png", "image/jpeg", "image/gif", "image/webp"}
+        try:
+            attachments = self._confluence.get_attachments(page_id)
+            image_attachments = [
+                a for a in attachments
+                if a.get("metadata", {}).get("mediaType", "") in _IMAGE_MIMES
+            ]
+            if image_attachments:
+                print(f"  Found {len(image_attachments)} image attachment(s).")
+            for att in image_attachments:
+                download_url = att.get("_links", {}).get("download", "")
+                title = att.get("title", "attachment")
+                media_type = att.get("metadata", {}).get("mediaType", "image/png")
+                if not download_url:
+                    continue
+                try:
+                    img_bytes = self._confluence.download_attachment(download_url)
+                    b64 = base64.b64encode(img_bytes).decode("utf-8")
+                    mime = "image/png" if "png" in media_type else "image/jpeg"
+                    confluence_screenshots.append([title, f"data:{mime};base64,{b64}"])
+                    image_names.append(title)
+                    print(f"  Downloaded attachment: {title}")
+                except Exception as exc:
+                    print(f"  [WARNING] Could not download attachment '{title}': {exc}")
+        except Exception as exc:
+            print(f"  [WARNING] Could not fetch attachments: {exc}")
 
+        # --- Figma screenshot ---
+        figma_screenshot_data_url: Optional[str] = None
+        figma_context = ""
         if figma_url and self._figma:
             print("  Fetching Figma screenshot...")
             try:
@@ -149,11 +178,20 @@ class UserStoriesGenerator:
                     print(f"  Screenshot saved: {saved_paths[0].name}")
             except Exception as exc:
                 print(f"  [WARNING] Could not fetch Figma screenshot: {exc}")
+            try:
+                parsed = FigmaClient.parse_figma_url(figma_url)
+                figma_context = (
+                    f"Figma design file: {parsed.file_key}"
+                    + (f", node: {parsed.node_id}" if parsed.node_id else "")
+                    + "\nThis is the UI design mockup for the features described above."
+                )
+            except Exception:
+                figma_context = f"Figma design reference: {figma_url}"
 
-        # --- 3. Fetch example stories for format reference (optional) ---
+        # --- JIRA example stories ---
         example_stories_text = ""
         if example_story_ids and self._jira:
-            print(f"  Fetching {len(example_story_ids)} example story(s) for format reference...")
+            print(f"  Fetching {len(example_story_ids)} example story(s)...")
             examples: list[str] = []
             for sid in example_story_ids:
                 try:
@@ -165,7 +203,7 @@ class UserStoriesGenerator:
             if examples:
                 example_stories_text = "\n\n".join(examples)
 
-        # --- 4. Fetch Epic context (optional) ---
+        # --- JIRA epic context ---
         epic_context = ""
         if epic_key and self._jira:
             print(f"  Fetching Epic context: {epic_key}...")
@@ -178,71 +216,82 @@ class UserStoriesGenerator:
             except Exception as exc:
                 print(f"  [WARNING] Could not fetch Epic {epic_key}: {exc}")
 
-        # --- 5. Build Figma context text for prompt ---
-        figma_prompt_context = ""
-        if figma_url:
-            try:
-                parsed = FigmaClient.parse_figma_url(figma_url)
-                figma_prompt_context = (
-                    f"Figma design file: {parsed.file_key}"
-                    + (f", node: {parsed.node_id}" if parsed.node_id else "")
-                    + "\nThis is the UI design mockup for the features described in the specification above."
-                )
-            except Exception:
-                figma_prompt_context = f"Figma design reference: {figma_url}"
+        return {
+            "page_title": page_title,
+            "confluence_url": confluence_url,
+            "spec_text": spec_text,
+            "epic_key": epic_key,
+            "epic_context": epic_context,
+            "example_stories_text": example_stories_text,
+            "figma_url": figma_url,
+            "figma_context": figma_context,
+            "figma_screenshot_data_url": figma_screenshot_data_url,
+            "image_names": image_names,
+            "confluence_screenshots": confluence_screenshots,
+        }
 
-        # --- 6. Generate stories via Claude AI ---
-        print("  Generating User Stories via Claude AI...")
-        stories = self._claude.generate_user_stories(
-            spec_text=spec_text,
-            epic_context=epic_context,
-            example_stories_text=example_stories_text,
-            figma_context=figma_prompt_context,
+    # ------------------------------------------------------------------
+    # Phase 2: Render HTML from stories
+    # ------------------------------------------------------------------
+
+    def render_from_stories(self, spec_data: dict, stories_input, style: str = "default") -> str:
+        """
+        Render HTML from spec_data (from fetch_data) and stories (generated by the skill).
+
+        stories_input can be:
+          - list[dict]  — legacy format (array of story objects)
+          - dict        — new format: {"stories": [...], "questions": [...]}
+
+        Each story's acceptance_criteria may contain plain strings or dicts of the form
+        {"text": "...", "screenshot": "filename.png"}.  Stories may also carry a top-level
+        "screenshots" key (list[str]) for a story-level image gallery.
+
+        Returns the path to the written HTML file.
+        """
+        # ------------------------------------------------------------------
+        # Parse input — handle both legacy list and new dict wrapper
+        # ------------------------------------------------------------------
+        if isinstance(stories_input, list):
+            raw_stories = stories_input
+            questions: list = []
+        else:
+            raw_stories = stories_input.get("stories", [])
+            questions = stories_input.get("questions", [])
+
+        # ------------------------------------------------------------------
+        # Build screenshot lookup: {filename: data_url}
+        # ------------------------------------------------------------------
+        screenshot_lookup: dict[str, str] = {
+            title: data_url
+            for title, data_url in spec_data.get("confluence_screenshots", [])
+        }
+
+        print(f"  Rendering {len(raw_stories)} user story(s)...")
+
+        template_name = "user_stories_hacker.html.j2" if style == "hacker" else "user_stories.html.j2"
+        template = self._jinja.get_template(template_name)
+        html_content = template.render(
+            page_title=spec_data.get("page_title", "User Stories"),
+            confluence_url=spec_data.get("confluence_url", ""),
+            figma_url=spec_data.get("figma_url"),
+            figma_screenshot_data_url=spec_data.get("figma_screenshot_data_url"),
+            confluence_screenshots=spec_data.get("confluence_screenshots", []),
+            epic_key=spec_data.get("epic_key"),
+            epic_context=spec_data.get("epic_context", ""),
+            stories=raw_stories,
+            questions=questions,
+            screenshot_lookup=screenshot_lookup,
+            generated_date=today_str(self._settings.output.date_format),
+            branding=self._settings.branding,
         )
-        print(f"  Generated {len(stories)} user story(s).")
 
-        # --- 7. Render HTML ---
-        html_content = self._render_html(
-            page_title=page_title,
-            confluence_url=confluence_url,
-            figma_url=figma_deep_link,
-            figma_screenshot_data_url=figma_screenshot_data_url,
-            epic_key=epic_key,
-            epic_context=epic_context,
-            stories=stories,
-        )
-
-        # --- 8. Write output ---
-        html_path = self._write_output(page_title, html_content)
+        html_path = self._write_output(spec_data.get("page_title", "user_stories"), html_content)
         print(f"  Written: {html_path}")
         return str(html_path)
 
     # ------------------------------------------------------------------
-    # Internal steps
+    # Internal helpers
     # ------------------------------------------------------------------
-
-    def _render_html(
-        self,
-        page_title: str,
-        confluence_url: str,
-        figma_url: Optional[str],
-        figma_screenshot_data_url: Optional[str],
-        epic_key: Optional[str],
-        epic_context: str,
-        stories: list[UserStory],
-    ) -> str:
-        template = self._jinja.get_template("user_stories.html.j2")
-        return template.render(
-            page_title=page_title,
-            confluence_url=confluence_url,
-            figma_url=figma_url,
-            figma_screenshot_data_url=figma_screenshot_data_url,
-            epic_key=epic_key,
-            epic_context=epic_context,
-            stories=stories,
-            generated_date=today_str(self._settings.output.date_format),
-            branding=self._settings.branding,
-        )
 
     def _write_output(self, page_title: str, html: str) -> Path:
         date_str = today_str(self._settings.output.date_format)
