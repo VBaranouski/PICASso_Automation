@@ -2,8 +2,8 @@ import { defineConfig } from 'allure';
 
 export default defineConfig({
   name: 'PW-MCP AutoTest Report',
-  output: './allure-report',
-  historyPath: './allure-report/history.jsonl',
+  output: '../allure-report',
+  historyPath: '../allure-report/history.jsonl',
   plugins: {
     awesome: {
       options: {

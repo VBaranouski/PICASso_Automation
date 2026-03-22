@@ -6,7 +6,7 @@ description: Use when creating comprehensive PICASso-format release notes in bot
 # Create Full Release Notes — Technical Writer Agent
 
 You are a **senior Technical Writer for Schneider Electric**.
-Python fetches JIRA data and renders the HTML shell. You write the narrative body.
+MCP fetches JIRA data. Python renders the HTML shell. You write the narrative body.
 
 ---
 
@@ -15,25 +15,71 @@ Python fetches JIRA data and renders the HTML shell. You write the narrative bod
 | Input | Flag | Required? |
 | ------- | ------ | ----------- |
 | Version name | `--version` | **Yes** |
-| JIRA project key | `--project` | Optional (default from config) |
+| JIRA project key | `--project` | Optional (default: PIC) |
 | Spec file | `--spec` | Optional (in `input/release_notes_detailed/`) |
 | Publish to Confluence | `--publish` | Optional flag |
 
 ---
 
-## Step 2 — Fetch release data
+## Step 2 — Fetch release data via MCP
 
-```bash
-cd packages/docs-generator
-python3 main.py release-notes-detailed \
-  --fetch-only \
-  --version "2.4.1" \
-  [--project PROJ] \
-  [--spec "spec.txt"]
+### 2a — Get version metadata
+
+```text
+mcp__mcp-atlassian__jira_get_project_versions(project_key="PIC")
 ```
 
-This writes `release_data_<version>_<date>.json` to `output/release_notes_detailed/` and prints its path.
-Read the file — it contains: `version_name`, `project_key`, `release_date`, `total_issues`, `issues_by_type`, `spec_content`, `template_content`.
+Find the entry where `name` matches the requested version. Extract: `id`, `name`, `releaseDate`, `released`.
+
+### 2b — Get all issues for this version
+
+```text
+mcp__mcp-atlassian__jira_search(
+  jql="project = PIC AND fixVersion = '<version>' ORDER BY issuetype ASC, key ASC",
+  fields=["key","summary","status","priority","issuetype","assignee"],
+  max_results=200
+)
+```
+
+If `total > 200`, paginate using `start_at` until all issues are fetched.
+
+Group results by `fields.issuetype.name`. Each issue entry:
+
+```json
+{"key": "PIC-123", "summary": "...", "status": "Done", "priority": "High", "assignee": "Name"}
+```
+
+### 2c — Read spec file (optional)
+
+If `--spec` was provided, use the Read tool to load it → `spec_content`.
+
+### 2d — Read HTML template
+
+```bash
+Read packages/docs-generator/src/templates/release_notes_detailed.html.j2
+```
+
+Store as `template_content` (used to understand required sections for Step 3).
+
+### 2e — Write release data JSON
+
+Write `output/release_notes_detailed/release_data_<version>_<date>.json`:
+
+```json
+{
+  "version_name": "2.4.1",
+  "project_key": "PIC",
+  "release_date": "2026-03-20",
+  "total_issues": 48,
+  "issues_by_type": {
+    "Story": [{"key": "PIC-1", "summary": "...", "status": "Done", "priority": "High", "assignee": "Name"}],
+    "Bug": [],
+    "Task": []
+  },
+  "spec_content": "optional spec file content or empty string",
+  "template_content": "Jinja2 template file content"
+}
+```
 
 ---
 
@@ -59,6 +105,7 @@ Write the generated HTML body to `output/release_notes_detailed/html_body_<versi
 ## Step 4 — Render full HTML
 
 ```bash
+cd packages/docs-generator
 python3 main.py release-notes-detailed \
   --release-data output/release_notes_detailed/release_data_<version>_<date>.json \
   --html-body output/release_notes_detailed/html_body_<version>_<date>.html \

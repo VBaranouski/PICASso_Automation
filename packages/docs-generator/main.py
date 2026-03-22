@@ -98,6 +98,18 @@ def cli(ctx: click.Context) -> None:
     type=click.Choice(["default", "hacker"], case_sensitive=False),
     help="Visual style for the HTML output.",
 )
+@click.option(
+    "--fetch-only",
+    is_flag=True,
+    default=False,
+    help="Fetch JIRA data and write release_data JSON. No HTML output.",
+)
+@click.option(
+    "--release-data",
+    "release_data_path",
+    default=None,
+    help="Path to release_data JSON (render mode — skips JIRA fetch).",
+)
 @click.pass_context
 def release_notes_cmd(
     ctx: click.Context,
@@ -107,18 +119,69 @@ def release_notes_cmd(
     publish: bool,
     release_date: str | None,
     style: str,
+    fetch_only: bool,
+    release_data_path: str | None,
 ) -> None:
     """Generate release notes from a JIRA version/release."""
+    import json as _json
+    from src.utils.date_utils import today_str
+    from src.utils.file_utils import ensure_dir, sanitize_filename
+
+    settings = ctx.obj["settings"]
+    confluence = ConfluenceClient(settings.confluence) if publish else None
+    generator = ReleaseNotesGenerator(JiraClient(settings.jira), settings, confluence=confluence, style=style)
+
+    # ------------------------------------------------------------------ #
+    # Mode 1: --fetch-only — fetch JIRA data, write JSON                  #
+    # ------------------------------------------------------------------ #
+    if fetch_only:
+        if not version and not version_id:
+            raise click.UsageError("Provide either --version or --version-id with --fetch-only.")
+        label = version_id or version
+        click.echo(click.style(f"\n[SE-DevTools] Fetching release data for version '{label}'", bold=True))
+        try:
+            data = generator.fetch_data(
+                version_name=version,
+                project_key=project,
+                version_id=version_id,
+                release_date_override=release_date,
+            )
+            out_dir = ensure_dir(settings.paths.output_release_notes_short)
+            date_str = today_str(settings.output.date_format)
+            safe_ver = sanitize_filename(data["version_name"])
+            data_path = out_dir / f"release_data_short_{safe_ver}_{date_str}.json"
+            data_path.write_text(_json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            click.echo(click.style("\n  Done!", fg="green", bold=True))
+            click.echo(f"  RELEASE_DATA -> {data_path}")
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
+
+    # ------------------------------------------------------------------ #
+    # Mode 2: --release-data — render HTML from pre-fetched JSON          #
+    # ------------------------------------------------------------------ #
+    if release_data_path:
+        click.echo(click.style("\n[SE-DevTools] Rendering Release Notes HTML", bold=True))
+        try:
+            data = _json.loads(Path(release_data_path).read_text(encoding="utf-8"))
+            txt_path, html_path = generator.render_from_data(data, publish_to_confluence=publish)
+            click.echo(click.style("\n  Done!", fg="green", bold=True))
+            click.echo(f"  TXT  -> {txt_path}")
+            click.echo(f"  HTML -> {html_path}")
+        except Exception as exc:
+            click.echo(click.style(f"\n  [ERROR] {exc}", fg="red"), err=True)
+            sys.exit(1)
+        return
+
+    # ------------------------------------------------------------------ #
+    # Mode 3: full pipeline (legacy — fetch + render in one step)         #
+    # ------------------------------------------------------------------ #
     if not version and not version_id:
         raise click.UsageError("Provide either --version or --version-id.")
 
-    settings = ctx.obj["settings"]
     label = version_id or version
     click.echo(click.style(f"\n[SE-DevTools] Generating Release Notes for version '{label}'", bold=True))
-
-    jira = JiraClient(settings.jira)
-    confluence = ConfluenceClient(settings.confluence) if publish else None
-    generator = ReleaseNotesGenerator(jira, settings, confluence=confluence, style=style)
 
     try:
         txt_path, html_path = generator.generate(

@@ -14,12 +14,12 @@ Before writing ANY code, read these three files in order:
 
 **1. TypeScript coding conventions** (naming, types, imports, class structure):
 ```
-Read file: packages/pw-autotest/.claude/conventions/typescript-conventions.md
+Read file: .claude/conventions/typescript-conventions.md
 ```
 
 **2. Testing patterns** (four-layer architecture, locators, POMs, components, fixtures, assertions):
 ```
-Read file: packages/pw-autotest/.claude/conventions/testing-patterns.md
+Read file: .claude/conventions/testing-patterns.md
 ```
 
 **3. Playwright skill** (MCP workflow, OutSystems patterns, verification/wait strategy, checklist):

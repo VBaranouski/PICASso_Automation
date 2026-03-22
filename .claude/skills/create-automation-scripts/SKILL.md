@@ -10,8 +10,8 @@ AI-powered test generation that reads test scenarios, explores the real applicat
 **Core principle:** Never guess locators — always explore the real DOM via MCP snapshots first.
 
 > **Prerequisite:** Before generating any code, read these convention files:
-> - `packages/pw-autotest/.claude/conventions/typescript-conventions.md`
-> - `packages/pw-autotest/.claude/conventions/testing-patterns.md`
+> - `.claude/conventions/typescript-conventions.md`
+> - `.claude/conventions/testing-patterns.md`
 
 ## When to Use
 
@@ -318,7 +318,6 @@ await allure.description('What this test verifies');
 | Test file | `tests/{feature}/{name}.spec.ts` | kebab-case |
 | Page Object | `src/pages/{Name}Page.ts` | PascalCase |
 | Barrel export | `src/pages/index.ts` | Always update |
-| Spec input | `specs/{feature}/{name}.md` | kebab-case |
 
 ## Quick Checklist
 

@@ -1,51 +1,130 @@
 ---
 name: create-user-stories
-description: Use when creating User Stories from a Confluence specification page. You ARE the Business Analyst — fetch spec data via Python, generate stories yourself, then render HTML.
+description: Use when creating User Stories from a Confluence specification page. You ARE the Business Analyst — fetch spec data via MCP, generate stories yourself, then render HTML.
 ---
 
 # Create User Stories — Business Analyst Agent
 
 You are a **senior Business Analyst for Schneider Electric**.
-Python handles data fetching and HTML rendering. You handle all AI generation.
+MCP handles data fetching from Confluence and Jira. Python renders HTML. You handle all AI generation.
 
 ---
 
 ## Step 1 — Collect inputs
 
-| Input | Flag | Required? |
+| Input | How provided | Required? |
 |-------|------|-----------|
-| Confluence page URL | `--confluence-url` | **Yes** |
-| Figma design URL | `--figma-url` | Optional — auto-detected from spec_text in Step 2b |
-| Example JIRA story IDs | `--example-story` (repeatable) | Optional |
-| Parent Epic key | `--epic` | Optional |
-| JIRA project key | `--project` | Optional (default: PIC) |
+| Confluence page URL | User prompt | **Yes** |
+| Figma design URL | User prompt | Optional — auto-detected from spec_text in Step 2 |
+| Example JIRA story IDs | User prompt | Optional |
+| Parent Epic key | User prompt | Optional |
+| JIRA project key | User prompt | Optional (default: PIC) |
 
 ---
 
-## Step 2 — Fetch spec data
+## Step 2 — Fetch spec data via MCP
 
-```bash
-cd packages/docs-generator
-python3 main.py user-stories \
-  --confluence-url "<URL>" \
-  [--figma-url "<URL>"] \
-  [--example-story PROJ-123] \
-  [--epic PROJ-800] \
-  --fetch-only
+### 2a — Fetch Confluence page content
+
+Parse the page ID from the URL:
+
+- Pattern `/pages/(\d+)` in the path, OR
+- Query param `pageId=(\d+)`
+
+Then call:
+
+```text
+mcp__mcp-atlassian__confluence_get_page(
+  page_id="<id>",
+  expand="body.storage,version"
+)
 ```
 
-This writes `spec_data_<title>_<date>.json` to `output/user_stories/` and prints its path.
-Read the file — it contains: `spec_text`, `epic_context`, `example_stories_text`, `figma_context`, `image_names`.
+Extract:
 
-**Screenshot matching:** The `image_names` field lists the filenames of all screenshots downloaded from the Confluence page. Use these filenames when referencing screenshots in stories (see Step 3).
+- `page_title` = `title` field
+- `spec_text` = strip all HTML tags from `body.storage.value` to get readable plain text. Preserve paragraph structure with newlines.
+
+### 2b — Fetch Confluence page images
+
+```text
+mcp__mcp-atlassian__confluence_get_attachments(page_id="<id>")
+```
+
+For each attachment with a media type of `image/*`:
+
+```text
+mcp__mcp-atlassian__confluence_download_attachment(
+  page_id="<id>",
+  attachment_id="<attachment_id>"
+)
+```
+
+Build:
+
+- `image_names` = list of attachment filenames (e.g. `["screenshot1.png", "design.png"]`)
+- `confluence_screenshots` = list of `[filename, "data:image/png;base64,..."]` pairs
+
+### 2c — Fetch epic context (optional)
+
+If the user provided an epic key:
+
+```text
+mcp__mcp-atlassian__jira_get_issue(issue_key="<epic>", fields=["summary","description"])
+```
+
+Convert ADF description to plain text (recursively extract all `text` node values). Format as:
+
+```
+Epic: <summary>
+<first 800 characters of description>
+```
+
+Store as `epic_context`.
+
+### 2d — Fetch example stories (optional)
+
+For each example story ID provided:
+
+```text
+mcp__mcp-atlassian__jira_get_issue(issue_key="<id>", fields=["summary","description","customfield_10014"])
+```
+
+Format each as:
+
+```
+Story: <key> — <summary>
+Description: <plain text description>
+Acceptance Criteria: <plain text from customfield_10014>
+```
+
+Concatenate all as `example_stories_text`.
+
+### 2e — Write spec data JSON
+
+Write `output/user_stories/spec_data_<sanitized_title>_<date>.json`:
+
+```json
+{
+  "page_title": "Specification title",
+  "spec_text": "plain text extracted from Confluence page body",
+  "epic_context": "optional: formatted epic summary + description",
+  "example_stories_text": "optional: formatted example stories",
+  "figma_url": "optional: if user provided a Figma URL",
+  "image_names": ["screenshot1.png", "screenshot2.png"],
+  "confluence_screenshots": [["screenshot1.png", "data:image/png;base64,..."]]
+}
+```
+
+Sanitize the title for the filename: replace non-alphanumeric characters with underscores, truncate to 40 chars.
 
 ---
 
 ## Step 2b — Figma MCP Context (MANDATORY when any Figma URL is present)
 
-After reading spec_data JSON, detect Figma URLs in this priority order:
+After writing spec_data JSON, detect Figma URLs in this priority order:
 
-1. `spec_data.figma_url` — set by Python if `--figma-url` was passed
+1. `spec_data.figma_url` — set if user provided `--figma-url`
 2. Scan `spec_data.spec_text` with regex: `https://(?:www\.)?figma\.com/design/[A-Za-z0-9]+/[^\s"'<>?#]*(?:\?[^\s"'<>]*)?`
 
 If **any** URL is found, you **MUST** call the Figma MCP — do NOT skip this step.
@@ -70,10 +149,8 @@ Store all results as **`figma_mcp_context`** (in-memory only — not written to 
 - Ground acceptance criteria in the real UI layout and navigation flow
 - Flag in `questions` any spec requirement that contradicts the design
 
-> **Note:** Python's raster screenshot (`figma_screenshot_data_url`) is for the HTML report.
+> **Note:** Confluence screenshots (`confluence_screenshots`) are for the HTML report.
 > MCP context is for generation quality. Both serve different purposes.
-
-If a Figma URL was auto-detected from `spec_text` but was **not** passed to Python via `--figma-url`, note in the Step 5 report that re-running `--fetch-only` with `--figma-url "<detected-url>"` would embed the screenshot in future HTML reports.
 
 **Fallback — no Figma URL found anywhere:**
 
@@ -168,6 +245,7 @@ Write the generated JSON object to `output/user_stories/stories_<title>_<date>.j
 ## Step 4 — Render HTML
 
 ```bash
+cd packages/docs-generator
 python3 main.py user-stories \
   --spec-data output/user_stories/spec_data_<title>_<date>.json \
   --stories-json output/user_stories/stories_<title>_<date>.json

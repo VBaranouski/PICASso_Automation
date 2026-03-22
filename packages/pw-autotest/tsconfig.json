@@ -23,6 +23,6 @@
     },
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "playwright.config.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts", "config/playwright.config.ts", "config/allure.config.ts"],
   "exclude": ["node_modules", "dist", "test-results", "allure-results"]
 }

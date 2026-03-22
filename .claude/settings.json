@@ -1,5 +1,9 @@
 {
   "mcpServers": {
+    "atlassian": {
+      "command": "uvx",
+      "args": ["mcp-atlassian", "--env-file", "/Users/Uladzislau_Baranouski/Claude Code/PICASso/.env"]
+    },
     "playwright": {
       "command": "npx",
       "args": [

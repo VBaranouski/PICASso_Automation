@@ -85,6 +85,92 @@ class ReleaseNotesGenerator:
 
         return str(txt_path), str(html_path)
 
+    def fetch_data(
+        self,
+        version_name: Optional[str] = None,
+        project_key: Optional[str] = None,
+        version_id: Optional[str] = None,
+        release_date_override: Optional[str] = None,
+    ) -> dict:
+        """Fetch JIRA data and return as a JSON-serialisable dict for MCP-based workflows."""
+        ctx = self._fetch_data(
+            version_name,
+            project_key or self._settings.jira.project_key,
+            version_id=version_id,
+            release_date_override=release_date_override,
+        )
+        return {
+            "version_name": ctx.version.name,
+            "version_description": ctx.version.description or "",
+            "release_date": ctx.version.release_date or "",
+            "released": ctx.version.released,
+            "project_key": ctx.project_key,
+            "total_issues": ctx.total_issues,
+            "generated_date": ctx.generated_date,
+            "issues_by_type": {
+                itype: [
+                    {
+                        "key": i.key,
+                        "summary": i.summary,
+                        "status": i.status,
+                        "priority": i.priority or "",
+                        "issue_type": i.issue_type,
+                        "assignee": i.assignee or "",
+                    }
+                    for i in issues
+                ]
+                for itype, issues in ctx.issues_by_type.items()
+            },
+        }
+
+    def render_from_data(
+        self,
+        data: dict,
+        publish_to_confluence: bool = False,
+    ) -> tuple[str, str]:
+        """Render HTML + TXT from a previously fetched data dict. Returns (txt_path, html_path)."""
+        from src.clients.jira_client import JiraIssue, JiraVersion
+
+        version = JiraVersion(
+            id="",
+            name=data["version_name"],
+            description=data.get("version_description", ""),
+            release_date=data.get("release_date", ""),
+            released=data.get("released", False),
+            project_key=data["project_key"],
+        )
+        issues_by_type: dict[str, list[JiraIssue]] = {}
+        for itype, raw_issues in data.get("issues_by_type", {}).items():
+            issues_by_type[itype] = [
+                JiraIssue(
+                    key=i["key"],
+                    summary=i["summary"],
+                    status=i["status"],
+                    priority=i.get("priority") or "Medium",
+                    issue_type=i["issue_type"],
+                    assignee=i.get("assignee") or None,
+                    description=None,
+                    acceptance_criteria=None,
+                )
+                for i in raw_issues
+            ]
+        total = sum(len(v) for v in issues_by_type.values())
+        ctx = ReleaseNotesContext(
+            version=version,
+            issues_by_type=issues_by_type,
+            generated_date=data.get("generated_date", today_str(self._settings.output.date_format)),
+            project_key=data["project_key"],
+            total_issues=total,
+        )
+        html_content = self._render_html(ctx)
+        txt_content = self._render_txt(ctx)
+        txt_path, html_path = self._write_outputs(ctx, html_content, txt_content)
+        if publish_to_confluence and self._confluence:
+            page_title = f"Release Notes — {ctx.project_key} {ctx.version.name}"
+            url = self._confluence.publish_release_notes(page_title, html_content)
+            print(f"  Published to Confluence: {url}")
+        return str(txt_path), str(html_path)
+
     # ------------------------------------------------------------------
     # Internal steps
     # ------------------------------------------------------------------

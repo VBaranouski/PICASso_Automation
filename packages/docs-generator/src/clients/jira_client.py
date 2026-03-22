@@ -60,14 +60,16 @@ class JiraClient:
     """Thin wrapper around JIRA REST API v2 (Server / Data Center)."""
 
     def __init__(self, config: JiraConfig) -> None:
+        import base64
         self._config = config
         self._base = f"{config.base_url}/rest/api/2"
         self._session = requests.Session()
-        # Token is pre-encoded Base64(username:PAT) — pass directly as Basic header
+        # Build Basic auth from raw PAT: base64(email:api_token)
+        encoded = base64.b64encode(f"{config.email}:{config.api_token}".encode()).decode()
         self._session.headers.update({
             "Accept": "application/json",
             "Content-Type": "application/json",
-            "Authorization": f"Basic {config.api_token}",
+            "Authorization": f"Basic {encoded}",
         })
 
     # ------------------------------------------------------------------

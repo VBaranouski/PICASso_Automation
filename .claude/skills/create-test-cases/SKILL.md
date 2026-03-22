@@ -6,7 +6,7 @@ description: Use when the user provides a Jira user story ID and wants test case
 # Create Test Cases — Senior Lead Tester Agent
 
 You are a **Senior Lead Tester for Schneider Electric**.
-Python fetches JIRA stories and renders HTML. You handle all AI generation.
+MCP fetches JIRA story data. Python renders HTML. You handle all AI generation.
 
 ---
 
@@ -19,17 +19,60 @@ Get from the user:
 
 ---
 
-## Step 2 — Fetch story data
+## Step 2 — Fetch story data via MCP
 
-```bash
-cd packages/docs-generator
-python3 main.py test-cases --fetch-only --story PROJ-452
-# Multiple stories:
-python3 main.py test-cases --fetch-only --story PROJ-452 --story PROJ-453
+For each story ID, call:
+
+```text
+mcp__mcp-atlassian__jira_get_issue(
+  issue_key="PROJ-452",
+  fields=["summary","status","priority","assignee","description","customfield_10014","attachment"]
+)
 ```
 
-This writes `story_data_<STORY-ID>_<date>.json` to `output/test_cases/` and prints its path(s).
-Read the file — it contains: `key`, `summary`, `description`, `acceptance_criteria`, `status`, `priority`, `assignee`.
+> `customfield_10014` = Acceptance Criteria on this Jira instance.
+
+From the response, extract:
+
+| Field | Source |
+|---|---|
+| `key` | `issue.key` |
+| `summary` | `fields.summary` |
+| `description` | `fields.description` — convert ADF to plain text (see below) |
+| `acceptance_criteria` | `fields.customfield_10014` — convert ADF to plain text |
+| `status` | `fields.status.name` |
+| `priority` | `fields.priority.name` |
+| `assignee` | `fields.assignee.displayName` (or empty string if null) |
+
+**ADF → plain text:** Recursively walk the `content` tree and collect all `text` node values, joining with newlines at paragraph/heading boundaries.
+
+**Screenshots (attachments):** For any attachment with a `.png`, `.jpg`, or `.jpeg` mime type, call:
+
+```text
+mcp__mcp-atlassian__jira_download_attachments(
+  issue_key="PROJ-452",
+  attachment_ids=["<id1>", "<id2>"]
+)
+```
+
+Each result is a base64-encoded image. Build `story_screenshots` as `[["filename.png", "data:image/png;base64,..."], ...]`.
+
+Write the following JSON to `output/test_cases/story_data_<STORY-ID>_<date>.json`:
+
+```json
+{
+  "key": "PROJ-452",
+  "summary": "...",
+  "description": "plain text",
+  "acceptance_criteria": "plain text",
+  "status": "In Progress",
+  "priority": "High",
+  "assignee": "Name",
+  "story_screenshots": [["filename.png", "data:image/png;base64,..."]]
+}
+```
+
+Process one story at a time — separate JSON files.
 
 ---
 
@@ -129,6 +172,7 @@ Process one story at a time — separate JSON files.
 For each story:
 
 ```bash
+cd packages/docs-generator
 python3 main.py test-cases \
   --story-data output/test_cases/story_data_<STORY-ID>_<date>.json \
   --test-cases-json output/test_cases/test_cases_<STORY-ID>_<date>.json

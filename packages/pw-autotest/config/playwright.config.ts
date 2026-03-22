@@ -1,32 +1,32 @@
 import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
-import { getEnvironment } from './config/environments';
+import { getEnvironment } from './environments';
 
 // Load shared secrets from monorepo root .env
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 const environment = getEnvironment(process.env.TEST_ENV);
 
 export default defineConfig({
-  testDir: './tests',
+  testDir: '../tests',
   timeout: 30_000,
   expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 4 : undefined,
-  outputDir: './test-results',
+  outputDir: '../test-results',
 
   reporter: [
     ['list'],
-    ['html', { outputFolder: 'playwright-report', open: 'never' }],
+    ['html', { outputFolder: '../playwright-report', open: 'never' }],
     ['allure-playwright', {
-      resultsDir: './allure-results',
+      resultsDir: '../allure-results',
       detail: true,
       suiteTitle: true,
     }],
-    ['json', { outputFile: 'test-results/results.json' }],
+    ['json', { outputFile: '../test-results/results.json' }],
   ],
 
   use: {
