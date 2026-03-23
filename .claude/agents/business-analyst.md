@@ -25,6 +25,42 @@ Invoke these skills as needed:
 - `/create-release-note-detailed` — Generate detailed release notes in HTML + PowerPoint formats
 - `/create-user-stories` — Generate User Stories and tasks based on functional spefification
 
+## JIRA & Confluence MCP Integration (MANDATORY)
+
+Use MCP tools directly for all JIRA and Confluence data fetching — do NOT run Python CLI fetch commands.
+
+**Fetch a JIRA version list:**
+
+```text
+mcp__mcp-atlassian__jira_get_project_versions(project_key="PIC")
+```
+
+**Search JIRA issues for a version:**
+
+```text
+mcp__mcp-atlassian__jira_search(
+  jql="project = PIC AND fixVersion = '<version>' ORDER BY issuetype ASC, key ASC",
+  fields=["key","summary","status","priority","issuetype","assignee"],
+  limit=50
+)
+```
+
+**Fetch a single JIRA issue:**
+
+```text
+mcp__mcp-atlassian__jira_get_issue(issue_key="PIC-123", fields=["summary","description","customfield_10014","attachment"])
+```
+
+**Fetch a Confluence page:**
+
+```text
+mcp__mcp-atlassian__confluence_get_page(page_id="<id>")
+```
+
+Extract the page ID from the URL: `…/pages/<pageId>/…`
+
+---
+
 ## Figma MCP Integration (MANDATORY)
 
 You have access to the Figma MCP plugin. When Figma URLs appear in **any** input (user prompt, Confluence spec, JIRA story), use it before generating content. Do not ask the user for permission — act autonomously.
@@ -59,7 +95,7 @@ All documentation commands run from `packages/docs-generator/`:
 
 ```bash
 cd packages/docs-generator
-python main.py <command> [options]
+python3 main.py <command> [options]
 ```
 
 **Input directories** (relative to repo root):
