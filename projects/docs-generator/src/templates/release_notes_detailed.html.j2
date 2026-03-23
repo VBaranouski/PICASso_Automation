@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Full Release Notes — {{ version_name }} | {{ branding.company_name }}</title>
+  <style>
+    :root {
+      --se-green:   {{ branding.primary_color }};
+      --se-dark:    {{ branding.dark_color }};
+      --se-text:    {{ branding.text_color }};
+      --se-border:  {{ branding.border_color }};
+      --se-row-alt: {{ branding.row_alt_color }};
+      --se-hover:   {{ branding.hover_color }};
+      --se-font:    {{ branding.font_family }};
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--se-font);
+      background: #ffffff;
+      color: var(--se-text);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    /* ---- Header banner ---- */
+    .header {
+      background: linear-gradient(135deg, var(--se-green) 0%, var(--se-dark) 100%);
+      color: #ffffff;
+      padding: 30px 56px 26px;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .logo { font-size: 20px; font-weight: 700; }
+    .logo span { opacity: 0.75; font-weight: 400; }
+    .doc-badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .header-meta {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-top: 10px;
+    }
+    .header-meta span { margin-right: 24px; }
+
+    /* ---- Meta strip ---- */
+    .meta-strip {
+      background: var(--se-row-alt);
+      border-bottom: 1px solid var(--se-border);
+      padding: 14px 56px;
+      display: flex;
+      gap: 36px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+    .meta-item { display: flex; flex-direction: column; }
+    .meta-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--se-dark);
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .meta-value { font-weight: 600; color: var(--se-text); }
+
+    /* ---- Document body ---- */
+    .doc-body {
+      padding: 40px 56px 60px;
+      max-width: 1100px;
+    }
+
+    /* ---- Headings — override AI-generated h1/h2/h3 ---- */
+    .doc-body h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--se-dark);
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid var(--se-green);
+    }
+    .doc-body h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--se-dark);
+      margin-top: 40px;
+      margin-bottom: 16px;
+      padding-left: 14px;
+      border-left: 5px solid var(--se-green);
+    }
+    .doc-body h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--se-text);
+      margin-top: 28px;
+      margin-bottom: 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--se-border);
+    }
+
+    /* ---- Paragraphs ---- */
+    .doc-body p {
+      margin-bottom: 12px;
+      color: var(--se-text);
+    }
+    .doc-body p strong {
+      color: var(--se-dark);
+    }
+
+    /* ---- Lists ---- */
+    .doc-body ul, .doc-body ol {
+      margin: 10px 0 14px 24px;
+    }
+    .doc-body li {
+      margin-bottom: 6px;
+      color: var(--se-text);
+      line-height: 1.7;
+    }
+    .doc-body li strong { color: var(--se-dark); }
+
+    /* Nested sub-bullets */
+    .doc-body ul ul, .doc-body ol ul {
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+    .doc-body ul li::marker { color: var(--se-green); }
+    .doc-body ol li::marker { color: var(--se-dark); font-weight: 700; }
+
+    /* ---- Revision history table (AI-generated) ---- */
+    .doc-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 24px;
+      font-size: 13px;
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .doc-body table thead tr { background: var(--se-dark); color: #ffffff; }
+    .doc-body table thead th {
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .doc-body table tbody tr:nth-child(odd)  { background: #ffffff; }
+    .doc-body table tbody tr:nth-child(even) { background: var(--se-row-alt); }
+    .doc-body table tbody tr:hover           { background: var(--se-hover); }
+    .doc-body table tbody td {
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--se-border);
+      vertical-align: top;
+    }
+    .doc-body table tbody tr:last-child td { border-bottom: none; }
+
+    /* ---- JIRA key inline reference ---- */
+    .doc-body code {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      background: #F1F8E9;
+      color: var(--se-dark);
+      padding: 1px 5px;
+      border-radius: 3px;
+      border: 1px solid var(--se-border);
+    }
+
+    /* ---- Section dividers ---- */
+    .doc-body hr {
+      border: none;
+      border-top: 1px solid var(--se-border);
+      margin: 32px 0;
+    }
+
+    /* ---- Footer ---- */
+    .footer {
+      padding: 18px 56px;
+      background: #F7F7F7;
+      border-top: 1px solid var(--se-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #888;
+    }
+    .footer-left { display: flex; flex-direction: column; gap: 2px; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">{{ branding.company_name }} <span>| DevTools</span></div>
+      <div class="doc-badge">Full Release Notes</div>
+    </div>
+    <div class="header-meta">
+      <span>Project: <strong>{{ project_key }}</strong></span>
+      <span>Version: <strong>{{ version_name }}</strong></span>
+      <span>Release Date: <strong>{{ release_date }}</strong></span>
+      <span>Total Issues: <strong>{{ total_issues }}</strong></span>
+    </div>
+  </div>
+
+  <!-- Meta strip -->
+  <div class="meta-strip">
+    <div class="meta-item">
+      <span class="meta-label">Document Type</span>
+      <span class="meta-value">Full Release Notes</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Version</span>
+      <span class="meta-value">{{ version_name }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Generated</span>
+      <span class="meta-value">{{ generated_date }}</span>
+    </div>
+    <div class="meta-item">
+      <span class="meta-label">Project</span>
+      <span class="meta-value">{{ project_key }}</span>
+    </div>
+  </div>
+
+  <!-- AI-generated document body -->
+  <div class="doc-body">
+    {{ html_body }}
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-left">
+      <span>{{ branding.company_name }} &mdash; Confidential</span>
+      <span>Generated by SE-DevTools on {{ generated_date }}</span>
+    </div>
+    <span>{{ version_name }}</span>
+  </div>
+
+</body>
+</html>

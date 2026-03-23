@@ -172,7 +172,7 @@ Process one story at a time — separate JSON files.
 For each story:
 
 ```bash
-cd packages/docs-generator
+cd projects/docs-generator
 python3 main.py test-cases \
   --story-data output/test_cases/story_data_<STORY-ID>_<date>.json \
   --test-cases-json output/test_cases/test_cases_<STORY-ID>_<date>.json

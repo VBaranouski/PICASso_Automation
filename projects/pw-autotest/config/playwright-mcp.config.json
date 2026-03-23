@@ -1,0 +1,19 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "headless": false,
+      "channel": "chrome"
+    },
+    "contextOptions": {
+      "viewport": { "width": 1280, "height": 720 }
+    }
+  },
+  "capabilities": ["core", "pdf", "vision"],
+  "saveTrace": true,
+  "saveSession": true,
+  "outputDir": "./traces",
+  "network": {
+    "blockedOrigins": ["https://ads.example.com"]
+  }
+}

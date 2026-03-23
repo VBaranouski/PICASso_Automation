@@ -245,7 +245,7 @@ Write the generated JSON object to `output/user_stories/stories_<title>_<date>.j
 ## Step 4 — Render HTML
 
 ```bash
-cd packages/docs-generator
+cd projects/docs-generator
 python3 main.py user-stories \
   --spec-data output/user_stories/spec_data_<title>_<date>.json \
   --stories-json output/user_stories/stories_<title>_<date>.json

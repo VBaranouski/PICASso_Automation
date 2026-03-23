@@ -91,10 +91,10 @@ You have access to the Figma MCP plugin. When Figma URLs appear in **any** input
 
 ## SE-DevTools CLI Context
 
-All documentation commands run from `packages/docs-generator/`:
+All documentation commands run from `projects/docs-generator/`:
 
 ```bash
-cd packages/docs-generator
+cd projects/docs-generator
 python3 main.py <command> [options]
 ```
 

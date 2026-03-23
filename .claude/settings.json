@@ -9,7 +9,7 @@
       "args": [
         "@playwright/mcp@latest",
         "--config",
-        "./packages/pw-autotest/config/playwright-mcp.config.json"
+        "./projects/pw-autotest/config/playwright-mcp.config.json"
       ]
     },
     "sequential-thinking": {

@@ -15,13 +15,13 @@ Before writing ANY code, read these three files in order:
 **1. TypeScript coding conventions** (naming, types, imports, class structure):
 
 ```text
-Read file: .claude/conventions/typescript-conventions.md
+Read file: .claude/rules/typescript-conventions.md
 ```
 
 **2. Testing patterns** (four-layer architecture, locators, POMs, components, fixtures, assertions):
 
 ```text
-Read file: .claude/conventions/testing-patterns.md
+Read file: .claude/rules/testing-patterns.md
 ```
 
 **3. Playwright skill** (MCP workflow, OutSystems patterns, verification/wait strategy, checklist):

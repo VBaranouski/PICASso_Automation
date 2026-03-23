@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Cases — {{ story.key }} | {{ branding.company_name }}</title>
+  <style>
+    :root {
+      --se-green:   {{ branding.primary_color }};
+      --se-dark:    {{ branding.dark_color }};
+      --se-text:    {{ branding.text_color }};
+      --se-border:  {{ branding.border_color }};
+      --se-row-alt: {{ branding.row_alt_color }};
+      --se-hover:   {{ branding.hover_color }};
+      --se-font:    {{ branding.font_family }};
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--se-font);
+      background: #ffffff;
+      color: var(--se-text);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: linear-gradient(135deg, var(--se-green) 0%, var(--se-dark) 100%);
+      color: #ffffff;
+      padding: 30px 48px 26px;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .logo { font-size: 20px; font-weight: 700; }
+    .logo span { opacity: 0.75; font-weight: 400; }
+    .badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .header-meta { font-size: 13px; opacity: 0.85; }
+    .header-meta span { margin-right: 24px; }
+
+    /* ---- Story card ---- */
+    .story-card {
+      margin: 24px 48px;
+      border: 1px solid var(--se-border);
+      border-left: 5px solid var(--se-green);
+      border-radius: 6px;
+      padding: 20px 24px;
+      background: var(--se-row-alt);
+    }
+    .story-card-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--se-dark);
+      margin-bottom: 8px;
+    }
+    .story-card-summary { font-size: 15px; font-weight: 600; color: var(--se-text); margin-bottom: 12px; }
+    .story-card-body { font-size: 13px; color: #555; line-height: 1.7; }
+    .story-card-ac {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--se-border);
+      font-size: 12px;
+    }
+    .story-card-ac strong { color: var(--se-dark); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* ---- Stats row ---- */
+    .stats-row {
+      margin: 0 48px 24px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .stat-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid var(--se-border);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 12px;
+    }
+    .stat-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-positive  { background: #43A047; }
+    .dot-negative  { background: #E53935; }
+    .dot-edge      { background: #FB8C00; }
+    .dot-high      { background: #C62828; }
+    .dot-medium    { background: #F9A825; }
+    .dot-low       { background: #558B2F; }
+
+    /* ---- Section title ---- */
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--se-dark);
+      border-left: 4px solid var(--se-green);
+      padding-left: 12px;
+      margin: 0 48px 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ---- Test cases table ---- */
+    .table-wrap { margin: 0 48px 48px; overflow-x: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      min-width: 900px;
+    }
+    thead tr { background: var(--se-dark); color: #ffffff; }
+    thead th {
+      padding: 11px 12px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      white-space: nowrap;
+    }
+    tbody tr:nth-child(odd)  { background: #ffffff; }
+    tbody tr:nth-child(even) { background: var(--se-row-alt); }
+    tbody tr:hover           { background: var(--se-hover); }
+    tbody td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--se-border);
+      vertical-align: top;
+    }
+    tbody tr:last-child td { border-bottom: none; }
+
+    /* ---- TC ID ---- */
+    .tc-id {
+      font-weight: 700;
+      color: var(--se-dark);
+      font-family: monospace;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    /* ---- Steps list ---- */
+    .steps-list { list-style: none; padding: 0; margin: 0; }
+    .steps-list li {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      background: var(--se-green);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+
+    /* ---- Priority badges ---- */
+    .badge-priority {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .badge-High   { background: #FFEBEE; color: #C62828; border: 1px solid #FFCDD2; }
+    .badge-Medium { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
+    .badge-Low    { background: #F1F8E9; color: #33691E; border: 1px solid #DCEDC8; }
+
+    /* ---- Type badges ---- */
+    .badge-type {
+      display: inline-block;
+      padding: 2px 9px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-Positive   { background: #E8F5E9; color: #1B5E20; border: 1px solid #C8E6C9; }
+    .badge-Negative   { background: #FFEBEE; color: #B71C1C; border: 1px solid #FFCDD2; }
+    .badge-Edge\ Case { background: #FFF3E0; color: #BF360C; border: 1px solid #FFE0B2; }
+
+    /* ---- Footer ---- */
+    .footer {
+      padding: 18px 48px;
+      background: #F7F7F7;
+      border-top: 1px solid var(--se-border);
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">{{ branding.company_name }} <span>| DevTools</span></div>
+      <div class="badge">Test Cases</div>
+    </div>
+    <h1>Test Cases — {{ story.key }}</h1>
+    <div class="header-meta">
+      <span>Story: <strong>{{ story.key }}</strong></span>
+      <span>Type: <strong>{{ story.issue_type }}</strong></span>
+      <span>Status: <strong>{{ story.status }}</strong></span>
+      {% if story.assignee %}<span>Assignee: <strong>{{ story.assignee }}</strong></span>{% endif %}
+    </div>
+  </div>
+
+  <!-- Story Card -->
+  <div class="story-card">
+    <div class="story-card-title">User Story</div>
+    <div class="story-card-summary">{{ story.summary }}</div>
+    {% if story.description %}
+    <div class="story-card-body">{{ story.description }}</div>
+    {% endif %}
+    {% if story.acceptance_criteria %}
+    <div class="story-card-ac">
+      <strong>Acceptance Criteria</strong>
+      <p style="margin-top:6px;">{{ story.acceptance_criteria }}</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Stats -->
+  {% set positive_count = test_cases | selectattr('test_type', 'equalto', 'Positive') | list | length %}
+  {% set negative_count = test_cases | selectattr('test_type', 'equalto', 'Negative') | list | length %}
+  {% set edge_count     = test_cases | selectattr('test_type', 'equalto', 'Edge Case') | list | length %}
+  {% set high_count     = test_cases | selectattr('priority',  'equalto', 'High')      | list | length %}
+  {% set medium_count   = test_cases | selectattr('priority',  'equalto', 'Medium')    | list | length %}
+  {% set low_count      = test_cases | selectattr('priority',  'equalto', 'Low')       | list | length %}
+
+  <div class="stats-row">
+    <div class="stat-chip"><span class="stat-dot dot-positive"></span> Positive: <strong>{{ positive_count }}</strong></div>
+    <div class="stat-chip"><span class="stat-dot dot-negative"></span> Negative: <strong>{{ negative_count }}</strong></div>
+    <div class="stat-chip"><span class="stat-dot dot-edge"></span>     Edge Cases: <strong>{{ edge_count }}</strong></div>
+    <div class="stat-chip" style="margin-left:12px;"><span class="stat-dot dot-high"></span>   High: <strong>{{ high_count }}</strong></div>
+    <div class="stat-chip"><span class="stat-dot dot-medium"></span> Medium: <strong>{{ medium_count }}</strong></div>
+    <div class="stat-chip"><span class="stat-dot dot-low"></span>    Low: <strong>{{ low_count }}</strong></div>
+  </div>
+
+  <!-- Section title -->
+  <div class="section-title">Test Cases ({{ test_cases | length }} total)</div>
+
+  <!-- Test Cases Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:70px">TC ID</th>
+          <th style="width:200px">Title</th>
+          <th style="width:160px">Preconditions</th>
+          <th>Test Steps</th>
+          <th style="width:180px">Expected Result</th>
+          <th style="width:80px">Priority</th>
+          <th style="width:90px">Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for tc in test_cases %}
+        <tr>
+          <td><span class="tc-id">{{ tc.id }}</span></td>
+          <td><strong>{{ tc.title }}</strong></td>
+          <td style="font-size:11.5px; color:#555;">{{ tc.preconditions }}</td>
+          <td>
+            <ul class="steps-list">
+              {% for step in tc.test_steps %}
+              <li>
+                <span class="step-num">{{ loop.index }}</span>
+                <span>{{ step }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+          </td>
+          <td style="font-size:12px;">{{ tc.expected_result }}</td>
+          <td><span class="badge-priority badge-{{ tc.priority }}">{{ tc.priority }}</span></td>
+          <td><span class="badge-type badge-{{ tc.test_type }}">{{ tc.test_type }}</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>{{ branding.company_name }} — Lead Tester Report — Confidential</span>
+    <span>Generated by SE-DevTools on {{ generated_date }}</span>
+  </div>
+
+</body>
+</html>

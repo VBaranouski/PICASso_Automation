@@ -21,7 +21,7 @@ Ask the user:
 ## Step 2 — Fetch transcript data
 
 ```bash
-cd packages/docs-generator
+cd projects/docs-generator
 
 # Single file:
 python3 main.py meeting-notes --fetch-only --file "standup.txt"

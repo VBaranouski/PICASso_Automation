@@ -4,11 +4,11 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'packages/pw-autotest/**'
+      - 'projects/pw-autotest/**'
   pull_request:
     branches: [main]
     paths:
-      - 'packages/pw-autotest/**'
+      - 'projects/pw-autotest/**'
   workflow_dispatch:
     inputs:
       test_env:
@@ -43,7 +43,7 @@ on:
 
 defaults:
   run:
-    working-directory: packages/pw-autotest
+    working-directory: projects/pw-autotest
 
 jobs:
   test:
@@ -59,7 +59,7 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-          cache-dependency-path: packages/pw-autotest/package-lock.json
+          cache-dependency-path: projects/pw-autotest/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -84,7 +84,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.project }}
-          path: packages/pw-autotest/allure-results/
+          path: projects/pw-autotest/allure-results/
           retention-days: 30
 
       - name: Upload Playwright report
@@ -92,7 +92,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.project }}
-          path: packages/pw-autotest/playwright-report/
+          path: projects/pw-autotest/playwright-report/
           retention-days: 30
 
       - name: Upload traces
@@ -100,5 +100,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: traces-${{ matrix.project }}
-          path: packages/pw-autotest/test-results/
+          path: projects/pw-autotest/test-results/
           retention-days: 7

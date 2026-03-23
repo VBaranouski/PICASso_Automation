@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>{{ version.project_key }} {{ release_type }} &mdash; {{ version.name }}</title>
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700");
+  :root{--bg-base:#080c10;--bg-panel:#0d1117;--bg-header:#0a0f16;--bg-row-alt:#0d1520;--border:#1e2d3d;--border-glow:#1e4060;--cyan:#39c5cf;--cyan-dim:#1a5a60;--cyan-glow:rgba(57,197,207,.13);--green:#3dcf6e;--green-dim:#1a5530;--orange:#e8943a;--orange-dim:#6a3a10;--orange-glow:rgba(232,148,58,.12);--red:#f05252;--red-dim:#6a1818;--red-glow:rgba(240,82,82,.13);--yellow:#e8c73a;--purple:#a371f7;--text:#c9d1d9;--text-dim:#6e7681;--text-faint:#2d3440;--mono:'JetBrains Mono',Consolas,monospace;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--mono);background:var(--bg-base);color:var(--text);font-size:12.5px;line-height:1.6;}
+  .page{max-width:860px;margin:28px auto;background:var(--bg-panel);border:1px solid var(--border);border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px var(--border),0 12px 50px rgba(0,0,0,.7);}
+  .titlebar{background:#10161e;border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:8px;}
+  .tb-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+  .tb-red{background:#f05252;box-shadow:0 0 4px #f05252;}.tb-yellow{background:#e8c73a;box-shadow:0 0 4px #e8c73a;}.tb-green{background:#3dcf6e;box-shadow:0 0 4px #3dcf6e;}
+  .tb-title{margin-left:10px;font-size:10.5px;color:var(--text-dim);letter-spacing:0.5px;}
+  .tb-spacer{flex:1;}.tb-pill{font-size:9.5px;color:var(--cyan-dim);border:1px solid var(--border-glow);padding:1px 9px;border-radius:3px;letter-spacing:0.8px;text-transform:uppercase;}
+  .header{padding:30px 36px 22px;border-bottom:1px solid var(--border);background:var(--bg-header);position:relative;overflow:hidden;}
+  .header::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(57,197,207,.018) 3px,rgba(57,197,207,.018) 4px);pointer-events:none;}
+  .hdr-prompt{font-size:10px;color:var(--green);letter-spacing:0.8px;margin-bottom:10px;opacity:.85;}
+  .hdr-prompt span{color:var(--text-dim);}
+  .deployed-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(61,207,110,.1);border:1px solid var(--green-dim);color:var(--green);border-radius:3px;padding:2px 10px;font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
+  .deployed-badge::before{content:"▶";font-size:8px;}
+  .header h1{font-size:26px;font-weight:700;color:var(--cyan);letter-spacing:-0.5px;text-shadow:0 0 28px rgba(57,197,207,.55);line-height:1;margin-bottom:10px;}
+  .hdr-meta{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--text-dim);}
+  .hdr-meta .sep{color:var(--border-glow);}.hdr-meta .val{color:var(--text);}
+  .intro{padding:16px 36px;background:rgba(57,197,207,.04);border-bottom:1px solid var(--border);border-left:3px solid var(--cyan-dim);font-size:12px;color:var(--text-dim);line-height:1.7;}
+  .intro strong{color:var(--text);}
+  .section{padding:24px 36px;border-bottom:1px solid var(--border);}
+  .section:last-of-type{border-bottom:none;}
+  .section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .sec-icon{font-size:11px;flex-shrink:0;}
+  .section.high   .sec-icon{color:var(--red);}
+  .section.medium .sec-icon{color:var(--orange);}
+  .section.low    .sec-icon{color:var(--cyan);}
+  .section.feat   .sec-icon{color:var(--purple);}
+  .section-header h2{font-size:11.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;}
+  .section.high   .section-header h2{color:var(--red);   text-shadow:0 0 10px rgba(240,82,82,.4);}
+  .section.medium .section-header h2{color:var(--orange);text-shadow:0 0 10px rgba(232,148,58,.4);}
+  .section.low    .section-header h2{color:var(--cyan);  text-shadow:0 0 10px rgba(57,197,207,.4);}
+  .section.feat   .section-header h2{color:var(--purple);text-shadow:0 0 10px rgba(163,113,247,.4);}
+  .sec-count{margin-left:auto;font-size:9.5px;font-weight:700;letter-spacing:1px;padding:2px 10px;border-radius:3px;text-transform:uppercase;white-space:nowrap;}
+  .section.high   .sec-count{background:var(--red-glow);                    color:var(--red);   border:1px solid var(--red-dim);}
+  .section.medium .sec-count{background:var(--orange-glow);                 color:var(--orange);border:1px solid var(--orange-dim);}
+  .section.low    .sec-count{background:var(--cyan-glow);                   color:var(--cyan);  border:1px solid var(--cyan-dim);}
+  .section.feat   .sec-count{background:rgba(163,113,247,.12);              color:var(--purple);border:1px solid #4a2a8a;}
+  ul{list-style:none;padding:0;border:1px solid var(--border);border-radius:4px;overflow:hidden;}
+  ul li{position:relative;padding:10px 14px 10px 32px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text);line-height:1.6;}
+  ul li:last-child{border-bottom:none;}
+  ul li:nth-child(even){background:var(--bg-row-alt);}
+  ul li:hover{background:rgba(57,197,207,.035);}
+  ul li::before{content:"▶";position:absolute;left:12px;top:11px;font-size:8px;}
+  .section.high   ul li::before{color:var(--red);}
+  .section.medium ul li::before{color:var(--orange);}
+  .section.low    ul li::before{color:var(--cyan);}
+  .section.feat   ul li::before{color:var(--purple);}
+  .no-data{padding:18px;text-align:center;color:var(--text-faint);font-size:11px;letter-spacing:0.5px;}
+  .no-data::before{content:'// ';}
+  .footer{background:#08090d;border-top:1px solid var(--border);padding:18px 36px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  .footer-left{}
+  .total-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(61,207,110,.1);border:1px solid var(--green-dim);color:var(--green);border-radius:3px;padding:3px 12px;font-size:10.5px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:8px;}
+  .total-badge::before{content:"✓ ";}
+  .hashtags{font-size:10px;color:var(--cyan-dim);letter-spacing:0.5px;margin-top:4px;}
+  .footer-right{font-size:11px;color:var(--text-dim);max-width:360px;line-height:1.6;text-align:right;}
+  .meta{background:#06080a;border-top:1px solid var(--border);padding:8px 36px;display:flex;justify-content:space-between;font-size:9.5px;color:var(--text-faint);letter-spacing:0.4px;}
+  .meta-logo::before{content:'▶ ';color:var(--green);}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="titlebar">
+    <div class="tb-dot tb-red"></div>
+    <div class="tb-dot tb-yellow"></div>
+    <div class="tb-dot tb-green"></div>
+    <span class="tb-title">terminal &mdash; release_notes &mdash; {{ version.name }}</span>
+    <span class="tb-spacer"></span>
+    <span class="tb-pill">SE-DevTools</span>
+  </div>
+
+  <div class="header">
+    <div class="hdr-prompt"><span>$ </span>python main.py release-notes <span>--version "{{ version.name }}" --style hacker</span></div>
+    <div class="deployed-badge">Successfully Deployed</div>
+    <h1>{{ version.project_key }} {{ release_type }} &mdash; {{ version.name }}</h1>
+    <div class="hdr-meta">
+      <span>Release Date</span><span class="sep">:</span><span class="val">{{ version.release_date or 'TBD' }}</span>
+      <span class="sep">//</span>
+      <span>Total Fixes</span><span class="sep">:</span><span class="val">{{ total_issues }}</span>
+    </div>
+  </div>
+
+  <div class="intro">{{ intro_text }}</div>
+
+  {# Macro: render one issue as a fix sentence #}
+  {% macro issue_li(issue) %}
+  {%- set defect = issue.issue_type | lower in ('bug', 'defect') -%}
+  <li>{% if defect %}Fixed an issue where {{ issue.summary[0] | lower }}{{ issue.summary[1:] }}.{% else %}{{ issue.summary }}{% endif %}</li>
+  {% endmacro %}
+
+  <!-- HIGH PRIORITY FIXES -->
+  {% if high_issues %}
+  <div class="section high">
+    <div class="section-header">
+      <span class="sec-icon">&#9654;</span>
+      <h2>High Priority Fixes</h2>
+      <span class="sec-count">{{ high_issues | length }} item{{ 's' if high_issues | length != 1 else '' }}</span>
+    </div>
+    <ul>{% for issue in high_issues %}{{ issue_li(issue) }}{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  <!-- MEDIUM PRIORITY FIXES -->
+  {% if medium_issues %}
+  <div class="section medium">
+    <div class="section-header">
+      <span class="sec-icon">&#9654;</span>
+      <h2>Medium Priority Fixes</h2>
+      <span class="sec-count">{{ medium_issues | length }} item{{ 's' if medium_issues | length != 1 else '' }}</span>
+    </div>
+    <ul>{% for issue in medium_issues %}{{ issue_li(issue) }}{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  <!-- LOW PRIORITY FIXES -->
+  {% if low_issues %}
+  <div class="section low">
+    <div class="section-header">
+      <span class="sec-icon">&#9654;</span>
+      <h2>Low Priority Fixes</h2>
+      <span class="sec-count">{{ low_issues | length }} item{{ 's' if low_issues | length != 1 else '' }}</span>
+    </div>
+    <ul>{% for issue in low_issues %}{{ issue_li(issue) }}{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  <!-- NEW FEATURES & ENHANCEMENTS -->
+  {% if feature_issues %}
+  <div class="section feat">
+    <div class="section-header">
+      <span class="sec-icon">&#9654;</span>
+      <h2>New Features and Enhancements</h2>
+      <span class="sec-count">{{ feature_issues | length }} item{{ 's' if feature_issues | length != 1 else '' }}</span>
+    </div>
+    <ul>
+      {% for issue in feature_issues %}
+      <li>{{ issue.summary }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  {% if not high_issues and not medium_issues and not low_issues and not feature_issues %}
+  <div class="section low">
+    <div class="no-data">no issues found for this version</div>
+  </div>
+  {% endif %}
+
+  <div class="footer">
+    <div class="footer-left">
+      <div class="total-badge">{{ total_issues }} fix{{ 'es' if total_issues != 1 else '' }} deployed</div>
+      <div class="hashtags">{{ hashtags }}</div>
+    </div>
+    <div class="footer-right">{{ closing_text }}</div>
+  </div>
+
+  <div class="meta">
+    <span class="meta-logo">Schneider Electric &mdash; SE-DevTools</span>
+    <span>Generated {{ generated_date }} &mdash; {{ version.project_key }} Release Management</span>
+  </div>
+
+</div>
+</body>
+</html>

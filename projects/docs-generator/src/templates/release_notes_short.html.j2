@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ version.project_key }} {{ release_type }} - {{ version.name }}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Segoe UI, Arial, sans-serif;
+    font-size: 14px;
+    background: #f2f2f2;
+    color: #1a1a1a;
+    padding: 32px 16px;
+  }
+  .card {
+    max-width: 760px;
+    margin: 0 auto;
+    background: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+    overflow: hidden;
+    border-top: 5px solid {{ branding.primary_color }};
+  }
+
+  /* ---- HEADER (SE green gradient, no black) ---- */
+  .header {
+    background: linear-gradient(135deg, {{ branding.primary_color }} 0%, {{ branding.dark_color }} 100%);
+    color: #ffffff;
+    padding: 28px 32px 24px;
+    position: relative;
+  }
+  .header .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.45);
+    color: #ffffff;
+    border-radius: 2px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .header .badge::before {
+    content: "✓";
+    font-weight: 900;
+    font-size: 12px;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 6px;
+    letter-spacing: -0.3px;
+  }
+  .header .subtitle {
+    font-size: 13px;
+    color: rgba(255,255,255,0.80);
+  }
+  .header .subtitle strong { color: #ffffff; }
+
+  /* ---- SE mark (white circle, top right) ---- */
+  .se-mark {
+    position: absolute;
+    top: 24px; right: 32px;
+    width: 44px; height: 44px;
+    background: rgba(255,255,255,0.25);
+    border: 2px solid rgba(255,255,255,0.55);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 900; color: #ffffff;
+    letter-spacing: -1px;
+  }
+
+  /* ---- INTRO ---- */
+  .intro {
+    padding: 20px 32px;
+    background: #f9fdf9;
+    border-bottom: 1px solid #e0f0e0;
+    font-size: 13.5px;
+    color: #444;
+    line-height: 1.65;
+    border-left: 4px solid {{ branding.primary_color }};
+  }
+
+  /* ---- SECTIONS ---- */
+  .section {
+    padding: 22px 32px;
+    border-bottom: 1px solid #eeeeee;
+  }
+  .section:last-of-type { border-bottom: none; }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  .priority-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .high   .priority-dot { background: #e74c3c; }
+  .medium .priority-dot { background: #f39c12; }
+  .low    .priority-dot { background: {{ branding.primary_color }}; }
+
+  .section-title h2 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #1a1a1a;
+  }
+  .section-title .count {
+    margin-left: auto;
+    background: #f0f0f0;
+    color: #666;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  ul { list-style: none; padding: 0; }
+  ul li {
+    position: relative;
+    padding: 9px 0 9px 20px;
+    border-bottom: 1px solid #f5f5f5;
+    line-height: 1.55;
+    font-size: 13.5px;
+    color: #333;
+  }
+  ul li:last-child { border-bottom: none; }
+  ul li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 17px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+  }
+  .high   ul li::before { background: #e74c3c; }
+  .medium ul li::before { background: #f39c12; }
+  .low    ul li::before { background: {{ branding.primary_color }}; }
+
+  /* ---- FOOTER (light, no black) ---- */
+  .footer {
+    background: #f5f5f5;
+    border-top: 1px solid #e0e0e0;
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .total-badge {
+    background: {{ branding.primary_color }};
+    color: #1a1a1a;
+    border-radius: 2px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+  .closing {
+    font-size: 12.5px;
+    color: #555555;
+    max-width: 420px;
+    line-height: 1.5;
+  }
+  .hashtags {
+    font-size: 12px;
+    color: {{ branding.dark_color }};
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  .meta {
+    font-size: 11px;
+    color: #999;
+    padding: 8px 32px;
+    text-align: right;
+    background: #f9f9f9;
+    border-top: 1px solid #eee;
+  }
+</style>
+</head>
+<body>
+<div class="card">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="se-mark">SE</div>
+    <div class="badge">Successfully Deployed</div>
+    <h1>{{ version.project_key }} {{ release_type }} &mdash; {{ version.name }}</h1>
+    <div class="subtitle">
+      Release Date: <strong>{{ version.release_date or 'TBD' }}</strong>
+      &nbsp;&bull;&nbsp;
+      Total Fixes: <strong>{{ total_issues }}</strong>
+    </div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="intro">{{ intro_text }}</div>
+
+  {# Macro: render one issue as a fix sentence (no JIRA key) #}
+  {% macro issue_li(issue) %}
+  {%- set defect = issue.issue_type | lower in ('bug', 'defect') -%}
+  <li>{% if defect %}Fixed an issue where {{ issue.summary[0] | lower }}{{ issue.summary[1:] }}.{% else %}{{ issue.summary }}{% endif %}</li>
+  {% endmacro %}
+
+  <!-- HIGH PRIORITY FIXES -->
+  {% if high_issues %}
+  <div class="section high">
+    <div class="section-title">
+      <div class="priority-dot"></div>
+      <h2>High Priority Fixes</h2>
+      <span class="count">{{ high_issues | length }} item{{ 's' if high_issues | length != 1 else '' }}</span>
+    </div>
+    <ul>
+      {% for issue in high_issues %}{{ issue_li(issue) }}{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- MEDIUM PRIORITY FIXES -->
+  {% if medium_issues %}
+  <div class="section medium">
+    <div class="section-title">
+      <div class="priority-dot"></div>
+      <h2>Medium Priority Fixes</h2>
+      <span class="count">{{ medium_issues | length }} item{{ 's' if medium_issues | length != 1 else '' }}</span>
+    </div>
+    <ul>
+      {% for issue in medium_issues %}{{ issue_li(issue) }}{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- LOW PRIORITY FIXES -->
+  {% if low_issues %}
+  <div class="section low">
+    <div class="section-title">
+      <div class="priority-dot"></div>
+      <h2>Low Priority Fixes</h2>
+      <span class="count">{{ low_issues | length }} item{{ 's' if low_issues | length != 1 else '' }}</span>
+    </div>
+    <ul>
+      {% for issue in low_issues %}{{ issue_li(issue) }}{% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- NEW FEATURES & ENHANCEMENTS -->
+  {% if feature_issues %}
+  <div class="section low">
+    <div class="section-title">
+      <div class="priority-dot" style="background:{{ branding.primary_color }};"></div>
+      <h2>New Features and Enhancements</h2>
+      <span class="count">{{ feature_issues | length }} item{{ 's' if feature_issues | length != 1 else '' }}</span>
+    </div>
+    <ul>
+      {% for issue in feature_issues %}
+      <li>{{ issue.summary }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div>
+      <div class="total-badge">&#10003; {{ total_issues }} fix{{ 'es' if total_issues != 1 else '' }} deployed</div>
+      <div class="hashtags">{{ hashtags }}</div>
+    </div>
+    <div class="closing">{{ closing_text }}</div>
+  </div>
+
+  <div class="meta">Generated {{ generated_date }} &mdash; {{ version.project_key }} Release Management</div>
+
+</div>
+</body>
+</html>

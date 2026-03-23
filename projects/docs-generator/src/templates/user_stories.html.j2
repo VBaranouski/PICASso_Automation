@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>User Stories — {{ page_title }} | {{ branding.company_name }}</title>
+  <style>
+    :root {
+      --se-green:   {{ branding.primary_color }};
+      --se-dark:    {{ branding.dark_color }};
+      --se-text:    {{ branding.text_color }};
+      --se-border:  {{ branding.border_color }};
+      --se-row-alt: {{ branding.row_alt_color }};
+      --se-hover:   {{ branding.hover_color }};
+      --se-font:    {{ branding.font_family }};
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--se-font);
+      background: #f4f6f8;
+      color: var(--se-text);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: linear-gradient(135deg, var(--se-green) 0%, var(--se-dark) 100%);
+      color: #ffffff;
+      padding: 30px 48px 26px;
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .logo { font-size: 20px; font-weight: 700; }
+    .logo span { opacity: 0.75; font-weight: 400; }
+    .doc-badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #ffffff;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+    .header-meta { font-size: 12px; opacity: 0.85; display: flex; gap: 20px; flex-wrap: wrap; }
+    .header-meta a { color: rgba(255,255,255,0.9); text-decoration: underline; }
+
+    /* ---- Summary bar ---- */
+    .summary-bar {
+      margin: 24px 48px 0;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .stat-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #ffffff;
+      border: 1px solid var(--se-border);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--se-dark);
+    }
+
+    /* ---- Figma preview panel ---- */
+    .figma-panel {
+      margin: 24px 48px 0;
+      background: #ffffff;
+      border: 1px solid var(--se-border);
+      border-left: 5px solid var(--se-green);
+      border-radius: 6px;
+      padding: 20px 24px;
+    }
+    .figma-panel-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--se-dark);
+      margin-bottom: 12px;
+    }
+    .figma-panel img {
+      max-width: 100%;
+      max-height: 400px;
+      border: 1px solid var(--se-border);
+      border-radius: 4px;
+      display: block;
+    }
+    .figma-panel a {
+      display: inline-block;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--se-dark);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .figma-panel a:hover { text-decoration: underline; }
+
+    /* ---- Stories container ---- */
+    .stories-container {
+      padding: 24px 48px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ---- Story card ---- */
+    .story-card {
+      background: #ffffff;
+      border: 1px solid var(--se-border);
+      border-left: 5px solid var(--se-green);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .story-card-header {
+      padding: 16px 24px 12px;
+      border-bottom: 1px solid var(--se-border);
+      background: var(--se-row-alt);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .story-number {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--se-dark);
+      opacity: 0.7;
+      white-space: nowrap;
+      margin-top: 3px;
+    }
+    .story-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--se-text);
+      flex: 1;
+      line-height: 1.4;
+    }
+    .story-type-badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      background: #E8F5E9;
+      color: #1B5E20;
+      border: 1px solid #C8E6C9;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .story-card-body { padding: 20px 24px; }
+
+    /* ---- User story statement ---- */
+    .story-statement {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--se-text);
+      margin-bottom: 20px;
+      padding: 14px 18px;
+      background: #f9fafb;
+      border-radius: 4px;
+      border: 1px solid var(--se-border);
+    }
+    .story-statement .role { font-weight: 700; color: var(--se-dark); }
+
+    /* ---- Acceptance Criteria ---- */
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--se-dark);
+      margin-bottom: 10px;
+    }
+    .ac-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 20px;
+    }
+    .ac-list li {
+      display: flex;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .ac-list li:last-child { border-bottom: none; }
+    .ac-num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      background: var(--se-green);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      margin-top: 1px;
+    }
+    .ac-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ---- Inline criterion screenshot ---- */
+    .criterion-screenshot {
+      margin-top: 8px;
+      border: 1px solid var(--se-border);
+      border-radius: 5px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+    .criterion-screenshot-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #888;
+      padding: 4px 10px;
+      background: #f0f0f0;
+      border-bottom: 1px solid var(--se-border);
+      letter-spacing: 0.4px;
+    }
+    .criterion-screenshot img {
+      display: block;
+      max-width: 100%;
+      max-height: 420px;
+      object-fit: contain;
+      padding: 8px;
+    }
+
+    /* ---- Story-level screenshot gallery ---- */
+    .story-screenshots {
+      margin-top: 4px;
+      margin-bottom: 4px;
+    }
+    .story-screenshots-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      color: var(--se-dark);
+      margin-bottom: 10px;
+    }
+    .screenshot-gallery {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .screenshot-thumb {
+      flex: 1 1 280px;
+      max-width: 480px;
+      border: 1px solid var(--se-border);
+      border-radius: 5px;
+      overflow: hidden;
+      background: #fafafa;
+    }
+    .screenshot-thumb-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #888;
+      padding: 4px 10px;
+      background: #f0f0f0;
+      border-bottom: 1px solid var(--se-border);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      letter-spacing: 0.4px;
+    }
+    .screenshot-thumb img {
+      display: block;
+      max-width: 100%;
+      max-height: 360px;
+      object-fit: contain;
+      padding: 8px;
+    }
+
+    /* ---- Story footer ---- */
+    .story-footer {
+      padding: 10px 24px;
+      background: #fafafa;
+      border-top: 1px solid var(--se-border);
+      font-size: 11px;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .story-footer strong { color: #666; }
+
+    /* ---- Questions / Concerns section ---- */
+    .questions-section {
+      margin: 0 48px 48px;
+    }
+    .questions-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .questions-section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--se-dark);
+    }
+    .questions-count-badge {
+      background: #FFF3E0;
+      border: 1px solid #FFB74D;
+      color: #E65100;
+      border-radius: 12px;
+      padding: 2px 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .question-card {
+      background: #ffffff;
+      border: 1px solid #FFB74D;
+      border-left: 5px solid #FF9800;
+      border-radius: 6px;
+      padding: 14px 20px;
+      margin-bottom: 10px;
+    }
+    .question-card:last-child { margin-bottom: 0; }
+    .question-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #BF360C;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .question-title::before {
+      content: "!";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      background: #FF9800;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .question-detail {
+      font-size: 13px;
+      color: var(--se-text);
+      line-height: 1.65;
+      padding-left: 26px;
+    }
+
+    /* ---- Footer ---- */
+    .footer {
+      padding: 18px 48px;
+      background: #f0f0f0;
+      border-top: 1px solid var(--se-border);
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">{{ branding.company_name }} <span>| SE-DevTools</span></div>
+      <div class="doc-badge">User Stories</div>
+    </div>
+    <h1>{{ page_title }}</h1>
+    <div class="header-meta">
+      {% if epic_key %}
+      <span>Epic: <strong>{{ epic_key }}</strong></span>
+      {% endif %}
+      <span>Source: <a href="{{ confluence_url }}" target="_blank">Confluence Specification</a></span>
+      {% if figma_url %}
+      <span>Design: <a href="{{ figma_url }}" target="_blank">Figma Mockup</a></span>
+      {% endif %}
+      <span>Generated: {{ generated_date }}</span>
+    </div>
+  </div>
+
+  <!-- Summary bar -->
+  <div class="summary-bar">
+    <div class="stat-chip">{{ stories | length }} User Stories</div>
+    {% if questions %}
+    <div class="stat-chip" style="border-color:#FFB74D;color:#E65100;">{{ questions | length }} Open Questions</div>
+    {% endif %}
+    {% if epic_key %}
+    <div class="stat-chip">Epic: {{ epic_key }}</div>
+    {% endif %}
+  </div>
+
+  {% if figma_screenshot_data_url %}
+  <!-- Figma Design Preview -->
+  <div class="figma-panel" style="margin-top:20px;">
+    <div class="figma-panel-title">Figma Design Reference</div>
+    <img src="{{ figma_screenshot_data_url }}" alt="Figma design mockup" />
+    {% if figma_url %}
+    <a href="{{ figma_url }}" target="_blank">Open in Figma →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- User Stories -->
+  <div class="stories-container">
+
+    {% for story in stories %}
+    {# Resolve story fields — works for both dict and object #}
+    {% set s_title = story.title if story.title is defined else story['title'] %}
+    {% set s_as_a = story.as_a if story.as_a is defined else story['as_a'] %}
+    {% set s_i_want = story.i_want if story.i_want is defined else story['i_want'] %}
+    {% set s_so_that = story.so_that if story.so_that is defined else story['so_that'] %}
+    {% set s_criteria = story.acceptance_criteria if story.acceptance_criteria is defined else story['acceptance_criteria'] %}
+    {% set s_source = story.source_requirement if story.source_requirement is defined else story['source_requirement'] %}
+    {% set s_screenshots = story.screenshots if story.screenshots is defined else story.get('screenshots', []) if story is mapping else [] %}
+
+    <div class="story-card">
+
+      <!-- Card Header -->
+      <div class="story-card-header">
+        <span class="story-number">US-{{ "%03d" | format(loop.index) }}</span>
+        <span class="story-title">{{ s_title }}</span>
+        <span class="story-type-badge">Story</span>
+      </div>
+
+      <!-- Card Body -->
+      <div class="story-card-body">
+
+        <!-- User Story Statement -->
+        <div class="story-statement">
+          As a <span class="role">{{ s_as_a }}</span>,
+          I want <span class="role">{{ s_i_want }}</span>,
+          so that <span class="role">{{ s_so_that }}</span>.
+        </div>
+
+        <!-- Acceptance Criteria -->
+        {% if s_criteria %}
+        <div class="section-label">Acceptance Criteria</div>
+        <ul class="ac-list">
+          {% for criterion in s_criteria %}
+          <li>
+            <span class="ac-num">{{ loop.index }}</span>
+            <div class="ac-content">
+              {% if criterion is mapping %}
+                {# Dict criterion: {text, screenshot} #}
+                <span>{{ criterion.text }}</span>
+                {% if criterion.screenshot and criterion.screenshot in screenshot_lookup %}
+                <div class="criterion-screenshot">
+                  <div class="criterion-screenshot-label">{{ criterion.screenshot }}</div>
+                  <img src="{{ screenshot_lookup[criterion.screenshot] }}" alt="{{ criterion.screenshot }}" />
+                </div>
+                {% endif %}
+              {% else %}
+                {# Plain string criterion #}
+                <span>{{ criterion }}</span>
+              {% endif %}
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+
+        <!-- Story-level screenshot gallery -->
+        {% if s_screenshots %}
+        {% set visible_shots = [] %}
+        {% for fname in s_screenshots %}
+          {% if fname in screenshot_lookup %}
+            {% set _ = visible_shots.append(fname) %}
+          {% endif %}
+        {% endfor %}
+        {% if visible_shots %}
+        <div class="story-screenshots">
+          <div class="story-screenshots-label">Design References ({{ visible_shots | length }})</div>
+          <div class="screenshot-gallery">
+            {% for fname in visible_shots %}
+            <div class="screenshot-thumb">
+              <div class="screenshot-thumb-label">{{ fname }}</div>
+              <img src="{{ screenshot_lookup[fname] }}" alt="{{ fname }}" />
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+      </div>
+
+      <!-- Card Footer: traceability -->
+      {% if s_source %}
+      <div class="story-footer">
+        <strong>Source:</strong> {{ s_source }}
+      </div>
+      {% endif %}
+
+    </div>
+    {% endfor %}
+
+  </div>
+
+  <!-- Questions, Concerns & Unclear Points -->
+  {% if questions %}
+  <div class="questions-section">
+    <div class="questions-section-header">
+      <div class="questions-section-title">Questions, Concerns &amp; Unclear Points</div>
+      <div class="questions-count-badge">{{ questions | length }} items</div>
+    </div>
+    {% for q in questions %}
+    <div class="question-card">
+      {% if q is mapping %}
+        <div class="question-title">{{ q.title }}</div>
+        <div class="question-detail">{{ q.detail }}</div>
+      {% else %}
+        <div class="question-detail">{{ q }}</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>{{ branding.company_name }} — User Story Backlog — Confidential</span>
+    <span>Generated by SE-DevTools on {{ generated_date }}</span>
+  </div>
+
+</body>
+</html>

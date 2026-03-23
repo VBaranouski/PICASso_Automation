@@ -41,17 +41,17 @@ input/release_notes_detailed/*.md
 input/release_notes_detailed/*.json
 
 # Environment & secrets
-packages/.env
-packages/.env.*
-packages/pw-autotest/config/.env.*
-packages/docs-generator/src/config/.env.*
+projects/.env
+projects/.env.*
+projects/pw-autotest/config/.env.*
+projects/docs-generator/src/config/.env.*
 *.env.local
-packages/pw-autotest/config/users/qa.users.ts
-packages/pw-autotest/config/users/dev.users.ts
-packages/pw-autotest/config/users/ppr.users.ts
-packages/docs-generator/src/config/users/qa.users.ts
-packages/docs-generator/src/config/users/dev.users.ts
-packages/docs-generator/src/config/users/ppr.users.ts
+projects/pw-autotest/config/users/qa.users.ts
+projects/pw-autotest/config/users/dev.users.ts
+projects/pw-autotest/config/users/ppr.users.ts
+projects/docs-generator/src/config/users/qa.users.ts
+projects/docs-generator/src/config/users/dev.users.ts
+projects/docs-generator/src/config/users/ppr.users.ts
 
 # IDE & OS
 .DS_Store

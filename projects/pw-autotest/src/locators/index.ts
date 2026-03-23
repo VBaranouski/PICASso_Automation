@@ -1,0 +1,8 @@
+export { authLocators } from './auth.locators';
+export type { AuthLocators } from './auth.locators';
+
+export { landingLocators } from './landing.locators';
+export type { LandingLocators } from './landing.locators';
+
+export { newProductLocators } from './new-product.locators';
+export type { NewProductLocators } from './new-product.locators';

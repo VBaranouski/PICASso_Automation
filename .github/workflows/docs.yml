@@ -4,16 +4,16 @@ on:
   push:
     branches: [main, develop]
     paths:
-      - 'packages/docs-generator/**'
+      - 'projects/docs-generator/**'
   pull_request:
     branches: [main]
     paths:
-      - 'packages/docs-generator/**'
+      - 'projects/docs-generator/**'
   workflow_dispatch:
 
 defaults:
   run:
-    working-directory: packages/docs-generator
+    working-directory: projects/docs-generator
 
 jobs:
   lint-and-validate:
@@ -25,7 +25,7 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-          cache-dependency-path: packages/docs-generator/requirements.txt
+          cache-dependency-path: projects/docs-generator/requirements.txt
 
       - name: Install dependencies
         run: pip install -r requirements.txt

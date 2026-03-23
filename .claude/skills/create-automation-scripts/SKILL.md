@@ -10,8 +10,8 @@ AI-powered test generation that reads test scenarios, explores the real applicat
 **Core principle:** Never guess locators — always explore the real DOM via MCP snapshots first.
 
 > **Prerequisite:** Before generating any code, read these convention files:
-> - `.claude/conventions/typescript-conventions.md`
-> - `.claude/conventions/testing-patterns.md`
+> - `.claude/rules/typescript-conventions.md`
+> - `.claude/rules/testing-patterns.md`
 
 ## When to Use
 

@@ -69,7 +69,7 @@ Write `output/release_notes_short/release_data_short_<version>_<date>.json`:
 ## Step 3 — Render HTML
 
 ```bash
-cd packages/docs-generator
+cd projects/docs-generator
 python3 main.py release-notes-short \
   --release-data output/release_notes_short/release_data_short_<version>_<date>.json \
   [--style hacker] \

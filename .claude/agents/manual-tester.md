@@ -77,7 +77,7 @@ The `/create-test-cases` skill handles this automatically in Step 2b. If no Figm
 Before creating any test documentation, load the methodology:
 
 ```text
-Read file: .claude/conventions/manual-testing-methodology.md
+Read file: .claude/rules/manual-testing-methodology.md
 ```
 
 Follow every rule in that methodology. Do not deviate.

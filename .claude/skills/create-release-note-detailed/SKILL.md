@@ -56,7 +56,7 @@ If `--spec` was provided, use the Read tool to load it → `spec_content`.
 ### 2d — Read HTML template
 
 ```bash
-Read packages/docs-generator/src/templates/release_notes_detailed.html.j2
+Read projects/docs-generator/src/templates/release_notes_detailed.html.j2
 ```
 
 Store as `template_content` (used to understand required sections for Step 3).
@@ -105,7 +105,7 @@ Write the generated HTML body to `output/release_notes_detailed/html_body_<versi
 ## Step 4 — Render full HTML
 
 ```bash
-cd packages/docs-generator
+cd projects/docs-generator
 python3 main.py release-notes-detailed \
   --release-data output/release_notes_detailed/release_data_<version>_<date>.json \
   --html-body output/release_notes_detailed/html_body_<version>_<date>.html \
