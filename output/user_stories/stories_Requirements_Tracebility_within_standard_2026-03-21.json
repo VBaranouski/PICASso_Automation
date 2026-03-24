@@ -1,0 +1,158 @@
+{
+  "stories": [
+    {
+      "title": "View and manage Requirements Mapping pairs in Backoffice",
+      "as_a": "Backoffice user with access to PICASso content management",
+      "i_want": "to view, add, edit, and activate/deactivate requirements mapping pairs between standards on a dedicated page",
+      "so_that": "I can maintain accurate traceability links between requirements belonging to different standards or policies",
+      "acceptance_criteria": [
+        "A new page 'Requirements Mapping' is accessible under the 'Product Requirements' section in Backoffice. The page contains: a Search field (filtering by Requirement Code), a Standard dropdown (all standards available in the system), a Linked Standard dropdown (all standards available in the system), a Show Inactive toggle (unchecked by default — shows only active mappings; when checked — shows both active and inactive), a table with mapping pairs, and a button 'Add Requirements Mapping Pair'.",
+        "The table on the Requirements Mapping page has columns: Standard (name of the standard/policy), Requirement (clickable code(s) of the requirement/sub-requirement — clicking redirects to the Edit Requirement/Sub-requirement page), Linked Standard (name of the linked standard/policy), Linked Requirement (clickable code(s) — same redirect behavior), Is Active (green checkmark when active, grey checkmark when inactive), and Actions (three-dots menu with options: Edit, Activate or Deactivate depending on current status).",
+        "Clicking 'Add Requirements Mapping Pair' opens the 'New Requirement Mapping Pair' page. Clicking 'Edit' from the Actions menu opens the 'Edit Requirement Mapping Pair' page. Both pages have identical fields: Standard (dropdown, single-select, mandatory — all standards in the system), Requirement (dropdown, multi-select, mandatory — activated only after a Standard is selected, showing requirements/sub-requirements related to the selected standard only), Linked Standard (dropdown with free-text input, mandatory — allows selecting an existing standard or typing a new one), Linked Requirement (dropdown, multi-select, mandatory — activated after Linked Standard is selected, showing requirements for that linked standard only), Is Active (checkbox — checked by default on New, indicating active).",
+        "Clicking 'Save' on the New or Edit page validates all mandatory fields. If any mandatory field is empty: error message 'Please fill in the required fields.' at the top of the screen, and each empty mandatory field is highlighted red with the message 'Required Field!'. If all fields are filled: success message 'Requirement mapping pair is successfully added.' or 'Requirement mapping pair is successfully updated.' at the top, and the user is redirected to the Requirements Mapping page. The new or updated mapping pair is applied to all versions of the requirements selected.",
+        "If requirements were removed during an Edit operation, they are also removed from all versions of those requirements across the system.",
+        "Clicking 'Back' on the New or Edit page discards all changes and returns to the Requirements Mapping page without saving.",
+        "Selecting 'Deactivate' from the Actions menu for an active mapping pair shows a confirmation pop-up: 'Are you sure you want to deactivate?' with Cancel and Ok buttons. Cancel closes the pop-up with no change. Ok: closes the pop-up, shows success message 'Requirements pair <Requirement> to <Linked requirement> is successfully deactivated.', updates status to Inactive, and the mapping pair is no longer considered for the traceability view in releases.",
+        "Selecting 'Activate' from the Actions menu for an inactive mapping pair shows a confirmation pop-up: 'Are you sure you want to activate?' with Cancel and Ok buttons. Cancel closes the pop-up with no change. Ok: closes the pop-up, shows success message 'Requirements pair <Requirement> to <Linked requirement> is successfully activated.', updates status to Active, and the mapping pair is again considered for the traceability view in releases."
+      ],
+      "screenshots": [],
+      "source_requirement": "Backoffice — Requirements Mapping page: View list / Add/edit requirements mapping pair / Activating/deactivating requirements mapping pair"
+    },
+    {
+      "title": "Import and export requirements mapping pairs via file",
+      "as_a": "Backoffice user managing requirements traceability at scale",
+      "i_want": "to download the current list of mapping pairs, download a template, fill it in, and upload it to create or update mappings in bulk",
+      "so_that": "I can manage large numbers of requirements traceability links efficiently without using the UI form for each pair",
+      "acceptance_criteria": [
+        "On the Requirements Mapping page, clicking 'Download Requirements Mapping' exports a file with all current mapping pairs with columns: Standard (standard name), Requirement (comma-separated requirement/sub-requirement codes), Linked Standard (standard name), Linked Requirement (comma-separated requirement/sub-requirement codes), Is Active (True when active, False when inactive).",
+        "Clicking 'Template Download' exports an empty file with the same column structure: Standard (string), Requirement (string, several values separated by comma), Linked Standard (string), Linked Requirement (string, several values separated by comma), Is Active (boolean True/False; empty value treated as True).",
+        "Clicking 'Select File' allows the user to upload a completed template file. Upon upload, the following validations are checked in order and all errors are reported together with their line numbers:",
+        "Validation rules applied during upload: wrong file format → 'Please upload valid file type (.xlsx)'; incorrect column structure → 'Columns structure is incorrect, please use the columns from the template file.'; Standard empty → 'Standard column can\\'t be empty — Lines <line number>'; Standard not found in system → 'Standard does not exist in the system — Lines <line number>'; Requirement empty → 'Requirement column can\\'t be empty — Lines <line number>'; Requirement code not found or separated by wrong symbol → 'Requirement does not exist in the system. Several codes can be separated only by comma. — Lines <line number>'; Linked Standard empty → 'Linked standard column can\\'t be empty — Lines <line number>'; Linked Standard not found → 'Linked standard does not exist in the system — Lines <line number>'; Linked Requirement empty → 'Linked requirement column\\'t be empty — Lines <line number>'; Linked Requirement code not found or wrong separator → 'Linked requirement does not exist in the system. Several codes can be separated only by comma. — Lines <line number>'; Is Active invalid value (not True, False, or empty) → 'Is Active status contains unsupported value (can be only \"True\" or \"False\") — Lines <line number>'.",
+        "When all validations pass, the system shows the success message 'File was uploaded successfully.' New and updated mapping pairs are immediately applied to all versions of the affected requirements. If requirements were removed from existing pairs during the upload, they are removed from all versions of those requirements.",
+        "An empty value in the Is Active column in the uploaded file is treated as True (active)."
+      ],
+      "screenshots": [],
+      "source_requirement": "Backoffice — Updating requirements mapping with the file upload"
+    },
+    {
+      "title": "Manage Standards in Backoffice",
+      "as_a": "Backoffice user with access to PICASso content management",
+      "i_want": "to view, create, edit, and activate/deactivate Standards that are used to categorise requirements sources and traceability mappings",
+      "so_that": "the Standards list stays accurate and all active standards are available for selection across requirements and sources",
+      "acceptance_criteria": [
+        "A new page 'Standards' is accessible under the 'Product Requirements' section in Backoffice. The page contains: a Search field (filtering by Standard Name or Code), a Show Inactive toggle (unchecked by default — only active standards shown; when checked — both active and inactive shown), a table, and an 'Add Standard' button.",
+        "The Standards table has columns: Code (unique code of the standard), Standard (clickable name of the standard — clicking opens the Edit Standard page), Is Active (green checkmark when active, grey checkmark when inactive), and Actions (three-dots menu with options: Edit, Activate or Deactivate depending on current status).",
+        "Clicking 'Add Standard' opens the 'New Standard' page. Clicking the standard name or 'Edit' from the Actions menu opens the 'Edit Standard' page. Both pages have: Code (string, mandatory — unique identifier), Standard (string, mandatory — display name shown in configurations), Is Active (checkbox — checked by default on New).",
+        "Clicking 'Save' validates the following: if the specified Code is already used by another standard → error 'Specified Code is already used for other standard. Please check and update the value.' at the top of the screen and the Code field highlighted red with 'Code should be unique.'; if any mandatory field is empty → error 'Please fill in the required fields.' with the empty field highlighted red and 'Required Field!'. If all validations pass → success message 'Standard is successfully added.' or 'Standard is successfully updated.', user is redirected to the Standards page, and the corresponding standard is updated on the Sources page immediately.",
+        "Clicking 'Back' on the New or Edit Standard page discards all changes without saving.",
+        "Selecting 'Deactivate' from the Actions menu for an active standard shows: confirmation pop-up 'Are you sure you want to deactivate?' with Cancel and Ok. Ok: success message 'Standard <Standard name> is successfully deactivated.', status → Inactive, and the standard can no longer be selected for Sources when they are edited.",
+        "Selecting 'Activate' from the Actions menu for an inactive standard shows: confirmation pop-up 'Are you sure you want to activate?' with Cancel and Ok. Ok: success message 'Standard <Standard name> is successfully activated.', status → Active, and the standard becomes selectable for Sources again."
+      ],
+      "screenshots": [],
+      "source_requirement": "Backoffice — 'Standard' page for Product Requirements: View list / Add/edit standard / Activating/deactivating standard"
+    },
+    {
+      "title": "Add Standard field to Requirements Sources and remove obsolete fields",
+      "as_a": "Backoffice user managing requirements sources",
+      "i_want": "to associate a standard with each source and to no longer see the obsolete 'Is Security Level' and 'Is Regional' fields",
+      "so_that": "each source is correctly tagged to the standard it belongs to, enabling accurate traceability views in releases",
+      "acceptance_criteria": [
+        "The 'Source List' page (Backoffice → Product Requirements → Source) gains a new column 'Standard' showing the name of the standard associated with each source. The columns 'Is Security Level' and 'Is Regional' are removed from this page.",
+        "The 'New Source' and 'Edit Source' pages gain a new optional dropdown field 'Standard' that allows the user to select from all active standards in the PICASso system (those with Active status in the Standards list). The fields 'Is Security Level' and 'Is Regional' are removed from these pages.",
+        "When a standard is deactivated from the Standards page, it is no longer selectable in the 'Standard' dropdown on New/Edit Source pages, but existing sources that already have that standard assigned continue to display it.",
+        "The 'Standard' field is optional — sources can be saved without selecting a standard."
+      ],
+      "screenshots": [],
+      "source_requirement": "Backoffice — Add 'Standard' field for 'Requirements Sources' page"
+    },
+    {
+      "title": "Configure default requirements traceability view on Product Details",
+      "as_a": "product owner or release administrator configuring a product in PICASso",
+      "i_want": "to set a default requirements traceability view for a product so that all its releases open in that perspective by default",
+      "so_that": "release teams working on this product always start from the most relevant standards-mapping view without having to manually set it each time",
+      "acceptance_criteria": [
+        {"text": "A new field 'Default Requirements traceability view' is added to the 'Product Configuration' sub-tab on the Product Details page. It is a single-select dropdown field.", "screenshot": "image-2026-3-13_21-12-46.png"},
+        "The dropdown options are: 'All requirements' (the default option for all products including existing ones), plus all currently active standards mapping pair combinations configured in the Backoffice Requirements Mapping page. Each combination is shown as '<Standard A> → <Standard B>' for every unique directed pair.",
+        "Example: if the system has mapping pairs CTI/CTS ↔ IEC62443 and IEC62443 ↔ OWASP and CTI/CTS ↔ OWASP, the dropdown options include: All Requirements, CTI/CTS → IEC62443, IEC62443 → CTI/CTS, IEC62443 → OWASP, OWASP → IEC62443, CTI/CTS → OWASP, OWASP → CTI/CTS.",
+        "The value selected for 'Default Requirements traceability view' on the product determines the pre-selected Traceability view shown on the Product Requirements page in all releases of this product.",
+        {"text": "All existing products have this field pre-populated with 'All requirements' after the feature is deployed. New products also default to 'All requirements' unless the administrator explicitly changes it.", "screenshot": "image-2026-3-13_21-12-20.png"},
+        "The dropdown is updated dynamically: when a new mapping pair is added or activated in Backoffice, it appears in this field's options; when a mapping pair is deactivated, it is removed from the dropdown options (but existing products that had it selected retain their saved value until manually changed)."
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — Default view of requirements traceability on Product Details"
+    },
+    {
+      "title": "Replace action buttons with icons in the Product and Process Requirements page toolbars",
+      "as_a": "product release manager working on the Product Requirements or Process Requirements page in a release",
+      "i_want": "the current action buttons and toggles to be replaced by a compact icon toolbar in the upper-right corner above the table header",
+      "so_that": "the page is less cluttered and I can access settings, import/export, diagrams, and Jira sync from a consistent location",
+      "acceptance_criteria": [
+        {"text": "The Product Requirements and Process Requirements pages in a release display a set of icon buttons in the upper-right corner above the table header, replacing the previous button/toggle layout. The icons shown are: Refresh Jira/Jama icon, Diagrams icon, Settings icon, and Import/Export icon.", "screenshot": "image-2026-3-13_21-25-33.png"},
+        {"text": "The Refresh Jira (or Jama) icon is shown only when requirements have been submitted to Jira or Jama. It displays a 'Last update from Jira <date and time>' or 'Last update from Jama <date and time>' message next to it. If the last update failed, an error icon is shown with a hover message describing the error.", "screenshot": "image-2026-3-13_22-17-7.png"},
+        "Clicking the Diagrams icon opens the 'Requirement Status Summary' pop-up.",
+        {"text": "Clicking the Settings icon opens a Settings pop-up with toggles. For Process Requirements: 'Show Sub-Requirements' (only shown if sub-requirements exist on the page — expands all sub-requirements) and 'Show All Requirements' (shows all requirements, including those not scoped). For Product Requirements: same two toggles plus a 'Traceability view' dropdown allowing selection of the standards mapping perspective.", "screenshot": "image-2026-3-13_22-8-41.png"},
+        {"text": "Clicking the Import/Export icon shows two options: 'Import XLSX' (only visible during Scoping, Scope Approval, and Manage stages — allows importing a file to update requirement statuses or create custom requirements; import progress and a link to the error pop-up if applicable are shown below the icon) and 'Export XLSX' (always visible — clicking directly starts the export without a menu when the user only has view privilege or is on a stage where status cannot be edited).", "screenshot": "image-2026-3-13_22-13-42.png"}
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — Updating buttons to icons on Product Requirements and Process Requirements pages"
+    },
+    {
+      "title": "Select and apply requirements traceability view in a release with Traceability focus filter",
+      "as_a": "product release manager viewing the Product Requirements page in a release",
+      "i_want": "to select a standards mapping pair as a Traceability view and see requirements displayed in a hierarchical linked layout with a focus filter",
+      "so_that": "I can analyse compliance coverage and gaps between two standards directly from the release requirements list",
+      "acceptance_criteria": [
+        {"text": "In the Settings pop-up on the Product Requirements page, the 'Traceability view' dropdown lists all active standards mapping pairs available in the system. Selecting 'All requirements' (default) shows the standard flat list. Selecting a mapping pair (e.g., 'IEC62443 → CTI/CTS') applies the traceability view.", "screenshot": "image-2026-3-13_22-8-41.png"},
+        {"text": "When a mapping pair is selected, the requirements list is refreshed to show requirements from the 1st standard in the selected pair, each with their linked requirements from the 2nd standard nested beneath in the following hierarchy: Parent requirement from 1st Standard → Linked requirements from 2nd Standard (marked in blue with a chain icon) → Sub-requirement from 1st Standard → Linked requirements from 2nd Standard for that sub-requirement (marked in blue with a chain icon).", "screenshot": "image-2026-3-16_23-40-40.png"},
+        "The direction of the pair matters: selecting 'IEC62443 → CTI/CTS' means IEC62443 is the 1st standard (primary list) and CTI/CTS requirements are shown as linked. Selecting 'CTI/CTS → IEC62443' reverses the roles.",
+        "The category of the linked requirement is ignored for display purposes: if a linked requirement belongs to a different category than its mapped primary requirement, it is still shown under its mapped primary requirement.",
+        "If a linked requirement from the 2nd standard is not scoped for the release, it is shown only when the 'Show All Requirements' toggle is active or when it has been manually added to the release.",
+        "All requirements not related to the selected mapping pair are still shown in the list, sorted by their Backoffice order numbers. The Traceability view is a display mode, not a filter — it does not hide unrelated requirements.",
+        "When a Traceability view (other than All requirements) is selected, a 'Traceability focus' filter appears with three options: 'All requirements' (default — both mapped and unmapped requirements shown), 'Only gaps (not linked)' (only requirements not linked under the selected mapping pair shown), 'Only linked' (only requirements that are mapped under the selected mapping pair shown).",
+        "The selected Traceability view and Traceability focus filter settings persist within the session for that release's Product Requirements page."
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — Selecting/changing Requirements Traceability view in Release"
+    },
+    {
+      "title": "Filter Product Requirements by Standard",
+      "as_a": "product release manager viewing the Product Requirements page",
+      "i_want": "to filter the requirements list to show only requirements connected to a specific standard",
+      "so_that": "I can quickly review the full set of requirements relevant to a particular regulatory framework without scrolling through all requirements",
+      "acceptance_criteria": [
+        "A new filter 'Standard' is shown on the 'Product Requirements' page in a release. It is a dropdown field listing all active standards available in the PICASso system (active in the Standards list of values).",
+        "Selecting a standard from the 'Standard' filter updates the requirements list to show only requirements whose source is connected to the selected standard.",
+        "The 'Standard' filter works in combination with other existing filters on the page (Search, Product Category, Sources, Status). All active filters are applied simultaneously.",
+        "Selecting no standard (default/empty selection) shows all requirements regardless of their associated standard."
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — Adding 'Standard' filter for the 'Product Requirements' page"
+    }
+  ],
+  "questions": [
+    {
+      "title": "Does the Requirements Mapping page apply to Process Requirements as well?",
+      "detail": "The spec explicitly notes 'Do we need it for Process Requirements?' next to the Requirements Mapping page description. It is currently defined only for Product Requirements. Please confirm whether Process Requirements should also have a Requirements Mapping page or mapping column, or whether this is intentionally out of scope."
+    },
+    {
+      "title": "Requirements Mapping tab on Edit Requirements page — is this in scope?",
+      "detail": "The spec includes a section for a new 'Requirements Mapping' tab on the 'Edit Product Requirement/Sub-requirement' page, but explicitly marks it as 'In question if we need it'. No user story has been created for this feature. Please confirm if this tab is required for the current iteration, and if yes, which stories it should be part of."
+    },
+    {
+      "title": "Mapped requirements display for Requirements Evaluation — is this in scope?",
+      "detail": "The spec includes a note 'Mapped requirements display for Requirements Evaluation — Do we need this view here?' at the end of the Frontoffice section. No requirement details are provided. Please clarify whether this is a separate feature that needs to be scoped, or if it is deferred."
+    },
+    {
+      "title": "Traceability view for process requirements — is it applicable?",
+      "detail": "The Traceability view feature and the Standard filter are described for the Product Requirements page. It is unclear whether a similar Traceability view or Standard filter should be added to the Process Requirements page in a release. Please clarify the expected behavior for Process Requirements."
+    },
+    {
+      "title": "Standard filter: filtering by 'Source connected to standard' — definition needed",
+      "detail": "The Standard filter description says 'show only requirements connected to selected standard'. It is not fully clear whether 'connected' means: (a) the requirement's Source has the selected Standard assigned, (b) the requirement is part of a Requirements Mapping pair for that standard, or (c) both. Please confirm the exact filtering logic to implement."
+    },
+    {
+      "title": "Traceability view options on Product Details dropdown when mapping pairs change",
+      "detail": "The 'Default Requirements traceability view' dropdown on Product Details must list all active mapping pair combinations. It is unclear whether deactivating a mapping pair that a product had selected as its default should: (a) revert the product to 'All requirements', (b) keep the saved value and show it grayed out, or (c) only remove it from new selections. Please clarify the behavior."
+    }
+  ]
+}

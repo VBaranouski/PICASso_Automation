@@ -1,0 +1,251 @@
+{
+  "stories": [
+    {
+      "title": "Add Replacing and Is Replaced By fields to requirements",
+      "as_a": "Backoffice content manager with access to PICASso requirements management",
+      "i_want": "to specify replacement relationships between requirements when creating or editing them using dedicated multi-select fields",
+      "so_that": "the system automatically manages the lifecycle of superseded requirements and maintains a traceable replacement chain across all releases",
+      "acceptance_criteria": [
+        "The 'Add Requirement' and 'Edit Requirement' screens include a new multi-select field 'Replacing'. Clicking the field opens a searchable list of all requirements and sub-requirements in the system with status Active or Inactive. Selecting an entry adds it to the field; the user can continue selecting additional requirements.",
+        "The 'Edit Requirement' screen includes a new multi-select field 'Is Replaced By' with the same searchable list of all Active and Inactive requirements/sub-requirements. This field is only available when editing an existing requirement — it does not appear on the 'Add Requirement' screen.",
+        "When a requirement is saved with a non-empty 'Replacing' field, the version-changing pop-up is shown allowing the user to select when the change is pushed to releases. This version is always classified as 'Major' regardless of whether any other fields were also changed.",
+        "Upon confirming save of a requirement with 'Replacing' filled: for each requirement listed in 'Replacing', the system creates a new version of that requirement with its status set to 'Inactive' and the current (replacing) requirement added to its 'Is Replaced By' field. If 'Is Replaced By' already contains values, the current requirement is appended to the existing list rather than overwriting it.",
+        "When a requirement is saved with a non-empty 'Is Replaced By' field, the version-changing pop-up is shown (Major change), the requirement's own status is set to 'Inactive', and for each requirement listed in 'Is Replaced By' a new version is created with the current requirement added to their 'Replacing' field (appended if not empty).",
+        "A requirement that has any value in its 'Is Replaced By' field is locked from further editing until all replacement links are removed. Any attempt to edit such a requirement must be blocked by the system.",
+        "Versions created for both the replacing requirement and all replaced requirements are classified as 'Major' changes in release version history. If the same save operation also changes minor fields, the version remains 'Major'.",
+        "The 'Is Replaced By' field on any requirement reflects the cumulative list of all requirements added via the 'Replacing' field on any other requirement pointing to it — the system never overwrites, only appends."
+      ],
+      "screenshots": [],
+      "source_requirement": "Backoffice — Adding replaced requirements data for requirements from UI: 'Add Requirement' and 'Edit Requirement' screens with fields 'Replacing' and 'Is Replaced By'"
+    },
+    {
+      "title": "Apply correct version classification when updating requirements that already have replacement links",
+      "as_a": "Backoffice content manager updating an existing requirement that already has a 'Replacing' field filled",
+      "i_want": "the system to correctly classify the version change and propagate it to all related requirements in the replacement chain",
+      "so_that": "release managers always see an accurate picture of the latest requirement state without stale replacement data",
+      "acceptance_criteria": [
+        "When only 'Minor' fields are updated on a requirement with a non-empty 'Replacing' field and the 'Replacing' values are not changed: the change is classified as 'Minor', no version pop-up is shown on save, and this new Minor version is added to the last version of each requirement in the 'Replacing' field and shown in their 'Is Replaced By' field.",
+        "When at least one 'Major' field is updated on a requirement with a non-empty 'Replacing' field and the 'Replacing' values are not changed: the change is classified as 'Major', the version pop-up is shown, and this new Major version is added to the last version of each requirement in the 'Replacing' field, appearing in their 'Is Replaced By' field.",
+        "When a new requirement/sub-requirement is added to the 'Replacing' field of a requirement that already has other values there: the change is 'Major', the version pop-up is shown, the existing 'Is Replaced By' data on already-linked requirements is preserved, and a new version is created for the newly added requirement with status 'Inactive' and the current requirement appended to its 'Is Replaced By' field.",
+        "When an existing requirement is removed from the 'Replacing' field but at least one other requirement remains in that field: the change is 'Major', the version pop-up is shown, and a new version is created for the removed requirement with status 'Inactive' and all previous versions of the current requirement removed from its 'Is Replaced By' field.",
+        "When all requirements are removed from the 'Replacing' field: the change is 'Major', the version pop-up is shown, and for every previously listed requirement a new version is created with status 'Inactive' and all previous versions of the current requirement removed from their 'Is Replaced By' fields.",
+        "In all cases, if the same save operation also changes any minor fields, the overall version is still classified as 'Major'."
+      ],
+      "screenshots": [],
+      "source_requirement": "Backoffice — Updating requirements that were replacing other requirements"
+    },
+    {
+      "title": "Export and import requirements files with Replacing and Is Replaced By columns",
+      "as_a": "Backoffice content manager managing requirements lifecycle via bulk file operations",
+      "i_want": "to export requirements files that include replacement relationship data and to upload files containing 'Replacing' column values to create replacement links in bulk",
+      "so_that": "I can manage large-scale requirement replacements without editing requirements one by one",
+      "acceptance_criteria": [
+        "The exported Product Requirements file includes two new columns after 'Is Active' and before 'Add Change on Date': 'Replacing' (comma-separated list of requirement codes replaced by this requirement) and 'Is Replaced By' (comma-separated list of requirement codes that replace this requirement).",
+        "The exported Process Requirements file includes the same two new columns 'Replacing' and 'Is Replaced By' in the same relative position (after 'Is Active', before 'Add Change on Date').",
+        "The import template for Product Requirements includes a new optional string column 'Replacing' positioned after 'Is Active' and before 'Add Change on Date', documented as accepting multiple requirement codes separated by comma.",
+        "The import template for Process Requirements includes the same new optional 'Replacing' column with the same position and separator rules.",
+        "When an uploaded file contains a value in the 'Replacing' column that does not correspond to any requirement/sub-requirement registered in the system, or where multiple codes are separated by a symbol other than comma, the system returns the error: 'Row <row number> - Requirement specified for \"Replacing\" column does not exist in the system. Several codes can be separated only by comma.'",
+        "When all validations pass for a file with non-empty 'Replacing' values, the system creates a new version for each requirement listed in that column with: status updated to 'Inactive', and the uploading requirement appended to their 'Is Replaced By' field.",
+        "A requirement that already has a value in its 'Is Replaced By' field cannot be updated via file upload and the import is blocked with an appropriate error until the replacement is removed.",
+        "Versions created from the file import for both replacing and replaced requirements are classified as 'Major'. If the same file row also changes minor fields, the version remains 'Major'."
+      ],
+      "screenshots": [],
+      "source_requirement": "Backoffice — Adding replaced requirements data for requirements with the file upload"
+    },
+    {
+      "title": "Display contextual requirements version update warning banners in releases",
+      "as_a": "product release manager with a release in Creation & Scoping, Review & Confirm, or Manage stage",
+      "i_want": "to see an accurate and contextual warning banner when newer versions of requirements are available for my release",
+      "so_that": "I know immediately when I need to review updates and whether I also need to address new questionnaire questions",
+      "acceptance_criteria": [
+        "The system checks for newer versions of requirements scoped for (or potentially scopeable for) the release whenever the release is in Creation & Scoping, Review & Confirm, or Manage stage, and shows the banner only when at least one newer version exists.",
+        "For a release created from scratch or as a clone, in Review & Confirm or Manage stage, with no unanswered Questionnaire questions: banner reads 'New version of requirements is available. Please review update statuses if needed. Learn More' — 'Learn More' is a clickable link opening the Requirements Update pop-up.",
+        {"text": "For a release created from scratch or as a clone, in Review & Confirm or Manage stage, with unanswered Questionnaire questions: banner reads 'A new version of requirements is available. Please review updated Questionnaire and review Requirements Update' — 'Questionnaire' opens the Questionnaire tab in the same window; 'Requirements Update' opens the Requirements Update pop-up.", "screenshot": "image-2026-3-20_15-45-20.png"},
+        {"text": "For a release created as a clone, in Creation & Scoping stage, with no unanswered questions: banner reads 'Requirements were cloned from release \"<release name>\" and newer version of requirements is available. Please review and update statuses if needed. Learn More'.", "screenshot": "image-2026-3-13_21-50-17.png"},
+        {"text": "For a release in Review & Confirm or Manage stage with no unanswered questions (scratch or clone): banner reads 'Newer version of requirements is available. Please review and update statuses if needed. Review Updates' — 'Review Updates' opens the Requirements Update pop-up.", "screenshot": "image-2026-3-13_21-49-32.png"},
+        {"text": "For a cloned release in Creation & Scoping stage when new unanswered questionnaire questions exist: banner reads 'Requirements were cloned from release \"<release name>\" and a new version of requirements is available. Please review updated Questionnaire and Requirements Update' with both links clickable.", "screenshot": "image-2026-3-13_21-44-58.png"},
+        {"text": "For any release stage when new unanswered questionnaire questions exist (added after last questionnaire completion): banner reads 'A new version of requirements is available. Answer new questions in Questionnaire and review Requirements Update' with both 'Questionnaire' and 'Requirements Update' links clickable.", "screenshot": "image-2026-3-13_21-43-1.png"},
+        "The warning banner appears on both the Product Requirements and Process Requirements tabs simultaneously when the condition is met.",
+        {"text": "The Questionnaire tab displays its own dedicated warning 'New questions have been added as part of the latest requirements update' whenever unanswered questions have been added since the questionnaire was last completed.", "screenshot": "image-2026-3-13_21-41-33.png"}
+      ],
+      "screenshots": [
+        "image-2026-3-11_23-4-42.png",
+        "image-2026-3-11_23-4-11.png"
+      ],
+      "source_requirement": "Frontoffice — Update the view and behavior of the Requirements Update pop-up — Open 'Requirements Update' pop-up"
+    },
+    {
+      "title": "Review and filter requirements changes in the Requirements Update pop-up",
+      "as_a": "product release manager responding to a requirements version update notification",
+      "i_want": "to see a clear, searchable, filterable list of all requirement changes applicable to my release",
+      "so_that": "I can understand the full scope of changes before deciding which ones to apply",
+      "acceptance_criteria": [
+        "The Requirements Update pop-up shows at the top: a link to 'Content Changes', the sub-header 'Review the proposed changes to requirements. Please select which changes to apply.', and a warning message 'Certain requirements will be updated automatically on the specified date.' — the warning is shown only when at least one listed requirement has a 'Change on Date' scheduled and the release is in Scoping or Scope Approval status.",
+        "The pop-up includes: a Search field (filtering by requirement code, name, or description), a Change type dropdown (options: Updated, Replaced, Added, Removed), and a Reset button that clears all active filters and restores the unfiltered list.",
+        "Requirements in the table are grouped by each unique set of replacing requirements: 10 requirements replaced by the same 2 requirements appear as 1 grouped change row; 1 requirement replaced by 1 other is its own row; 1 requirement replaced by 2 others is its own row with 2 new requirements shown.",
+        "The Change column displays one of four labels: 'Updated' (name, description, or selection criteria in latest version differs from current scoped version), 'Replaced' (current scoped version is Inactive and replacement exists in 'Is Replaced By'), 'Added' (new requirement or previously not-scoped requirement whose selection criteria now makes it scopeable), 'Removed' (deactivated without replacement, or selection criteria updated to make it no longer scopeable, or Inactive with replacements that would not be scoped).",
+        "The Requirement Name column shows: for Added/Removed — the single code and name; for Updated — two code+name pairs with 'Old' and 'New' stamps; for Replaced — all old codes/names with 'Old' stamp and all replacing codes/names with 'New' stamp. When any of these requirements has a 'Change on Date', that date is displayed in red at the end of that row's Requirement Name cell.",
+        "Parent requirements that have sub-requirements in the change list show an opened expand icon; sub-requirements show a sub-requirement arrow icon; parent requirements without sub-requirements in the change list show no icon. The list is sorted by the Old requirement's order value, with parents shown above their respective sub-requirements.",
+        "The Requirement Description column shows the description (first 2 lines by default with a 'View more' link) using the same Old/New stamping pattern as Requirement Name.",
+        "The Details column contains a 'View Details' link per change row that opens the detailed comparison pop-up for that change."
+      ],
+      "screenshots": [
+        "image-2026-3-19_13-45-0.png",
+        "image-2026-3-13_21-54-30.png"
+      ],
+      "source_requirement": "Frontoffice — Update the view and behavior of the Requirements Update pop-up — table columns and content"
+    },
+    {
+      "title": "View detailed change information for individual requirements",
+      "as_a": "product release manager reviewing a requirements update in the Requirements Update pop-up",
+      "i_want": "to open a side-by-side comparison pop-up showing the old and new state of each individual requirement change",
+      "so_that": "I can fully assess the impact of each change and verify current release data before accepting or rejecting it",
+      "acceptance_criteria": [
+        "Clicking 'View Details' for an 'Added' change shows a pop-up with: the requirement's code and name as the header, an 'Added' stamp, and the description of the added requirement.",
+        "Clicking 'View Details' for a 'Removed' change shows a pop-up with: the requirement's code and name as header, 'Removed' stamp, description, current status in this release, Evidence Link (if any), and Justification (if any). If status is 'Delegated' and 'Delegated To' details exist, a 'View Details' link under the status opens the Requirements Info pop-up in a new browser window.",
+        "Clicking 'View Details' for an 'Updated' change shows a two-column pop-up: header = new code and name, 'Updated' stamp; left column ('Old' stamp) — current version name, description, status, evidence link, justification, and delegation details (with 'View Details' link if Delegated); right column ('New' stamp) — latest version name and description. Fields that changed are highlighted in green in the right column.",
+        {"text": "Clicking 'View Details' for a 'Replaced' change shows a pop-up with header 'Replaced: <N> requirement/s → <M> requirement/s', a 'Replaced' stamp, and two columns: left ('Old' stamp) — all replaced requirements, each showing name, description, status, evidence link, justification, and delegation details; right ('New' stamp) — all replacing requirements, each showing name and description. Each column is independently scrollable when content exceeds screen height.", "screenshot": "image-2026-3-11_23-34-44.png"},
+        "The detail pop-up is informational and read-only. It is closed via the 'Close' button or X, returning the user to the Requirements Update pop-up without any changes.",
+        "For all change types, any requirement with 'Delegated' status and available 'Delegated To' delegation details shows a 'View Details' link under the status field that opens the Requirements Info pop-up in a new browser window."
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — View details of the update"
+    },
+    {
+      "title": "Apply selected requirements changes to a release from the Requirements Update pop-up",
+      "as_a": "product release manager who has reviewed requirements changes and is ready to apply them",
+      "i_want": "to apply my selected changes to the release or keep the current version, with the system enforcing proper parent/sub-requirement consistency",
+      "so_that": "my release scope remains accurate, complete, and traceable after requirements are updated",
+      "acceptance_criteria": [
+        "For Product Requirements, each change row has a checkbox. When a checkbox is selected for a change whose requirement (old or new version) shares a parent or sub-requirements with other requirements in the change list, the system automatically pre-selects all related sub-requirements of the same parent and the parent itself. An informational message replaces the prior yellow warning (if shown): 'Related parent/sub-requirements were auto-selected. Review and deselect if needed.'",
+        "Clicking 'Apply Selected Changes' (Product Requirements) when the selection includes any Updated or Replaced change where the current release version of that requirement has a status other than 'Planned', or has any data in 'Evidence Link' or 'Justification': the pop-up transitions to the 'Update Requirements Status' page without applying changes yet.",
+        "Clicking 'Apply Selected Changes' (Product Requirements) when all Updated/Replaced requirements in the selection have status 'Planned' and empty Evidence Link and Justification: the system immediately applies all selected changes — adding Added requirements, removing Removed requirements, updating versions for Updated requirements (keeping Jama/Jira links and Delegated From details), and removing Replaced requirements while adding their replacements (transferring 'Delegated From' only). Jama/Jira links are NOT automatically transferred to replacing requirements.",
+        "For any newly added sub-requirement (via Added or Replaced actions), the system automatically adds the parent requirement to the release even if the parent's change was not individually selected.",
+        "For Process Requirements, the pop-up shows a single 'Yes, change the version' button instead of per-row checkboxes. Clicking it triggers the same flow: if any Updated/Replaced requirement has non-Planned status or has Evidence/Justification data → go to Update Requirements Status page; otherwise apply all changes directly.",
+        "For Process Requirements, when replacement is 1-to-1 or many-to-1: Evidence, Justification, and 'Delegated From' delegation details are transferred to the replacing requirement. Jama/Jira links are NOT transferred in either case.",
+        "Clicking 'Keep Current Version' or X on the Requirements Update pop-up: the pop-up closes, the release version remains unchanged, and no updates are applied — even after subsequent questionnaire updates or risk classification changes. Only mandatory date-scheduled updates continue to be applied automatically.",
+        "After a successful direct apply (no Status page required), the Requirements Update warning banner is dismissed from the release."
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — Actions on the 'Requirements Update' pop-up"
+    },
+    {
+      "title": "Review, configure statuses, and save on the Update Requirements Status page",
+      "as_a": "product release manager applying requirements changes that include non-Planned status requirements",
+      "i_want": "to review the proposed new requirement versions, set their statuses individually or in bulk, and navigate freely between the change list and the status configuration page before committing",
+      "so_that": "compliance evidence and status data is never silently lost when requirements are updated or replaced",
+      "acceptance_criteria": [
+        "The 'Update Requirements Status' page shows: sub-header 'Review the requirements and set their statuses in the \"New status\" column.', a conditional warning 'Certain requirements will be updated automatically on the specified date.' (shown when any requirement has a Change on Date and release is in Scoping/Scope Approval), and Bulk Actions buttons ('Edit' and 'Transfer Requirement Statuses').",
+        "The table is grouped by unique New Requirement Name and contains columns: Checkbox, Old Requirement Name (all old codes/names; date in red if Change on Date applies), Old Status, New Requirement Name, New Status (pre-filled per transfer rules), and Actions (Edit icon).",
+        "Default New Status pre-fill rules: (1) 1-to-1 update or replacement with Old Status In Progress/Partial/Postponed → status transferred along with Evidence, Justification, and 'Delegated From' details; for Updated changes Jama/Jira links are also transferred. (2) 1-to-1 update or replacement with Old Status Not Applicable/Done/Delegated → status NOT transferred (New Status = Planned), but Evidence, Justification, Delegated To/From, and (for Updated) Jama/Jira details are transferred. (3) Many-to-1 or 1-to-many replacement → nothing transferred: New Status = Planned, Evidence and Justification empty.",
+        "Clicking the 'Edit' icon for a specific row opens the 'Edit Requirement' pop-up with: left side (scrollable) showing change type stamp and full old requirement details (name, description, status, evidence link, justification, source status if available, backlog link if available); right side showing 'New' stamp with new requirement name and description read-only, plus editable Status dropdown, Evidence Link field (mandatory when status is Done or Partial), and Justification text field (mandatory when status is Not Applicable, Postponed, Partial, or Delegated). Changed fields highlighted in green. When 'Delegated' is selected, delegation sub-fields appear. Pre-filled transferred data is already visible in editable fields. 'Save Changes' validates and saves; 'Cancel'/X closes without saving.",
+        {"text": "Selecting multiple rows and clicking 'Edit' under Bulk Actions opens the 'Edit Selected Requirements' pop-up showing each change as a collapsible section with old/new details. A sticky bottom section (with separate scroll) has shared editable Status, Evidence Link, and Justification fields applied to all selected requirements upon 'Save Changes'. 'Cancel'/X closes without saving.", "screenshot": "image-2026-3-11_23-33-56.png"},
+        {"text": "Clicking 'Transfer Requirement Statuses' under Bulk Actions opens a 'Confirm Status Transfer' pop-up. Upon Confirm: for Updated requirements — status, Evidence, Justification, Delegated To/From, and Jama/Jira links are transferred from old to new. For 1-to-1 Replaced — status, Evidence, Justification, Delegated To/From transferred (no Jama/Jira). For many-to-1 Replaced — nothing transferred; 'Transfer Requirement Statuses' button is inactive when only many-to-1 changes are selected. Cancel closes without transferring.", "screenshot": "image-2026-3-11_23-33-31.png"},
+        "Clicking the back arrow at the top of the Status page returns to the full requirements change list. All previously configured statuses on the Status page are retained when navigating back and forth. Clicking 'Apply Selected Changes' on the change list returns to the Status page.",
+        "Clicking 'Save Changes' on the Status page applies all changes to the release: Added requirements added, Removed requirements removed, Updated requirements get new version (for requirements not shown on Status page — keeping evidence/justification/Jama/Jira; for those on Status page — using configured or transferred data), Replaced requirements removed and replacements added. New sub-requirements automatically bring their parent. Jama/Jira NOT transferred for replaced requirements. Clicking 'Cancel'/X on the Status page leaves the release version unchanged."
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — Update Requirements Status page view / Edit requirements status / Actions on the Update Requirements Status page and navigations"
+    },
+    {
+      "title": "Preserve scoped requirement versions after questionnaire and risk updates",
+      "as_a": "product release manager who has chosen to keep the current version of requirements in my release",
+      "i_want": "the system to preserve my approved requirement versions even when I later update the questionnaire or change risk classifications",
+      "so_that": "my deliberate compliance decisions are never silently overwritten by re-scoping triggered by unrelated business changes",
+      "acceptance_criteria": [
+        "After a user clicks 'Keep Current Version' or X on the Requirements Update pop-up, the scoped requirement versions in the release remain unchanged — even when the questionnaire is subsequently updated, Risk Classification is changed, or Data Protection & Privacy Risk is changed.",
+        "Requirements re-scoping triggered by questionnaire, risk classification, or privacy risk updates uses the current versions already present in the release (not the latest library versions).",
+        "Only mandatory date-scheduled requirement updates ('Change on Date' was specified) are applied automatically regardless of the user's 'Keep Current Version' choice.",
+        "For a new release created from scratch for any product (new or existing): after questionnaire completion, only the latest requirement versions are scoped — no version change pop-up is shown, and Inactive requirements are not shown.",
+        "For a release created as a clone: all requirements (scoped and not scoped) are copied with the version from the original release. The version change pop-up is shown allowing the user to accept the latest version. Mandatory date-scheduled updates are NOT automatically applied to cloned releases.",
+        "For a Scoping-stage release when questionnaire or risk is updated after an existing version change pop-up: requirements are re-scoped using the current version set, not the latest library versions. The version change pop-up remains shown for requirements scopeable or removable under the updated variables.",
+        "For a Review & Confirm-stage release when risk is updated: same re-scoping behavior as Scoping, with version change pop-up still visible. For a Manage-stage release: mandatory date-scheduled updates are NOT automatically applied — user must review from the pop-up.",
+        "For releases in final or locked statuses (Cancelled, Inactive, Completed, or post-FCSR Readiness sign-off): no version change pop-up is shown as requirements cannot be edited in those stages."
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — Latest version of requirements should not be added after risk or questionnaire update"
+    },
+    {
+      "title": "Handle version updates for not-scoped requirements when scope changes",
+      "as_a": "product release manager managing the requirements scope of a release",
+      "i_want": "not-scoped requirements to reflect the correct version and to be prompted when manually adding a not-scoped requirement that has a newer version available",
+      "so_that": "I never inadvertently add an outdated requirement to my release scope",
+      "acceptance_criteria": [
+        "Not-scoped requirements in a release are automatically updated to the latest library version when: (a) a version update is confirmed by the user via the Requirements Update pop-up, or (b) re-scoping is completed after a questionnaire, risk classification, or privacy risk update.",
+        "If the user clicked 'Keep Current Version' or X on the Requirements Update pop-up, not-scoped requirements continue to display the pre-update version — consistent with the scoped requirements version in that release.",
+        "When a user manually adds a not-scoped requirement to the release and a newer version exists in the library, a version change pop-up is shown for that specific requirement, allowing the user to choose to switch to the newer version before adding it to scope."
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — Impact of the requirements update for not scoped requirements"
+    },
+    {
+      "title": "View automatically-applied requirements changes in the Already Updated pop-up",
+      "as_a": "product release manager whose release has had mandatory scheduled requirements changes automatically applied",
+      "i_want": "to see a notification and be able to review the list of changes that were automatically pushed to my release",
+      "so_that": "I am always informed about changes I did not manually trigger and can verify their impact on my release",
+      "acceptance_criteria": [
+        "When the system automatically pushes mandatory date-scheduled changes to a release in Creation & Scoping or Review & Confirm stage, a warning message is shown in the release with a 'Learn More' link.",
+        "Clicking 'Learn More' opens the 'Requirements Update' pop-up in 'already updated' mode with: a link to Content Changes, and the sub-header 'The following requirements scoped for this release were updated.'",
+        "The pop-up includes the same filters as the proactive Requirements Update pop-up: Search (by code, name, or description), Change type dropdown (Updated, Replaced, Added, Removed), and a Reset button.",
+        "The table uses the same columns, grouping rules, and Change-type logic as the proactive Requirements Update pop-up: Change, Requirement Name (Old/New stamps), Requirement Description (Old/New stamps, truncated to 2 lines with 'View more'), and Details (link to View Details pop-up).",
+        "The 'Change on Date' value is shown in red in the Requirement Name column for any requirement that was automatically applied on a scheduled date.",
+        "This pop-up is informational only — there are no checkboxes or 'Apply Selected Changes' button. The user can only review details and close the pop-up."
+      ],
+      "screenshots": [],
+      "source_requirement": "Frontoffice — Already updated requirements pop-up update"
+    },
+    {
+      "title": "Enable questionnaire editing and show targeted warnings when new questions are added post-completion",
+      "as_a": "product release manager whose questionnaire has been extended with new questions after it was already completed",
+      "i_want": "to see clear warnings about unanswered questionnaire questions and be able to edit the questionnaire during normally locked stages",
+      "so_that": "the requirements scoping remains accurate when the questionnaire is extended as part of a requirements update",
+      "acceptance_criteria": [
+        "When unanswered questions exist on the Questionnaire tab (added after the questionnaire was last completed), the Questionnaire tab header shows a warning badge, and the tab body shows the banner: 'New questions have been added as part of the latest requirements update.'",
+        "Users with the appropriate edit-questionnaire privilege can edit and resubmit the questionnaire during Scope Approval and Manage stages if — and only if — new unanswered questions have been added since the questionnaire was last completed. In all other circumstances the questionnaire is not editable on these stages.",
+        "On Process/Product Requirements tabs, when both unanswered questionnaire questions AND a requirements version update are pending simultaneously, the combined banner message references both 'Questionnaire' and 'Requirements Update' links. The specific wording follows the release type: for scratch releases — 'A new version of requirements is available. Please review updated Questionnaire and review Requirements Update'; for cloned releases — 'Requirements were cloned from release <name> and a new version of requirements is available. Please review updated Questionnaire and Requirements Update'.",
+        "If no new unanswered questions exist but a Major requirements version change is pending: only the version change warning is shown on the requirements tabs (no questionnaire link). The exact wording is per the warning banner story for scratch vs. cloned release context.",
+        "If new unanswered questions exist but no requirements version change is pending: only the questionnaire warning banner is shown on the Questionnaire tab."
+      ],
+      "screenshots": [
+        "image-2026-3-13_21-43-23.png",
+        "image-2026-3-13_21-41-33.png"
+      ],
+      "source_requirement": "Frontoffice — Update questionnaire behavior"
+    },
+    {
+      "title": "Update Tableau Product and Process Requirements actual-on-date reports with release-based filter",
+      "as_a": "reporting user viewing Product and Process Requirements data in Tableau dashboards",
+      "i_want": "the Product/Release filter on 'actual on Date' reports to return requirements associated with a specific release ID rather than all product requirements",
+      "so_that": "the report accurately reflects the exact set of requirements that applied to a given release at the chosen date",
+      "acceptance_criteria": [
+        "The Product/Release filter on the Product Requirements and Process Requirements 'actual on Date' Tableau reports still allows the user to first select a product and then select one of its releases.",
+        "When a specific release is selected via the filter, the report displays only the requirements associated with that release ID — not all requirements for the product across all releases.",
+        "The previous behavior of aggregating all product requirements regardless of release context is replaced entirely by this release-ID-based scope."
+      ],
+      "screenshots": [],
+      "source_requirement": "Tableau reports update — Product Requirements and Process Requirements actual on Date reports should be updated"
+    }
+  ],
+  "questions": [
+    {
+      "title": "Status of PIC-10186 — is it still in scope?",
+      "detail": "The tracking table at the top of the spec marks PIC-10186 as 'In question?'. It is not clear whether this story is still required or which requirement area it covers. Please confirm if PIC-10186 is in scope and, if so, what feature it addresses."
+    },
+    {
+      "title": "Version classification when all replacement links are removed",
+      "detail": "The Q&A section states that when the 'Replacing' field is cleared entirely, the system should check whether a previous version without 'Replacing' data exists and classify accordingly (major or minor). This logic is only in the Q&A, not in the main spec body. Story 2 (cascade version effects) currently documents it as always Major when 'Replacing' values are removed. Please confirm: is the removal of all replacement links always a Major change, or does the system compare with the last non-replacing version to determine classification?"
+    },
+    {
+      "title": "Who can unlock a requirement locked by 'Is Replaced By'?",
+      "detail": "The spec states a requirement with an 'Is Replaced By' value cannot be updated until the replacement is removed. It is unclear: (a) whether removing the value from the replacing requirement's 'Replacing' field automatically unlocks the replaced requirement; (b) whether the 'Inactive' status is reverted when the replacement link is removed; and (c) which user roles have permission to perform this unlocking operation."
+    },
+    {
+      "title": "Mandatory date-scheduled updates on cloned releases after the change date has passed",
+      "detail": "The spec states mandatory date-scheduled updates are NOT automatically added to cloned releases. However, it also states they ARE applied to Scoping/Scope Approval releases. If a cloned release reaches Scoping stage after the mandatory change date has already passed, it is unclear whether: (a) the change is retroactively applied, or (b) it is permanently skipped for that release."
+    },
+    {
+      "title": "Questionnaire re-completion after skipping some requirement updates",
+      "detail": "Scenario: the user keeps the current version for some requirements via 'Keep Current Version', then later completes an updated questionnaire. The spec states re-scoping uses the current version set. It is unclear whether the version change pop-up still shows updates that were previously dismissed or only those newly applicable after the questionnaire change."
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+{
+  "stories": [
+    {
+      "title": "Search and Select Third Party Supplier and TPS Product from OneTrust Lookup",
+      "as_a": "release manager entering TPS product data in the Cybersecurity Residual Risks tab",
+      "i_want": "to search for a Third Party Supplier by name and select a TPS Product/Component Name from the vendor's matching OneTrust engagements",
+      "so_that": "supplier and product data is consistent with OneTrust records and manual entry discrepancies are eliminated",
+      "acceptance_criteria": [
+        "The 'Third Party Supplier Name' field accepts free-text input. As the user types, PICASso displays a filtered dropdown list of matching vendor names sourced from the latest OneTrust import file. Matching is case-insensitive and matches on partial text entered anywhere in the vendor name.",
+        "Once the user selects a Third Party Supplier from the dropdown, the 'TPS Product/Component Name' dropdown is enabled and populated only with the Engagement Name values from OneTrust that belong to the selected vendor. Engagements belonging to other vendors are not shown.",
+        "If there is only one engagement for the selected vendor, the 'TPS Product/Component Name' field is automatically pre-selected with that single value without requiring additional user interaction.",
+        "If the user selects the TPS Product/Component Name first (before selecting a supplier), and the engagement is unambiguously linked to one supplier, the 'Third Party Supplier Name' field is automatically populated with that supplier's name.",
+        "The 'Product/Component Type' field (3 values) is not sourced from OneTrust and must be declared manually by the user. This field remains independently editable and is not affected by any OneTrust lookup or vendor/engagement selection.",
+        "If no vendor matching the entered text exists in the OneTrust import data, the dropdown shows no results and a message is displayed: 'No supplier found in OneTrust. Please register this supplier using the OneTrust form.' A clickable link to the OneTrust supplier declaration form is shown alongside this message.",
+        "The user cannot save a TPS Product record with a supplier name that has not been resolved to a valid OneTrust vendor entry. The save action is blocked and an inline validation message is displayed if the supplier field does not resolve to a confirmed OneTrust match.",
+        "The supplier lookup and engagement dropdown always reflect data from the most recently ingested OneTrust daily import file. If no import file has been successfully ingested, both fields display an error state: 'OneTrust data is currently unavailable. Please try again later or contact the integration team.'"
+      ],
+      "screenshots": ["Screenshot 2025-10-20 at 14.49.48.png"],
+      "source_requirement": "PICASso Requirements table: 'Third Party Supplier Name - The user will enter the name for the Third Party Supplier - PICASSO must show the name of the relevant vendor as per the entered text based on the OneTrust Input File' and 'TPS Product/Component Name - The user will select the TPS Product/Component Name - PICASSO must show the vendor engagements relevant for the selected vendor in a dropdown based on the OneTrust Input File'. Also: 'To validate whether the Third Party Supplier Name should be selected first. After that, the Product/Component Name will be selected based on the supplier chosen (will be chosen automatically once there is only one Product Component).'"
+    },
+    {
+      "title": "Auto-populate IRA Rating, Maturity Level, and Signed Agreement from OneTrust",
+      "as_a": "release manager selecting a vendor engagement in the TPS Product section",
+      "i_want": "the IRA Rating, Third Party Supplier Assessment Overall Maturity Level, and Signed Third Party Products & Services Agreement fields to be automatically populated from OneTrust data",
+      "so_that": "security assessment data is accurate, consistent with OneTrust, and does not require manual entry",
+      "acceptance_criteria": [
+        {"text": "When a vendor engagement is selected, the 'Select IRA Rating' field is automatically set to the IRA rating (Risk Profile) value from the OneTrust import file corresponding to that engagement. The value is applied immediately on engagement selection without any additional user action.", "screenshot": "image-2025-12-1_17-8-7.png"},
+        "If the IRA rating has not been generated in OneTrust for the selected engagement, the system sets 'Select IRA Rating' to a predefined default value. The default value must be defined and agreed upon during implementation before release.",
+        "When a vendor engagement is selected, the 'Third Party Supplier Assessment Overall Maturity Level' field is automatically set based on the Maturity Rating from OneTrust. OneTrust uses 5 maturity levels; PICASso uses 3 levels. A defined mapping table translates OneTrust's 5-level scale to PICASso's 3-level scale and is applied during auto-population. The mapping table must be defined and documented before implementation.",
+        "If the Overall Maturity Level has not been generated in OneTrust for the selected engagement, the system sets the field to a predefined default value.",
+        "When a vendor engagement is selected, the 'Signed Third Party Products & Services Agreement' field is automatically populated from the corresponding value in the OneTrust import file.",
+        "If the Signed Agreement value has not been captured in OneTrust for the engagement (noted as 'has not been captured yet'), the system sets this field to a predefined default value.",
+        "All three auto-populated fields (IRA Rating, Maturity Level, Signed Agreement) remain editable by the user after auto-population to allow manual overrides where necessary.",
+        "If the selected engagement's Supplier Status or Engagement Status is Pending or Inactive, all three fields (IRA Rating, Maturity Level, Signed Agreement) are set to placeholder values and rendered as greyed-out, non-editable fields. The 'Supplier Status' field is shown prominently to explain why the fields are locked. A message guides the user: 'Update missing fields in OneTrust and complete the pending engagement or record, then re-export.'",
+        "When the engagement status transitions to Active or Completed (after re-import), the greyed-out fields become editable and are re-populated with live OneTrust values.",
+        "If auto-population fails due to a mapping error or missing data in the import file, the affected fields remain blank and a warning is shown: 'Auto-population failed for one or more fields. Please check the OneTrust export and mapping configuration, or enter values manually.'"
+      ],
+      "source_requirement": "PICASso Requirements table: 'Select IRA Rating - The IRA rating must be populated automatically - PICASSO must set the IRA rating based on the OneTrust Input file. In case the IRA rating has not been generated in OneTrust, PICASSO must setup this field to a default value'; 'Third Party Supplier Assessment Overall Maturity Level - must be populated automatically'; 'Signed Third Party Products & Services Agreement - must be populated automatically'. PICASso-OneTrust Mapping table notes 5-level to 3-level maturity mapping. Validation Condition table: 'Status is Pending/Inactive - Placeholder values for IRA, Maturity Level and Agreement are filled and the fields are greyed out.'"
+    },
+    {
+      "title": "Auto-populate Supplier ID, Engagement ID, and Status Fields from OneTrust",
+      "as_a": "release manager completing a TPS Product record",
+      "i_want": "the Supplier ID, Engagement ID, Supplier Status, and Engagement Status fields to be automatically set from OneTrust import data when a vendor and engagement are selected",
+      "so_that": "PICASso records are fully traceable to corresponding OneTrust entries without manual data entry",
+      "acceptance_criteria": [
+        "When a Third Party Supplier is selected from the OneTrust-backed lookup, the 'Supplier ID' field is automatically populated with the corresponding Supplier ID value from the OneTrust import file. This field is read-only and cannot be edited by the user.",
+        "When a vendor engagement is selected, the 'Engagement ID' field is automatically populated with the corresponding Engagement ID from the OneTrust import file. This field is read-only and cannot be edited by the user.",
+        "The 'Supplier Status' field is automatically set from the OneTrust import file's status value for the selected vendor. This field is read-only.",
+        "The 'Engagement Status' field is automatically set from the OneTrust import file's status value for the selected engagement. This field is read-only.",
+        "If the Supplier ID is not present in the import file for the selected supplier, the field displays an error state and an inline message is shown: 'Supplier ID not available in the current OneTrust import. Contact the integration team.'",
+        "If the Engagement ID is not present for the selected engagement, the field displays an error state with a similar message.",
+        "The 'IRA Rating ID' and 'Overall Maturity Level Value ID' fields are flagged as pending clarification from the OneTrust team regarding their availability in the OneTrust instance. Until confirmed available, these fields must either be hidden from the UI or displayed with a visible label 'Pending Clarification — not yet available from OneTrust.' Implementation of these fields is deferred until OneTrust availability is confirmed in writing."
+      ],
+      "source_requirement": "PICASso Requirements table: 'Supplier ID - must be populated automatically - PICASSO must set the value of this field based on the corresponding value in OneTrust flat file for the supplier or vendor that was chosen'; 'Engagement ID - must be populated automatically'; 'Supplier Status - must be populated automatically'; 'Engagement Status - must be populated automatically'; 'IRA Rating ID - Not available in instance. Clarification needed'; 'Overall Maturity Level Value ID - Not available in instance. Clarification needed.'"
+    },
+    {
+      "title": "Guide Users When Supplier Is Not Found in OneTrust",
+      "as_a": "release manager who cannot find a Third Party Supplier in the OneTrust-backed lookup",
+      "i_want": "to be guided to register the supplier in OneTrust via a provided form link",
+      "so_that": "all Schneider Electric third-party suppliers are properly registered and risk-assessed in OneTrust before being referenced in PICASso releases",
+      "acceptance_criteria": [
+        "When the user types a supplier name in the 'Third Party Supplier Name' field and no matching vendor exists in the OneTrust import data, the system clearly displays a 'no results found' state in the dropdown.",
+        "Alongside the no-results message, the system displays an explanatory note: 'Not all Schneider Electric suppliers are registered in OneTrust.' A clearly labelled clickable link — 'Register supplier in OneTrust' — directs the user to the OneTrust supplier risk identification form.",
+        "The user cannot save a TPS Product record with a 'Third Party Supplier Name' value that has not been confirmed as a valid OneTrust vendor. The save button is disabled or an inline validation error is shown if the supplier field is unresolved.",
+        "The link to the OneTrust supplier declaration form is also accessible even when search results are found, allowing proactive registration of unlisted suppliers without disrupting the current workflow.",
+        "After the supplier has been declared in OneTrust and the next daily import cycle completes, the new supplier appears in the PICASso lookup. No manual action in PICASso is required beyond waiting for the next import.",
+        "If a TPS Product record already exists in PICASso with a manually typed supplier name that predates the OneTrust integration, the system flags the record as requiring review. The user must resolve it to a valid OneTrust supplier or explicitly mark it as not applicable."
+      ],
+      "source_requirement": "Spec section: 'Not all suppliers of Schneider Electric exist in OneTrust - need to create a request on the Assessment for 3rd party supplier. If the Supplier cannot be found, a link to the form in OneTrust can be used to declare this supplier on the risk supplier identification.'"
+    },
+    {
+      "title": "Daily OneTrust Data Sync with Release Impact Detection and User Notification",
+      "as_a": "release manager with in-progress or completed releases containing TPS Product data",
+      "i_want": "to be notified when OneTrust data affecting my releases has changed and to confirm that the mapped data is still correct",
+      "so_that": "TPS Product data in releases stays current with the latest OneTrust assessments and I am never surprised by background data changes",
+      "acceptance_criteria": [
+        "PICASso runs a daily background job, once per business day (weekday basis), to check for a new OneTrust import file on SharePoint. The job processes only the most recent file, identified by the date in the file name. Files from prior days that have already been ingested are skipped.",
+        "When updated vendor or engagement data is detected in the new import file, PICASso identifies all releases referencing the affected suppliers or engagements in their TPS Product section and applies update logic based on release status.",
+        "For completely new releases (in-progress, where TPS Product data has not yet been entered): no automatic update is applied and no notification is sent. The user will see current OneTrust values when they first populate the TPS Product section.",
+        "For in-progress releases where TPS Product data has already been entered: the system sends a notification to the release manager listing which TPS Product fields have changed and showing the old and new values. The release manager must explicitly confirm that the mapped data is correct before the system applies the update. If the manager confirms, the data is updated in the background. If the manager does not respond or rejects the update, the current data is retained unchanged.",
+        "For completed releases: the system creates a cloned copy of the release pre-populated with the updated OneTrust data, then notifies the release manager to review and confirm the cloned data. If the manager confirms, the clone is saved as a new release record. Completed releases themselves are never modified in place.",
+        "Changes driven by OneTrust updates are surfaced in the Release Notes view, providing a consolidated list of all OneTrust-driven data changes for each affected release.",
+        "If the daily import file is not available on SharePoint, fails schema validation, or cannot be ingested for any reason, no updates are made, no notifications are sent, and all existing PICASso data remains unchanged. The integration team is alerted via a system log entry.",
+        "The daily sync job logs each run with: start time, file processed (name and date), number of impacted releases found, number of notifications sent, and any errors encountered."
+      ],
+      "source_requirement": "Spec section: 'To check once per day whether we have actual data from the OneTrust OR get a list of the updates from OneTrust, check which releases were impacted by these updates, and notify users about updates (can be shown in the scope of the Release notes, provide all changes on one screen)'. Use cases: 'Completely new release - show new functionality. Completed releases - create a new release on the completed releases (clone release) - map previously provided data to the new releases. Notify users about updated functionality to review and update. Users should provide confirmation that mapped data is correct. In progress releases: If data has not been provided yet, nothing should happen. If data has been provided, Users should provide confirmation that mapped data is correct.'"
+    },
+    {
+      "title": "Freeze OneTrust Updates at FCSR Stage and Store TPS Product Change History",
+      "as_a": "release manager whose release has passed the FCSR Review gate",
+      "i_want": "OneTrust-driven updates to be blocked after the Security & Privacy Readiness Sign Off stage and for the full change history of TPS Product fields to be stored",
+      "so_that": "finalized security data cannot be silently overwritten by background sync jobs and all changes are auditable",
+      "acceptance_criteria": [
+        "Once a release reaches the 'Security & Privacy Readiness Sign Off' (FCSR Review) stage, the daily OneTrust sync job skips that release entirely. No automatic field updates are applied to TPS Product records in that release from this point forward.",
+        "Completed releases are also excluded from in-place automatic OneTrust updates. Any OneTrust changes for completed releases are handled exclusively via the clone workflow (a new release is created), never by modifying the completed release record directly.",
+        "Manual edits to TPS Product fields by authorized users remain permitted, subject to the release stage access permissions already in place in PICASso.",
+        "If the daily sync job encounters a release that is at or past the FCSR stage, it logs the skipped release and its reason. No error is raised; skipping is the expected behavior.",
+        "PICASso maintains a full audit history for each TPS Product record, capturing every change to the following fields: TPS Product/Component Name, Third Party Supplier Name, IRA Rating, Overall Maturity Level, Signed Agreement, Supplier Status, Engagement Status, Supplier ID, and Engagement ID.",
+        "Each history entry records: the field name, the previous value, the new value, the source of the change (OneTrust automatic update or manual PICASso edit), the date and time of the change, and the user or system process that made the change.",
+        "The audit history is accessible to release managers and auditors from within the TPS Product record view in PICASso. The history must be visible without requiring a special admin role.",
+        "If a user or process attempts to trigger an OneTrust update on a frozen release (FCSR or completed), the system rejects the operation and returns a message: 'This release is locked for OneTrust updates. Changes must be made via a cloned release.'"
+      ],
+      "source_requirement": "Spec section: 'Freeze updates before the FCSR Review stage (on the Security & Privacy Readiness Sign Off) and for completed Releases.' And: 'The PICASso should store updates of the TPS Products on the PICASso side (both inherited data from the OneTrust and modified on the PICASso).'"
+    },
+    {
+      "title": "OneTrust to SharePoint Daily CSV Export Integration",
+      "as_a": "integration engineer configuring the OneTrust-to-PICASso data pipeline",
+      "i_want": "OneTrust to generate and upload a validated, correctly formatted CSV export file to SharePoint each business day",
+      "so_that": "PICASso can reliably ingest current vendor and engagement data from a single, trustworthy daily source file",
+      "acceptance_criteria": [
+        "OneTrust generates and uploads the export file automatically once per business day (weekday basis) on a defined schedule. No manual triggering is required under normal operating conditions.",
+        "The export file is in CSV format: UTF-8 encoded, comma-delimited, with a fixed schema defining all column names, data types, and value formats. Any file that deviates from the schema — missing columns, incorrect data types, out-of-range values — is rejected before upload. No partial or malformed files are uploaded to SharePoint.",
+        "The file name follows a consistent naming convention that includes the generation date, for example: `OneTrust_Export_YYYY-MM-DD.csv`. This naming convention distinguishes each daily file and allows PICASso to identify the most recent file.",
+        "The export includes only vendors whose Supplier Category matches the approved category list provided by Schneider Electric. Vendors in other categories are excluded from the file.",
+        "Only vendors with an 'Active' status in OneTrust are included. Vendors with 'Archived' or 'Inactive' status are excluded.",
+        "Only engagements with 'Active' or 'Under Progress' status are included. Engagements with any other status are excluded unless a full snapshot export is explicitly requested by the integration team.",
+        "OneTrust authenticates to SharePoint using a Client ID and Client Secret provided by the client. The SharePoint site URL and document library path are configured securely within OneTrust based on Schneider Electric guidance. The SharePoint endpoint must be reachable, write-accessible, and have correct folder-level permissions configured by the client.",
+        "The file is uploaded atomically: it must not be visible or readable by SharePoint or PICASso during the transfer process. Only the fully completed, successfully uploaded file is made available for ingestion.",
+        "PICASso ingests only one export file per daily cycle. If multiple files are present, PICASso processes only the file with the most recent date in the file name.",
+        "If the export file is not generated or fails schema validation, no file is uploaded to SharePoint. PICASso does not ingest any data for that cycle, and the previous day's data remains active and unchanged. The integration team must check OneTrust logs and manually re-run the export job if needed.",
+        "If the Client Secret is rotated without updating the credential stored in OneTrust, the upload fails with the error: 'File upload to SharePoint failed. Please verify Client ID, Client Secret, and permissions, then retry.' The integration team must update the credential in OneTrust and manually trigger the export job to recover.",
+        "If SharePoint is unreachable during upload, the error 'Unable to connect to SharePoint site' is logged. The integration team must confirm site availability, network access, and permissions before retrying.",
+        "All required OneTrust attributes — including any custom attributes used in the export schema — must exist in the OneTrust instance before the integration goes live. Missing attributes must be declared and configured in OneTrust prior to the first scheduled export run."
+      ],
+      "source_requirement": "High Level Integration Architecture section: Requirements (Scheduled File Export, Fixed File Format, Data Filters, Authentication, File Naming Convention, No Partial Uploads, Attribute Availability), Assumptions (SharePoint Setup, Defined Schedule, Outbound Integration, Connectivity), Constraints (CSV Format Only), Error and Validation Handling table, Triggers table (Daily Export Schedule, Vendor Category Filter, Vendor Status Filter, Engagement Status Filter)."
+    }
+  ],
+  "questions": [
+    {
+      "title": "IRA Rating ID and Overall Maturity Level Value ID — availability unconfirmed",
+      "detail": "Story 3 (Auto-populate Supplier ID, Engagement ID, and Status Fields): The spec explicitly states 'IRA Rating ID — Not available in instance. Clarification needed' and 'Overall Maturity Level Value ID — Not available in instance. Clarification needed.' These two fields are included in the requirements table but their availability in the OneTrust instance has not been confirmed. The team must check with OneTrust whether these IDs can be exported before any development is started. Until confirmed, these fields must be hidden or marked 'Pending Clarification' in the UI."
+    },
+    {
+      "title": "Default values for IRA Rating, Maturity Level, and Signed Agreement not defined",
+      "detail": "Stories 2 and 3 (Auto-populate fields): The spec states 'PICASSO must setup this field to a default value' for IRA Rating, Maturity Level, and Signed Agreement when OneTrust has no data for the engagement. However, the spec does not define what those default values are. These must be agreed and documented before development starts. Without them, developers cannot implement the fallback behaviour."
+    },
+    {
+      "title": "5-to-3 Maturity Level mapping table not defined",
+      "detail": "Story 2 (Auto-populate IRA Rating, Maturity Level, and Signed Agreement): OneTrust uses 5 maturity levels; PICASso uses 3. The spec acknowledges this mapping is needed ('Contains 3 levels because of the mapping') but does not provide the mapping table. The product/security team must define exactly how OneTrust's 5 levels map to PICASso's 3 levels before this field can be implemented."
+    },
+    {
+      "title": "Signed Agreement field format and values not yet captured in OneTrust",
+      "detail": "Story 2 (Auto-populate fields): The spec notes 'Signed Third Party Products & Services Agreement — has not been captured yet, will be provided by the end of the year.' This means the exact field name, possible values, and data format from OneTrust are currently unknown. Development of this field's auto-population should be deferred until OneTrust confirms the field structure. The PICASso side should plan for a default fallback value in the interim."
+    }
+  ]
+}

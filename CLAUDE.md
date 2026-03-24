@@ -1,6 +1,6 @@
 # CLAUDE.md — PICASso
 
-Platform for test automation and project documentation generation for Schneider Electric.
+Platform for test automation and project documentation generation for PICASso web app tool on  Schneider Electric.
 
 ---
 

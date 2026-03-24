@@ -1,0 +1,1563 @@
+WEBVTT
+
+6e36d370-2463-4e36-bac4-839254689eda/14-0
+00:00:04.593 --> 00:00:08.993
+<v Ramesh Godara>Yeah, I have started the recording,
+so that please unmute yourself.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/15-0
+00:00:08.913 --> 00:00:12.767
+<v Uladzislau Baranouski>Yeah, thank you. Thank you, Ramesh.
+We're going to start it. So Irina,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/15-1
+00:00:12.767 --> 00:00:13.473
+<v Uladzislau Baranouski>words to you.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/16-0
+00:00:13.873 --> 00:00:14.193
+<v Uladzislau Baranouski>to you.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/17-0
+00:00:14.233 --> 00:00:18.253
+<v Iryna Kovlyha>Yeah,
+I just wanted to show you like how this</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/17-1
+00:00:18.253 --> 00:00:23.408
+<v Iryna Kovlyha>PIM looks in read only,
+but now I see that again it is not</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/17-2
+00:00:23.408 --> 00:00:28.127
+<v Iryna Kovlyha>available for me,
+so unfortunately I cannot show you.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/17-3
+00:00:28.127 --> 00:00:33.633
+<v Iryna Kovlyha>But in general we know that PIM is a
+system where like legacy.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/19-0
+00:00:33.833 --> 00:00:38.274
+<v Iryna Kovlyha>Product is stored.
+We know that there we can even search</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/19-1
+00:00:38.274 --> 00:00:42.248
+<v Iryna Kovlyha>products,
+but unfortunately for now we do not have</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/19-2
+00:00:42.248 --> 00:00:48.169
+<v Iryna Kovlyha>the information how the attributes of
+like what means each attribute of the</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/19-3
+00:00:48.169 --> 00:00:48.793
+<v Iryna Kovlyha>product.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/20-0
+00:00:49.273 --> 00:00:55.549
+<v Iryna Kovlyha>In order to analyze it,
+but we know that we we will need to</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/20-1
+00:00:55.549 --> 00:01:03.498
+<v Iryna Kovlyha>understand how this current PIM structure
+can be like mapped to our current</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/20-2
+00:01:03.498 --> 00:01:06.113
+<v Iryna Kovlyha>structure in the Picasso.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/21-0
+00:01:06.873 --> 00:01:14.270
+<v Iryna Kovlyha>And also like we will need to understand
+like how because currently we know that</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/21-1
+00:01:14.270 --> 00:01:19.384
+<v Iryna Kovlyha>different teams like create products in
+different ways.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/21-2
+00:01:19.384 --> 00:01:22.033
+<v Iryna Kovlyha>So we will need also to work.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/22-0
+00:01:22.873 --> 00:01:28.603
+<v Iryna Kovlyha>Like to understand how we will work with
+some historical data.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/22-1
+00:01:28.603 --> 00:01:34.242
+<v Iryna Kovlyha>Basically like it's like general
+description. Maybe Kristina,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/22-2
+00:01:34.242 --> 00:01:37.153
+<v Iryna Kovlyha>you can add something more here.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/24-0
+00:01:49.553 --> 00:01:51.073
+<v Uladzislau Baranouski>Oh, Kristina, we cannot hear you.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/25-0
+00:01:54.313 --> 00:01:58.233
+<v Uladzislau Baranouski>We see that you are unmuted, but no audio.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/44-0
+00:02:44.713 --> 00:02:54.027
+<v Khrystyna Iermak>Can you hear me now? OK, OK.
+I I lost the last sentence from Ira. Ira.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/43-0
+00:02:46.233 --> 00:02:48.513
+<v Uladzislau Baranouski>Oh yes, we can.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/42-0
+00:02:46.633 --> 00:02:47.753
+<v Maryna Shykova>Yeah, mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/44-1
+00:02:54.027 --> 00:02:56.913
+<v Khrystyna Iermak>Can you please repeat?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/45-0
+00:02:56.273 --> 00:02:59.964
+<v Iryna Kovlyha>Yeah,
+I've described that like what is the</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/45-1
+00:02:59.964 --> 00:03:06.830
+<v Iryna Kovlyha>general purpose of working on the team
+that we need to understand its structure</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/45-2
+00:03:06.830 --> 00:03:12.753
+<v Iryna Kovlyha>and how it can be mapped to Picasso.
+Also we need to understand how.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/46-0
+00:03:12.953 --> 00:03:19.939
+<v Iryna Kovlyha>Like how historical data should be
+managed because like different teams</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/46-1
+00:03:19.939 --> 00:03:27.119
+<v Iryna Kovlyha>create products in different ways.
+So this like 2 main topics for the PIM</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/46-2
+00:03:27.119 --> 00:03:31.873
+<v Iryna Kovlyha>integration and by the way I see is that
+PIM is.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/47-0
+00:03:32.633 --> 00:03:38.513
+<v Iryna Kovlyha>Available for me,
+so I can just in general show you.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/76-0
+00:03:44.423 --> 00:03:51.393
+<v Iryna Kovlyha>That for now like how how it looks.
+Once you're navigating to the theme it</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/76-1
+00:03:51.393 --> 00:03:58.362
+<v Iryna Kovlyha>looks like this and filtering products
+can be done on this advanced search</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/76-2
+00:03:58.362 --> 00:03:59.663
+<v Iryna Kovlyha>functionality.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/106-0
+00:04:00.143 --> 00:04:07.117
+<v Iryna Kovlyha>Functionality and one we selecting
+attribute so that we will be able to</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/106-1
+00:04:07.117 --> 00:04:12.541
+<v Iryna Kovlyha>search through different attributes and
+including them.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/106-2
+00:04:12.541 --> 00:04:17.383
+<v Iryna Kovlyha>Let's say let's use something like
+product brand.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/152-0
+00:04:17.903 --> 00:04:23.041
+<v Iryna Kovlyha>So we see that this like this attribute
+will be included in search.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/152-1
+00:04:23.041 --> 00:04:28.632
+<v Iryna Kovlyha>Yeah but but unfortunately we currently
+do not understand what means each</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/152-2
+00:04:28.632 --> 00:04:34.601
+<v Iryna Kovlyha>attribute because as you can see that
+once I'm starting typing that there is a</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/152-3
+00:04:34.601 --> 00:04:36.943
+<v Iryna Kovlyha>lot of different attributes so.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/182-0
+00:04:37.703 --> 00:04:43.007
+<v Iryna Kovlyha>We need like some additional description
+to know which attribute corresponds to</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/182-1
+00:04:43.007 --> 00:04:46.588
+<v Iryna Kovlyha>which characteristic of the product in
+details. Yeah,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/182-2
+00:04:46.588 --> 00:04:51.759
+<v Iryna Kovlyha>and I asked you first and maybe you can
+provide even more like something more</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/182-3
+00:04:51.759 --> 00:04:54.543
+<v Iryna Kovlyha>details on the PIM integration in general.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/215-0
+00:04:56.463 --> 00:05:06.242
+<v Khrystyna Iermak>Yeah, have you shown the APIs?
+So because here actually we would have</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/189-0
+00:05:00.183 --> 00:05:00.503
+<v Ramesh Godara>Yes.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/215-1
+00:05:06.242 --> 00:05:13.786
+<v Khrystyna Iermak>two parts. Yeah,
+first one is actually the historical</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/215-2
+00:05:13.786 --> 00:05:14.903
+<v Khrystyna Iermak>records.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/237-0
+00:05:15.143 --> 00:05:24.254
+<v Khrystyna Iermak>Picasso and specifically we would be
+interested like as a first step in legacy</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/237-1
+00:05:24.254 --> 00:05:29.559
+<v Khrystyna Iermak>products now,
+but later we would need also to</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/237-2
+00:05:29.559 --> 00:05:30.943
+<v Khrystyna Iermak>synchronize.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/257-0
+00:05:31.463 --> 00:05:40.825
+<v Khrystyna Iermak>Existing Picasso products with the
+products from PIN and then later on</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/257-1
+00:05:40.825 --> 00:05:45.703
+<v Khrystyna Iermak>update this information through APIs.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/284-0
+00:05:46.543 --> 00:05:54.002
+<v Khrystyna Iermak>So PIM exposes APIs.
+You can find them on APG portal.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/284-1
+00:05:54.002 --> 00:06:04.223
+<v Khrystyna Iermak>So we would consume those APIs in order
+to get information regarding the.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/321-0
+00:06:05.103 --> 00:06:12.234
+<v Khrystyna Iermak>Attribute like you got the changes of
+product attributes in PIM and update them</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/321-1
+00:06:12.234 --> 00:06:17.939
+<v Khrystyna Iermak>accordingly in Picasso.
+What is important for us here to manage</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/321-2
+00:06:17.939 --> 00:06:22.663
+<v Khrystyna Iermak>is is their state of the product as we
+believe that.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/346-0
+00:06:23.143 --> 00:06:29.810
+<v Khrystyna Iermak>Like products in PIM should have
+up-to-date statuses,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/346-1
+00:06:29.810 --> 00:06:39.316
+<v Khrystyna Iermak>whether this is like product that is
+actively developed or this is a product</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/346-2
+00:06:39.316 --> 00:06:40.303
+<v Khrystyna Iermak>that is.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/386-0
+00:06:40.663 --> 00:06:47.449
+<v Khrystyna Iermak>In end of commercialization status or end
+of support or end of life, whatever, yeah,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/386-1
+00:06:47.449 --> 00:06:53.116
+<v Khrystyna Iermak>and this is what we would need to regular
+regularly update in Picasso.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/386-2
+00:06:53.116 --> 00:06:58.943
+<v Khrystyna Iermak>There also could be some other attributes
+that we would need to consume.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/405-0
+00:06:59.423 --> 00:07:07.105
+<v Khrystyna Iermak>From team and update in Picasso,
+but this is not yet identified,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/405-1
+00:07:07.105 --> 00:07:12.423
+<v Khrystyna Iermak>so for us it would be like APIs
+consumption.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/415-0
+00:07:17.583 --> 00:07:22.143
+<v Khrystyna Iermak>And they have lots of them,
+so we can use whatever we want.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/414-0
+00:07:20.783 --> 00:07:20.983
+<v Ramesh Godara>Mm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/424-0
+00:07:22.423 --> 00:07:25.381
+<v Ramesh Godara>Uh,
+could you please add the documentation</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/424-1
+00:07:25.381 --> 00:07:26.343
+<v Ramesh Godara>also for this?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/432-0
+00:07:27.903 --> 00:07:30.383
+<v Ramesh Godara>Uh APIs, the EPG APIs.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/426-0
+00:07:27.943 --> 00:07:28.463
+<v Khrystyna Iermak>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/435-0
+00:07:30.823 --> 00:07:34.343
+<v Khrystyna Iermak>Yeah, yeah, yeah. Give me a second. Uh.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/434-0
+00:07:32.103 --> 00:07:32.863
+<v Ramesh Godara>Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/440-0
+00:07:37.823 --> 00:07:40.583
+<v Khrystyna Iermak>Sound it in the top.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/439-0
+00:07:40.743 --> 00:07:42.263
+<v Ramesh Godara>Mm-hmm. Thank you.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/456-0
+00:08:00.823 --> 00:08:05.902
+<v Ramesh Godara>You know,
+is it possible to get access of this tool</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/456-1
+00:08:05.902 --> 00:08:08.343
+<v Ramesh Godara>just to check or? Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/497-0
+00:08:06.343 --> 00:08:11.439
+<v Iryna Kovlyha>Yes, it's possible.
+Currently like in general what was</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/497-1
+00:08:11.439 --> 00:08:18.851
+<v Iryna Kovlyha>discussed with us that this tool will be
+available only only in read only mode.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/480-0
+00:08:18.583 --> 00:08:19.223
+<v Ramesh Godara>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/497-2
+00:08:18.851 --> 00:08:26.263
+<v Iryna Kovlyha>Like there's no possibility to to get to
+some, let's say Q&amp;AQA environment.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/529-0
+00:08:26.383 --> 00:08:31.048
+<v Iryna Kovlyha>So etcetera.
+So only read only and you need to pass a</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/529-1
+00:08:31.048 --> 00:08:37.959
+<v Iryna Kovlyha>self learning materials and like to go
+through self learning materials and pass</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/529-2
+00:08:37.959 --> 00:08:44.783
+<v Iryna Kovlyha>quiz and after that automatically the Z
+axis will be assigned to you. So like.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/567-0
+00:08:45.903 --> 00:08:46.143
+<v Iryna Kovlyha>My.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/574-0
+00:08:46.463 --> 00:08:50.375
+<v Iryna Kovlyha>In my case like some person send me a
+good information.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/574-1
+00:08:50.375 --> 00:08:54.637
+<v Iryna Kovlyha>We are teams that are currently the PM is
+available for you.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/574-2
+00:08:54.637 --> 00:09:00.435
+<v Iryna Kovlyha>Unfortunately there were some issues that
+even this like still it wasn't available</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/552-0
+00:08:57.703 --> 00:08:57.903
+<v Khrystyna Iermak>Yeah.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/574-3
+00:09:00.435 --> 00:09:03.648
+<v Iryna Kovlyha>for me,
+but after they have done something on</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/574-4
+00:09:03.648 --> 00:09:06.023
+<v Iryna Kovlyha>their site it is available for me.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/589-0
+00:09:06.343 --> 00:09:11.537
+<v Iryna Kovlyha>As in this mode as as you can see on the
+screen,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/589-1
+00:09:11.537 --> 00:09:18.743
+<v Iryna Kovlyha>I will share with you a link to this
+materials to to pass the quiz.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/603-0
+00:09:19.703 --> 00:09:23.567
+<v Ramesh Godara>Mm-hmm. Thank you.
+And there are different types of PIM,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/603-1
+00:09:23.567 --> 00:09:26.617
+<v Ramesh Godara>right?
+Like PIM core and so which one are we</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/603-2
+00:09:26.617 --> 00:09:27.023
+<v Ramesh Godara>using?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/604-0
+00:09:34.103 --> 00:09:34.263
+<v Iryna Kovlyha>Mm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/633-0
+00:09:35.343 --> 00:09:40.335
+<v Khrystyna Iermak>Yeah, and this, this,
+this is probably an open question as of</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/620-0
+00:09:39.223 --> 00:09:39.703
+<v Ramesh Godara>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/633-1
+00:09:40.335 --> 00:09:44.361
+<v Khrystyna Iermak>now. Yeah,
+what what's to what exactly to use and</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/633-2
+00:09:44.361 --> 00:09:47.903
+<v Khrystyna Iermak>how to map.
+This is what we are working on.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/645-0
+00:09:51.543 --> 00:09:55.303
+<v Iryna Kovlyha>Kristina,
+do you have the access to this Limke</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/645-1
+00:09:55.303 --> 00:09:56.423
+<v Iryna Kovlyha>Developer API?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/648-0
+00:09:59.863 --> 00:10:01.423
+<v Maryna Shykova>Mm yeah.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/646-0
+00:09:59.903 --> 00:10:00.143
+<v Iryna Kovlyha>Mm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/651-0
+00:10:01.583 --> 00:10:01.823
+<v Khrystyna Iermak>Yeah.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/667-0
+00:10:02.663 --> 00:10:09.582
+<v Maryna Shykova>But you should check it not in here.
+You need to be logged like from your</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/657-0
+00:10:05.943 --> 00:10:06.223
+<v Khrystyna Iermak>Yeah.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/661-0
+00:10:08.303 --> 00:10:08.543
+<v Iryna Kovlyha>On.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/667-1
+00:10:09.582 --> 00:10:10.423
+<v Maryna Shykova>computer.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/669-0
+00:10:11.143 --> 00:10:12.103
+<v Khrystyna Iermak>Mhm, mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/670-0
+00:10:11.943 --> 00:10:13.663
+<v Maryna Shykova>Not in the video.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/689-0
+00:10:14.783 --> 00:10:18.076
+<v Khrystyna Iermak>Yeah,
+it seems that like we don't have this</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/677-0
+00:10:15.063 --> 00:10:15.503
+<v Iryna Kovlyha>There you go.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/689-1
+00:10:18.076 --> 00:10:21.743
+<v Khrystyna Iermak>like our video by twisted to access this
+portal.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/688-0
+00:10:21.343 --> 00:10:21.823
+<v Iryna Kovlyha>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/699-0
+00:10:24.303 --> 00:10:27.008
+<v Iryna Kovlyha>Hmm.
+Interesting because in to PM I'm</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/699-1
+00:10:27.008 --> 00:10:29.143
+<v Iryna Kovlyha>accessing we are VDI. Hmm. OK.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/705-0
+00:10:28.343 --> 00:10:32.239
+<v Maryna Shykova>Alright,
+it's because when you have created a</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/705-1
+00:10:32.239 --> 00:10:34.863
+<v Maryna Shykova>request, it was added for this.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/708-0
+00:10:35.943 --> 00:10:37.783
+<v Maryna Shykova>Oh, for this computer.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/722-0
+00:10:40.783 --> 00:10:47.263
+<v Maryna Shykova>But APT documentation it's open for our
+says I believe link to the.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/725-0
+00:10:48.383 --> 00:10:50.743
+<v Maryna Shykova>VPN account that we are using.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/736-0
+00:10:52.903 --> 00:10:53.743
+<v Iryna Kovlyha>Oh, OK.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/739-0
+00:10:52.983 --> 00:10:55.623
+<v Maryna Shykova>And in Vijay we have different VPN.
+Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/759-0
+00:10:53.743 --> 00:10:59.903
+<v Khrystyna Iermak>No, it's it's it's a stop.
+Can you just type pin in the search bar?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/751-0
+00:10:59.263 --> 00:11:00.463
+<v Maryna Shykova>Type Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/774-0
+00:10:59.943 --> 00:11:07.858
+<v Rishabh Tailor>Yeah, there are 10 APIs,
+different APIs for PIM AIM contribution</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/767-0
+00:11:04.863 --> 00:11:06.903
+<v Khrystyna Iermak>Mm-hmm, mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/774-1
+00:11:07.858 --> 00:11:11.023
+<v Rishabh Tailor>document file incremental.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/777-0
+00:11:16.503 --> 00:11:19.863
+<v Ramesh Godara>I think uh in product right? Uh.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/791-0
+00:11:19.303 --> 00:11:23.903
+<v Maryna Shykova>A PIM Product Expert or a PIM search
+might be as well.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/779-0
+00:11:20.623 --> 00:11:20.823
+<v Rishabh Tailor>No.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/799-0
+00:11:23.583 --> 00:11:27.903
+<v Rishabh Tailor>Search is also there,
+but search has only one uh endpoint.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/803-0
+00:11:27.223 --> 00:11:29.543
+<v Maryna Shykova>To get product related data. Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/829-0
+00:11:29.823 --> 00:11:34.279
+<v Rishabh Tailor>Oh yeah,
+product has multiple endpoints and files</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/829-1
+00:11:34.279 --> 00:11:39.270
+<v Rishabh Tailor>and incrementals.
+These are different APIs for based on</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/829-2
+00:11:39.270 --> 00:11:46.489
+<v Rishabh Tailor>let's say a particular product I guess
+from what these request and response seem</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/829-3
+00:11:46.489 --> 00:11:47.023
+<v Rishabh Tailor>to be.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/830-0
+00:12:00.703 --> 00:12:01.463
+<v Khrystyna Iermak>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/866-0
+00:12:19.143 --> 00:12:23.350
+<v Uladzislau Baranouski>OK,
+so can we now split this integration in</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/866-1
+00:12:23.350 --> 00:12:30.521
+<v Uladzislau Baranouski>smaller pieces or you guys need some time
+to go through the those like the</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/866-2
+00:12:30.521 --> 00:12:38.170
+<v Uladzislau Baranouski>developer API or to have the connection
+to PIM before or we can just draft some</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/866-3
+00:12:38.170 --> 00:12:38.743
+<v Uladzislau Baranouski>ideas?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/867-0
+00:12:38.743 --> 00:12:39.743
+<v Uladzislau Baranouski>That's how to split it.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/883-0
+00:12:44.263 --> 00:12:48.473
+<v Maryna Shykova>What we know right now that we for sure
+will be using APG,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/883-1
+00:12:48.473 --> 00:12:51.183
+<v Maryna Shykova>so the identification is clear, right?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/919-0
+00:12:52.263 --> 00:12:56.975
+<v Maryna Shykova>That's understood.
+And first we will use API for the</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/886-0
+00:12:53.463 --> 00:12:54.783
+<v Ramesh Godara>Mhm, yeah.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/919-1
+00:12:56.975 --> 00:13:01.952
+<v Maryna Shykova>integration and it will be on the
+outbound integration.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/919-2
+00:13:01.952 --> 00:13:05.952
+<v Maryna Shykova>So we will only get the data,
+read the data.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/919-3
+00:13:05.952 --> 00:13:10.663
+<v Maryna Shykova>We are not planning to post something
+from our site.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/922-0
+00:13:11.423 --> 00:13:12.383
+<v Maryna Shykova>Right. Um.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/948-0
+00:13:13.543 --> 00:13:19.643
+<v Maryna Shykova>But we don't know the exact set of the
+calls and how the data corresponds and</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/948-1
+00:13:19.643 --> 00:13:25.430
+<v Maryna Shykova>like which API exactly we'll be using.
+So on this one I believe that some</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/948-2
+00:13:25.430 --> 00:13:27.463
+<v Maryna Shykova>analysis needs to be done.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/949-0
+00:13:28.583 --> 00:13:28.783
+<v Maryna Shykova>1.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/970-0
+00:13:38.623 --> 00:13:44.543
+<v Uladzislau Baranouski>OK, so to use those connections,
+what we need to build from our side like</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/956-0
+00:13:39.103 --> 00:13:40.023
+<v Maryna Shykova>It's.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/961-0
+00:13:40.983 --> 00:13:41.503
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/970-1
+00:13:44.543 --> 00:13:45.503
+<v Uladzislau Baranouski>the UI then?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/973-0
+00:13:45.543 --> 00:13:45.783
+<v Uladzislau Baranouski>Hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/977-0
+00:13:46.503 --> 00:13:50.703
+<v Maryna Shykova>You are not clear if you need.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/976-0
+00:13:47.183 --> 00:13:48.943
+<v Uladzislau Baranouski>I don't know some develop.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1011-0
+00:13:56.343 --> 00:14:01.719
+<v Maryna Shykova>Kristina, how we plan to have it?
+Would it be like if some new product</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1011-1
+00:14:01.719 --> 00:14:06.185
+<v Maryna Shykova>available in PIM,
+we are loading it on our site or it will</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1011-2
+00:14:06.185 --> 00:14:09.743
+<v Maryna Shykova>be look for the product when it is
+registered?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1010-0
+00:14:12.063 --> 00:14:12.343
+<v Uladzislau Baranouski>And.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1014-0
+00:14:13.943 --> 00:14:14.063
+<v Maryna Shykova>OK.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1053-0
+00:14:14.023 --> 00:14:18.860
+<v Khrystyna Iermak>Believe that we would need like once the
+product is created,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1053-1
+00:14:18.860 --> 00:14:24.885
+<v Khrystyna Iermak>it's being created in Picasso and it
+would be search from the products from</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1053-2
+00:14:24.885 --> 00:14:30.276
+<v Khrystyna Iermak>PIM. At the same time guys,
+Please remember that in PIM we have the</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1053-3
+00:14:30.276 --> 00:14:31.703
+<v Khrystyna Iermak>products that are.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1087-0
+00:14:32.263 --> 00:14:39.602
+<v Khrystyna Iermak>Available that are already sold.
+So actually the offers while in Picasso</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1087-1
+00:14:39.602 --> 00:14:45.635
+<v Khrystyna Iermak>we could have bricks,
+platforms that are not sold like as a</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1087-2
+00:14:45.635 --> 00:14:51.063
+<v Khrystyna Iermak>standalone product on the market,
+so they don't have.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1120-0
+00:14:52.263 --> 00:14:56.841
+<v Khrystyna Iermak>Commercial number.
+This is the first point to remember.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1120-1
+00:14:56.841 --> 00:15:02.399
+<v Khrystyna Iermak>The second point is that we could
+register in Picasso, for example,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1120-2
+00:15:02.399 --> 00:15:07.303
+<v Khrystyna Iermak>some products that are not yet
+commercialized, for example,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1120-3
+00:15:07.303 --> 00:15:09.183
+<v Khrystyna Iermak>the completely new one.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1156-0
+00:15:09.943 --> 00:15:13.894
+<v Khrystyna Iermak>Yeah,
+that are like in the development process</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1156-1
+00:15:13.894 --> 00:15:17.761
+<v Khrystyna Iermak>yet.
+So that's why such products would not be</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1156-2
+00:15:17.761 --> 00:15:23.225
+<v Khrystyna Iermak>available in PIN yet,
+like once they are released to the market,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1156-3
+00:15:23.225 --> 00:15:27.343
+<v Khrystyna Iermak>once they got their commercial reference
+number.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1180-0
+00:15:28.983 --> 00:15:36.473
+<v Khrystyna Iermak>Then this product would appear in PIM and
+we would need just to map. Yeah,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1180-1
+00:15:36.473 --> 00:15:42.565
+<v Khrystyna Iermak>their records and yeah,
+the third use case is so like, yeah,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1180-2
+00:15:42.565 --> 00:15:43.663
+<v Khrystyna Iermak>the search.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1208-0
+00:15:44.103 --> 00:15:52.825
+<v Khrystyna Iermak>For the existing product and right now we
+do not distinguish, for example,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1208-1
+00:15:52.825 --> 00:16:00.383
+<v Khrystyna Iermak>internal applications and other products,
+so we don't have such.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1234-0
+00:16:00.823 --> 00:16:05.979
+<v Khrystyna Iermak>Attribute right now in product details
+top, yeah,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1234-1
+00:16:05.979 --> 00:16:11.444
+<v Khrystyna Iermak>but still we have such records in Picasso
+as of now.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1234-2
+00:16:11.444 --> 00:16:19.383
+<v Khrystyna Iermak>So now the internal applications of
+Schneider Electric and they would never.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1246-0
+00:16:19.383 --> 00:16:25.277
+<v Khrystyna Iermak>Ever have these PIN corresponding PIN
+record? Yeah,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1246-1
+00:16:25.277 --> 00:16:28.903
+<v Khrystyna Iermak>so they could exist without PIN.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1279-0
+00:16:43.503 --> 00:16:51.706
+<v Khrystyna Iermak>So answering the question, yeah,
+so we can either search for corresponding</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1279-1
+00:16:51.706 --> 00:16:57.393
+<v Khrystyna Iermak>product in PIM.
+We could for example create Picasso</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1265-0
+00:16:52.663 --> 00:16:53.383
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1279-2
+00:16:57.393 --> 00:17:00.783
+<v Khrystyna Iermak>product without PIM connection.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1313-0
+00:17:01.503 --> 00:17:05.620
+<v Khrystyna Iermak>Yeah,
+and later connect our product in Picasso</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1313-1
+00:17:05.620 --> 00:17:11.313
+<v Khrystyna Iermak>with PIM product. Yeah,
+once it is added there and we could have</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1298-0
+00:17:10.783 --> 00:17:11.263
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1313-2
+00:17:11.313 --> 00:17:17.970
+<v Khrystyna Iermak>cases where the product in Picasso
+doesn't have corresponding record in PIM</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1313-3
+00:17:17.970 --> 00:17:18.583
+<v Khrystyna Iermak>at all.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1363-0
+00:17:19.223 --> 00:17:24.113
+<v Maryna Shykova>And As for the search,
+it's like during the registration of the</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1363-1
+00:17:24.113 --> 00:17:27.934
+<v Maryna Shykova>product or like when like kind of a daily
+update,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1363-2
+00:17:27.934 --> 00:17:33.817
+<v Maryna Shykova>we get the information that there are
+some products registered in BIM and we</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1363-3
+00:17:33.817 --> 00:17:38.783
+<v Maryna Shykova>create them by default in Picasa and just
+waiting for the users.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1394-0
+00:17:38.823 --> 00:17:43.084
+<v Khrystyna Iermak>No, we don't. Yeah, no, no.
+We don't need to create like,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1365-0
+00:17:38.903 --> 00:17:39.503
+<v Maryna Shykova>Turn like.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1367-0
+00:17:40.503 --> 00:17:41.023
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1394-1
+00:17:43.084 --> 00:17:47.932
+<v Khrystyna Iermak>I'm not saying dummy records. Yeah,
+but records just, just, just,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1380-0
+00:17:45.383 --> 00:17:47.703
+<v Maryna Shykova>Mm-hmm. Like draft products. Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1394-2
+00:17:47.932 --> 00:17:52.633
+<v Khrystyna Iermak>just as draft. No, we don't need.
+It's just like in case, yeah,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1394-3
+00:17:52.633 --> 00:17:54.983
+<v Khrystyna Iermak>we need to have them in Picasso.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1390-0
+00:17:53.103 --> 00:17:53.583
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1393-0
+00:17:56.063 --> 00:17:56.343
+<v Maryna Shykova>OK.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1416-0
+00:17:58.023 --> 00:18:02.655
+<v Maryna Shykova>So like it's anyway starts with the user
+registering the product.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1416-1
+00:18:02.655 --> 00:18:06.303
+<v Maryna Shykova>We are we are not doing it instead of
+them. Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1409-0
+00:18:03.023 --> 00:18:03.663
+<v Khrystyna Iermak>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1415-0
+00:18:06.463 --> 00:18:07.503
+<v Khrystyna Iermak>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1426-0
+00:18:10.863 --> 00:18:14.265
+<v Maryna Shykova>OK,
+but we will show some sort of the linkage</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1426-1
+00:18:14.265 --> 00:18:15.743
+<v Maryna Shykova>right here with PIM.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1453-0
+00:18:17.223 --> 00:18:22.727
+<v Maryna Shykova>So we will have update for this like
+search of the UI and update of the</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1453-1
+00:18:22.727 --> 00:18:28.383
+<v Maryna Shykova>product details like we'll show somehow
+the connection with PIM if it is.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1455-0
+00:18:29.343 --> 00:18:30.223
+<v Maryna Shykova>Available.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1456-0
+00:18:33.543 --> 00:18:34.623
+<v Maryna Shykova>Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1499-0
+00:18:45.303 --> 00:18:50.999
+<v Maryna Shykova>I think that no BIM records is kind of
+what we have right now.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1499-1
+00:18:50.999 --> 00:18:56.966
+<v Maryna Shykova>I don't know if you need to cover it
+exactly. So to kind of link.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1487-0
+00:18:54.463 --> 00:18:58.436
+<v Uladzislau Baranouski>Mm-hmm.
+So we need just the ability to push it to</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1499-2
+00:18:56.966 --> 00:19:04.199
+<v Maryna Shykova>So you have registered something and you
+are looking if it is available and add</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1487-1
+00:18:58.436 --> 00:19:00.343
+<v Uladzislau Baranouski>PIM, right? Uh, to sort.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1492-0
+00:19:02.103 --> 00:19:02.623
+<v Uladzislau Baranouski>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1499-3
+00:19:04.199 --> 00:19:05.103
+<v Maryna Shykova>this link.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1512-0
+00:19:05.303 --> 00:19:13.063
+<v Maryna Shykova>Between those two objects like for
+example by some unique ID that we have in.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1510-0
+00:19:08.023 --> 00:19:09.743
+<v Uladzislau Baranouski>Product to lean.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1513-0
+00:19:14.863 --> 00:19:14.943
+<v Uladzislau Baranouski>Um.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1514-0
+00:19:18.703 --> 00:19:19.343
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1530-0
+00:19:23.103 --> 00:19:30.049
+<v Uladzislau Baranouski>OK,
+so we need first UI and the UI for search</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1530-1
+00:19:30.049 --> 00:19:33.823
+<v Uladzislau Baranouski>UI for like link linking.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1531-0
+00:19:34.903 --> 00:19:39.223
+<v Maryna Shykova>Mm-hmm, mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1535-0
+00:19:49.623 --> 00:19:52.783
+<v Uladzislau Baranouski>I like the error.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1558-0
+00:20:05.103 --> 00:20:07.652
+<v Ramesh Godara>Also,
+once we like search and we'll have</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1558-1
+00:20:07.652 --> 00:20:11.257
+<v Ramesh Godara>product details,
+so are we going to allow users to update</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1558-2
+00:20:11.257 --> 00:20:14.303
+<v Ramesh Godara>any of those details or it will be like
+it only?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1562-0
+00:20:18.903 --> 00:20:21.023
+<v Ramesh Godara>Like before saving in Picasso.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1573-0
+00:20:25.703 --> 00:20:31.263
+<v Maryna Shykova>Will we import some port details from PIM?
+I have missed this part.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1610-0
+00:20:35.623 --> 00:20:41.579
+<v Maryna Shykova>Kristina, maybe I have missed this part.
+I understood that we are like using it</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1610-1
+00:20:41.579 --> 00:20:45.822
+<v Maryna Shykova>only for linkage,
+but are we going to like to search for</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1610-2
+00:20:45.822 --> 00:20:51.702
+<v Maryna Shykova>some details that are specified for the
+product in BIM and also transfer it to</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1610-3
+00:20:51.702 --> 00:20:52.223
+<v Maryna Shykova>Picasa?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1612-0
+00:20:53.903 --> 00:20:55.303
+<v Khrystyna Iermak>Uh, so um.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1648-0
+00:20:57.223 --> 00:21:04.378
+<v Khrystyna Iermak>What we would need like once we have,
+yeah, the link between Picasso and Beam,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1621-0
+00:21:00.263 --> 00:21:00.783
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1648-1
+00:21:04.378 --> 00:21:08.907
+<v Khrystyna Iermak>then yeah,
+if for example we have some updates of</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1648-2
+00:21:08.907 --> 00:21:14.703
+<v Khrystyna Iermak>attributes and probably we would monitor
+just like a few maybe.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1663-0
+00:21:15.303 --> 00:21:19.534
+<v Khrystyna Iermak>Two or like up to five attributes of this
+product. Yeah,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1663-1
+00:21:19.534 --> 00:21:22.503
+<v Khrystyna Iermak>we would need to update them in because.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1700-0
+00:21:23.823 --> 00:21:28.352
+<v Khrystyna Iermak>Like for example,
+what I can think about is the state of</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1700-1
+00:21:28.352 --> 00:21:32.325
+<v Khrystyna Iermak>the product. Yeah, if it is changed,
+for example,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1700-2
+00:21:32.325 --> 00:21:36.695
+<v Khrystyna Iermak>it was active and now it is like end of
+support. Yeah,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1700-3
+00:21:36.695 --> 00:21:41.303
+<v Khrystyna Iermak>then we need to get this information from
+team like once.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1692-0
+00:21:38.103 --> 00:21:38.623
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1698-0
+00:21:41.783 --> 00:21:42.303
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1703-0
+00:21:42.543 --> 00:21:44.623
+<v Khrystyna Iermak>The update is so.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1707-0
+00:21:45.743 --> 00:21:47.343
+<v Khrystyna Iermak>Done. They are.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1708-0
+00:21:46.903 --> 00:21:48.823
+<v Maryna Shykova>Mm-hmm. OK.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1732-0
+00:21:49.943 --> 00:21:54.999
+<v Maryna Shykova>So we we will,
+we will have some some fields which will</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1732-1
+00:21:54.999 --> 00:22:00.686
+<v Maryna Shykova>be taken only from PIM.
+If we have this linkage added and that</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1722-0
+00:21:57.543 --> 00:21:58.263
+<v Khrystyna Iermak>Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1729-0
+00:22:00.663 --> 00:22:02.703
+<v Khrystyna Iermak>Yeah, yeah, correct.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1732-2
+00:22:00.686 --> 00:22:03.303
+<v Maryna Shykova>needs to be refreshed, right?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1751-0
+00:22:04.423 --> 00:22:10.157
+<v Maryna Shykova>And also I believe that like mapping
+between our values and the data in BIM</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1751-1
+00:22:10.157 --> 00:22:13.023
+<v Maryna Shykova>will be covered in back office, right?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1769-0
+00:22:14.503 --> 00:22:18.659
+<v Maryna Shykova>So for example,
+if they have the instead of end of life</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1769-1
+00:22:18.659 --> 00:22:24.225
+<v Maryna Shykova>state something like duplicated,
+we will need to map it somehow to our end</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1769-2
+00:22:24.225 --> 00:22:25.263
+<v Maryna Shykova>of life state.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1775-0
+00:22:26.703 --> 00:22:29.983
+<v Ramesh Godara>Mm-hmm. Yeah, right.
+They might have different text.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1796-0
+00:22:30.903 --> 00:22:34.781
+<v Maryna Shykova>Yeah,
+the and it will be something that will be</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1776-0
+00:22:32.343 --> 00:22:33.303
+<v Ramesh Godara>You know.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1796-1
+00:22:34.781 --> 00:22:39.870
+<v Maryna Shykova>completed by the because that means not
+that for each product,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1796-2
+00:22:39.870 --> 00:22:43.263
+<v Maryna Shykova>but for the whole integration. So I think.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1812-0
+00:22:48.183 --> 00:22:54.063
+<v Uladzislau Baranouski>Will we have ability to push from Picasso
+products to PIM or only link?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1822-0
+00:22:56.103 --> 00:23:00.623
+<v Maryna Shykova>We have read only access. Irina mentioned,
+right? Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1817-0
+00:22:57.783 --> 00:22:59.463
+<v Uladzislau Baranouski>Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1824-0
+00:23:00.423 --> 00:23:03.023
+<v Uladzislau Baranouski>OK, so we can only grab the data.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1825-0
+00:23:03.863 --> 00:23:04.383
+<v Maryna Shykova>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1827-0
+00:23:04.423 --> 00:23:05.503
+<v Uladzislau Baranouski>All right.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1838-0
+00:23:11.263 --> 00:23:17.103
+<v Ramesh Godara>But they do have a page right Irina for
+like a two week communication.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1862-0
+00:23:19.943 --> 00:23:25.056
+<v Maryna Shykova>I'm not sure like I believe that we can
+study this document that was shared</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1862-1
+00:23:25.056 --> 00:23:30.303
+<v Maryna Shykova>because we didn't have connection with
+any of the PIN representatives so far.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1879-0
+00:23:31.703 --> 00:23:38.983
+<v Ramesh Godara>Yeah, after this call, let me check once.
+So Iryna, who is the point of?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1883-0
+00:23:37.063 --> 00:23:41.903
+<v Maryna Shykova>And what what for do you need to a
+connection like two way connections?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1887-0
+00:23:42.063 --> 00:23:44.289
+<v Ramesh Godara>No, no,
+I'm just checking like since Urad was</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1887-1
+00:23:44.289 --> 00:23:45.063
+<v Ramesh Godara>asking right so.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1896-0
+00:23:47.543 --> 00:23:51.223
+<v Maryna Shykova>Yeah, just wanted to check.
+Maybe you have some ideas. Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1903-0
+00:23:51.263 --> 00:23:53.639
+<v Ramesh Godara>No, no,
+this is this totally depends on the</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1903-1
+00:23:53.639 --> 00:23:56.663
+<v Ramesh Godara>requirements, right?
+So currently it's not requirement.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1904-0
+00:23:57.903 --> 00:23:58.103
+<v Maryna Shykova>OK.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1916-0
+00:24:06.943 --> 00:24:13.287
+<v Ramesh Godara>So you know who is the point of contact?
+Like in case we need credentials to test</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1916-1
+00:24:13.287 --> 00:24:13.983
+<v Ramesh Godara>the APIs.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1945-0
+00:24:15.343 --> 00:24:23.489
+<v Iryna Kovlyha>I'm not sure because we were talking with
+Hussain and Hiba regarding PIM integrate</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1945-1
+00:24:23.489 --> 00:24:30.063
+<v Iryna Kovlyha>PIM integration and after that a person
+with a name. Let me check.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1939-0
+00:24:25.343 --> 00:24:25.823
+<v Ramesh Godara>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1946-0
+00:24:30.663 --> 00:24:30.743
+<v Iryna Kovlyha>Um.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1958-0
+00:24:33.423 --> 00:24:39.183
+<v Iryna Kovlyha>He is Rahul Sharma who shared with me
+updates regarding my access.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1959-0
+00:24:40.063 --> 00:24:40.263
+<v Iryna Kovlyha>Um.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1960-0
+00:24:40.263 --> 00:24:40.823
+<v Ramesh Godara>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/1978-0
+00:25:16.103 --> 00:25:20.543
+<v Uladzislau Baranouski>Alright,
+any other thoughts what we might missed?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2020-0
+00:25:37.743 --> 00:25:42.048
+<v Uladzislau Baranouski>All right, so maybe Irina,
+you can share with Ramesh what you</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2020-1
+00:25:42.048 --> 00:25:45.937
+<v Uladzislau Baranouski>already have in terms of drafts,
+just the URLs. Ramesh,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2020-2
+00:25:45.937 --> 00:25:51.352
+<v Uladzislau Baranouski>you will try to request the access to PIM,
+pass the training and then we will</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2011-0
+00:25:49.343 --> 00:25:50.063
+<v Ramesh Godara>Mhm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2020-3
+00:25:51.352 --> 00:25:52.463
+<v Uladzislau Baranouski>regroup on this.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2044-0
+00:25:52.863 --> 00:25:58.975
+<v Uladzislau Baranouski>Once you will have a little bit more
+details and we we will try to put the</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2044-1
+00:25:58.975 --> 00:26:05.249
+<v Uladzislau Baranouski>high level estimates for each topic what
+we have at risk or just update what</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2044-2
+00:26:05.249 --> 00:26:08.263
+<v Uladzislau Baranouski>defined here based on your knowledge.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2064-0
+00:26:12.143 --> 00:26:15.581
+<v Ramesh Godara>Could you please share these two
+screenshots,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2046-0
+00:26:12.263 --> 00:26:12.503
+<v Uladzislau Baranouski>Right.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2064-1
+00:26:15.581 --> 00:26:18.943
+<v Ramesh Godara>PIM and the legacy product one also?
+Mm-hmm.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2065-0
+00:26:16.343 --> 00:26:20.463
+<v Uladzislau Baranouski>Yeah, sure. Yeah, yeah, I will.
+I will put it in the chat.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2056-0
+00:26:17.223 --> 00:26:17.423
+<v Iryna Kovlyha>Hello.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2109-0
+00:26:22.903 --> 00:26:29.015
+<v Iryna Kovlyha>So I shared 2 links in the chat and the
+second one is actually with this read</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2109-1
+00:26:29.015 --> 00:26:33.481
+<v Iryna Kovlyha>only materials.
+In the section business concept you will</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2109-2
+00:26:33.481 --> 00:26:39.593
+<v Iryna Kovlyha>see some mandatory presentations and
+mandatory and optional and once you will</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2109-3
+00:26:39.593 --> 00:26:41.943
+<v Iryna Kovlyha>scroll a little bit lower you.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2112-0
+00:26:42.623 --> 00:26:45.543
+<v Iryna Kovlyha>Will find a link to the quiz.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2114-0
+00:26:47.983 --> 00:26:50.303
+<v Ramesh Godara>Mm-hmm. Thank you.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2125-0
+00:26:56.463 --> 00:27:02.903
+<v Uladzislau Baranouski>All right, so let me check. Yes,
+I can put the image one and image 2.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2132-0
+00:27:06.183 --> 00:27:09.703
+<v Uladzislau Baranouski>OK. So any questions, any comments?</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2136-0
+00:27:16.583 --> 00:27:18.583
+<v Ramesh Godara>No, nothing from my side.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2163-0
+00:27:21.303 --> 00:27:25.278
+<v Uladzislau Baranouski>OK. So, yeah,
+then let's close the call and then</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2163-1
+00:27:25.278 --> 00:27:29.821
+<v Uladzislau Baranouski>regroup later,
+maybe this later this week or next week,</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2163-2
+00:27:29.821 --> 00:27:32.903
+<v Uladzislau Baranouski>right. Thank you. Thank you, everyone.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2169-0
+00:27:33.263 --> 00:27:36.143
+<v Khrystyna Iermak>Yep. Thank you. Thank you so much.
+Have a good day.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2171-0
+00:27:36.183 --> 00:27:36.503
+<v Iryna Kovlyha>Bye, bye.</v>
+
+6e36d370-2463-4e36-bac4-839254689eda/2173-0
+00:27:36.623 --> 00:27:37.863
+<v Maryna Shykova>Mhm. Thank you.</v>

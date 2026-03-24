@@ -27,7 +27,10 @@ Invoke these skills as needed:
 
 ## JIRA & Confluence MCP Integration (MANDATORY)
 
-Use MCP tools directly for all JIRA and Confluence data fetching — do NOT run Python CLI fetch commands.
+CRITICAL RULES:
+
+- Use `atlas` agent to fetch data from Jira and Confluence MCP
+- Use MCP tools directly for all JIRA and Confluence data fetching — do NOT run Python CLI fetch commands.
 
 **Fetch a JIRA version list:**
 

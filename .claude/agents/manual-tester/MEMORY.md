@@ -1,0 +1,1 @@
+# Manual Tester Agent Memory
