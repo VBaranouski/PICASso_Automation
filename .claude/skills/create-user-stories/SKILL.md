@@ -199,6 +199,24 @@ Using the spec data, generate a **JSON object** (not an array) with two top-leve
 - Include specifics: exact field names, button labels, error messages, data formats, allowed/forbidden values.
 - Pre-answer developer questions (what happens when X is empty, what if no permission, max length, etc.).
 
+**Formatting rule — lists over prose for multi-item descriptions:**
+When a criterion enumerates 3+ items (e.g. table columns, field lists, option sets), use a bullet/numbered list or table rather than a long prose sentence. Example — instead of:
+> "The table has columns: Standard (name), Requirement (clickable code — redirects to edit page), Is Active (green/grey checkmark)."
+
+Write:
+
+> "The table has columns:
+>
+> - Standard — name of the standard/policy
+> - Requirement — clickable code(s); clicking redirects to the Edit Requirement page
+> - Is Active — green checkmark when active, grey checkmark when inactive"
+
+**Inline Figma references in AC:**
+When `figma_mcp_context` was fetched, embed the Figma frame link directly inside the criterion text using the pattern `(see Figma [Frame Label|<figma-url-with-node-id>])`. Example:
+> "Clicking 'View Details' shows a pop-up with the requirement code/name as header and an 'Added' stamp. (see Figma [Requirements Update – View Details – Added Pop-up|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5827-204540])"
+
+Only embed links for frames that directly illustrate that specific criterion. Do not add a generic Figma link to every criterion.
+
 ### Screenshot Matching
 
 - The spec has screenshots listed in `image_names`. Assign them to the most relevant story or criterion.
@@ -206,6 +224,14 @@ Using the spec data, generate a **JSON object** (not an array) with two top-leve
 - For **criterion-level screenshots** (directly illustrating a specific criterion): replace the plain string with a dict `{"text": "criterion text...", "screenshot": "filename.png"}`.
 - Only reference filenames that exist in `image_names`. Do not invent filenames.
 - If you cannot confidently match a screenshot to a specific story or criterion, leave it unmatched — do not guess randomly.
+
+### Additional Information Section
+
+Every story **must** include an `additional_information` object with three lists:
+
+- `mockups` — Figma frame URLs used when writing this story (with descriptive labels). Populate from `figma_mcp_context` URLs or user-provided Figma URLs.
+- `confluence_links` — direct URL(s) to the Confluence section(s) describing this functionality. Extract from the Confluence page URL + section anchors.
+- `diagrams` — URLs to any architecture/flow diagrams referenced in the spec (leave empty array `[]` if none).
 
 ### Questions Section
 
@@ -229,6 +255,15 @@ Using the spec data, generate a **JSON object** (not an array) with two top-leve
         {"text": "Criterion that references a specific screen", "screenshot": "image-filename.png"}
       ],
       "screenshots": ["image-filename.png", "image-other.png"],
+      "additional_information": {
+        "mockups": [
+          {"label": "Frame Name – State", "url": "https://www.figma.com/design/...?node-id=XXXX"}
+        ],
+        "confluence_links": [
+          {"label": "Spec Section Title", "url": "https://confluence.se.com/pages/..."}
+        ],
+        "diagrams": []
+      },
       "source_requirement": "Section or quote from the spec this covers"
     }
   ],
