@@ -198,7 +198,7 @@
   <div class="header">
     <div class="se-mark">SE</div>
     <div class="badge">Successfully Deployed</div>
-    <h1>{{ version.project_key }} {{ release_type }} &mdash; {{ version.name }}</h1>
+    <h1>PICASso {{ release_type }} &mdash; {{ version.name }}</h1>
     <div class="subtitle">
       Release Date: <strong>{{ version.release_date or 'TBD' }}</strong>
       &nbsp;&bull;&nbsp;
@@ -214,6 +214,22 @@
   {%- set defect = issue.issue_type | lower in ('bug', 'defect') -%}
   <li>{% if defect %}Fixed an issue where {{ issue.summary[0] | lower }}{{ issue.summary[1:] }}.{% else %}{{ issue.summary }}{% endif %}</li>
   {% endmacro %}
+
+  <!-- NEW FEATURES & ENHANCEMENTS -->
+  {% if feature_issues %}
+  <div class="section low">
+    <div class="section-title">
+      <div class="priority-dot" style="background:{{ branding.primary_color }};"></div>
+      <h2>New Features and Enhancements</h2>
+      <span class="count">{{ feature_issues | length }} item{{ 's' if feature_issues | length != 1 else '' }}</span>
+    </div>
+    <ul>
+      {% for issue in feature_issues %}
+      <li>{{ issue.summary }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
 
   <!-- HIGH PRIORITY FIXES -->
   {% if high_issues %}
@@ -257,22 +273,6 @@
   </div>
   {% endif %}
 
-  <!-- NEW FEATURES & ENHANCEMENTS -->
-  {% if feature_issues %}
-  <div class="section low">
-    <div class="section-title">
-      <div class="priority-dot" style="background:{{ branding.primary_color }};"></div>
-      <h2>New Features and Enhancements</h2>
-      <span class="count">{{ feature_issues | length }} item{{ 's' if feature_issues | length != 1 else '' }}</span>
-    </div>
-    <ul>
-      {% for issue in feature_issues %}
-      <li>{{ issue.summary }}</li>
-      {% endfor %}
-    </ul>
-  </div>
-  {% endif %}
-
   <!-- FOOTER -->
   <div class="footer">
     <div>
@@ -282,7 +282,7 @@
     <div class="closing">{{ closing_text }}</div>
   </div>
 
-  <div class="meta">Generated {{ generated_date }} &mdash; {{ version.project_key }} Release Management</div>
+  <div class="meta">Generated {{ generated_date }} &mdash; PICASso Release Management</div>
 
 </div>
 </body>

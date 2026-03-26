@@ -252,23 +252,23 @@ class ReleaseNotesGenerator:
 
         intro_text = (
             f"We are pleased to announce the successful deployment of the "
-            f"<strong>{ctx.project_key} {release_type} {ctx.version.name}</strong>. "
+            f"<strong>PICASso {release_type} {ctx.version.name}</strong>. "
             f"This release delivers " + " and ".join(parts) + "."
             if parts else
             f"We are pleased to announce the successful deployment of the "
-            f"<strong>{ctx.project_key} {release_type} {ctx.version.name}</strong>."
+            f"<strong>PICASso {release_type} {ctx.version.name}</strong>."
         )
 
         tag_map = {
-            "Hotfix": f"#{ctx.project_key} &nbsp;#Release &nbsp;#HotFix",
-            "Enhancement Release": f"#{ctx.project_key} &nbsp;#Release &nbsp;#Enhancement",
-            "Release Candidate": f"#{ctx.project_key} &nbsp;#Release &nbsp;#ReleaseCandidate",
+            "Hotfix": "#PICASso &nbsp;#Release &nbsp;#HotFix",
+            "Enhancement Release": "#PICASso &nbsp;#Release &nbsp;#Enhancement",
+            "Release Candidate": "#PICASso &nbsp;#Release &nbsp;#ReleaseCandidate",
         }
-        hashtags = tag_map.get(release_type, f"#{ctx.project_key} &nbsp;#Release")
+        hashtags = tag_map.get(release_type, "#PICASso &nbsp;#Release")
 
         closing_text = (
-            f"Thank you to the team for the fast turnaround on this {release_type.lower()}! "
-            f"If you encounter any issues, please reach out to the {ctx.project_key} support team."
+            f"Thanks to the team for all hard work on this release. "
+            f"If you encounter any issues, please reach out to the PICASso support team."
         )
 
         return template.render(

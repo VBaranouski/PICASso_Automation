@@ -1,0 +1,594 @@
+{
+  "stories": [
+    {
+      "title": "Backoffice: Version classification when updating requirements with 'Replacing' field filled",
+      "as_a": "Backoffice user with privilege to edit requirements in PICASso",
+      "i_want": "the system to correctly classify changes as Major or Minor when I update a requirement that already has a 'Replacing' field filled in, and to propagate those version changes to the linked replaced requirements",
+      "so_that": "the release versioning logic correctly reflects the impact of changes to replacing requirements",
+      "acceptance_criteria": [
+        {
+          "text": "When only Minor fields are updated on a requirement that already has a non-empty 'Replacing' field: the change is classified as 'Minor', no version change pop-up is shown, and the new Minor version is added to the last version of each requirement in 'Replacing'. (see Figma [Edit Process Requirement that replaces the existing one(s) – Default|https://www.figma.com/design/VCnhNo2gacNBDgTeyHRRYB/Backoffice?node-id=1900-12642])",
+          "screenshot": "1900-12642"
+        },
+        "When at least one Major field is updated on a requirement with a non-empty 'Replacing' field (but without changing the 'Replacing' values themselves): the change is classified as 'Major', the version change pop-up is shown, and the new Major version is propagated to the last version of each requirement in 'Replacing'.",
+        {
+          "text": "When a new requirement is added to the 'Replacing' field of a requirement that already has 'Replacing' values:\n- The change is Major — version change pop-up is shown\n- The new Major version is propagated to the already-linked requirements\n- A new version is created for the newly added requirement with status 'Inactive' and the current requirement appended to its 'Is Replaced By' field\n\n(see Figma [New Process Requirement – Confirmation – Default|https://www.figma.com/design/VCnhNo2gacNBDgTeyHRRYB/Backoffice?node-id=1900-14607])",
+          "screenshot": "1900-14607"
+        },
+        "When an existing requirement is removed from the 'Replacing' field (partial removal, some values remain): the change is Major — version change pop-up is shown; a new version of the removed requirement is created with status 'Inactive' and all previous versions of the current requirement removed from its 'Is Replaced By' field.",
+        "When ALL requirements are removed from the 'Replacing' field: the change is Major — version change pop-up is shown; a new version of every removed requirement is created with status 'Inactive' and all previous versions of the current requirement removed from their 'Is Replaced By' fields.",
+        "In all cases above, if the change is Major, the version change pop-up correctly shows the new version information and allows the user to choose when to push the change to releases."
+      ],
+      "screenshots": [
+        "1900-12642",
+        "1900-14607"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Edit Process Requirement that replaces existing – Default",
+            "url": "https://www.figma.com/design/VCnhNo2gacNBDgTeyHRRYB/Backoffice?node-id=1900-12642"
+          },
+          {
+            "label": "New Process Requirement – Confirmation – Default",
+            "url": "https://www.figma.com/design/VCnhNo2gacNBDgTeyHRRYB/Backoffice?node-id=1900-14607"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Updating requirements that were replacing other requirements",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Updatingrequirementsthatwerereplacingotherreqirements"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Backoffice > Updating requirements that were replacing other requirements"
+    },
+    {
+      "title": "Backoffice: Add 'Replacing' and 'Is Replaced By' columns to export files and 'Replacing' column to template with upload validation",
+      "as_a": "Backoffice user with privilege to export, download templates, and upload requirements in PICASso",
+      "i_want": "the Product and Process Requirements export files to include 'Replacing' and 'Is Replaced By' columns, the template files to include a 'Replacing' column, and the upload process to validate the 'Replacing' field values",
+      "so_that": "I can view and manage requirement replacement relationships via file export/import and receive clear errors when uploaded data is invalid",
+      "acceptance_criteria": [
+        {
+          "text": "The Product Requirements export file includes two new columns:\n- 'Replacing' — comma-separated list of requirement codes replaced by this requirement\n- 'Is Replaced By' — comma-separated list of requirement codes replacing this requirement\n\nThese columns are inserted after the existing columns in the appropriate position per the full column order defined in the spec. (see Figma [Process Requirement List – Default|https://www.figma.com/design/VCnhNo2gacNBDgTeyHRRYB/Backoffice?node-id=1900-13638])",
+          "screenshot": "1900-13638"
+        },
+        "The Process Requirements export file also includes the same two new columns 'Replacing' and 'Is Replaced By' with the same semantics, in the appropriate position.",
+        "The Product Requirements template file includes a new column 'Replacing' — optional string, requirement codes separated by commas. The 'Is Replaced By' column is NOT added to the template (it is read-only/system-managed).",
+        "The Process Requirements template file also includes the new 'Replacing' column with the same behavior.",
+        {
+          "text": "When a template file with a 'Replacing' column is uploaded, the system validates each 'Replacing' field value. If a code does not correspond to any registered requirement/sub-requirement in the system, or if codes are separated by anything other than a comma, the upload returns a row-level error: \"Row <row_number> - 'Requirement specified for \\\"Replacing\\\" column does not exist in the system. Several codes can be separated only by comma.'\" (see Figma [New Process Sub-Requirement – replaces existing – Unchecked|https://www.figma.com/design/VCnhNo2gacNBDgTeyHRRYB/Backoffice?node-id=1900-14023])",
+          "screenshot": "1900-14023"
+        },
+        "When upload validation passes, the system creates new versions for the requirements listed in 'Replacing' with status 'Inactive' and appends the uploaded requirement to their 'Is Replaced By' field (without overwriting existing values). Any requirement with a non-empty 'Is Replaced By' field cannot be further updated until the replacement is removed.",
+        "Versions created via upload for both replacing and replaced requirements are classified as 'Major'. If other minor fields are also changed in the same upload row, the version is still saved as 'Major'."
+      ],
+      "screenshots": [
+        "1900-13638",
+        "1900-14023"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Process Requirement List – Default",
+            "url": "https://www.figma.com/design/VCnhNo2gacNBDgTeyHRRYB/Backoffice?node-id=1900-13638"
+          },
+          {
+            "label": "New Process Sub-Requirement – replaces existing – Unchecked",
+            "url": "https://www.figma.com/design/VCnhNo2gacNBDgTeyHRRYB/Backoffice?node-id=1900-14023"
+          },
+          {
+            "label": "Edit Process Requirement – Sub Requirement List",
+            "url": "https://www.figma.com/design/VCnhNo2gacNBDgTeyHRRYB/Backoffice?node-id=1900-14368"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Adding replaced requirements data with file upload",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Addingreplaceddatarequirementswithfileupload"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Backoffice > Adding replaced requirements data for requirements with the file upload"
+    },
+    {
+      "title": "Frontoffice: Requirements Update pop-up — warning messages, filters and table view",
+      "as_a": "Product Owner or user with access to manage a release in PICASso (on Creation & Scoping, Review & Confirm, or Manage stage)",
+      "i_want": "to see a contextual warning message when a newer version of requirements is available and to open a 'Requirements Update' pop-up with filters and a grouped table of all applicable changes",
+      "so_that": "I can review what requirement changes are pending for my release before deciding whether to apply them",
+      "acceptance_criteria": [
+        "When a release is on the Creation & Scoping, Review & Confirm, or Manage stage, the system checks whether a newer version of requirements (scoped or potentially scopable for this release) is available. If yes, a warning message is shown in the release. The exact warning text depends on the release creation method and unanswered questionnaire state:\n\n- Release created from scratch or as clone (R&C or Manage stage), **no** unanswered questions: \"New version of requirements is available. Please review update statuses if needed. Learn More\" — 'Learn More' is a clickable link opening the Requirements Update pop-up.\n- Release created from scratch or as clone (R&C or Manage stage), **with** unanswered questions: \"A new version of requirements is available. Please review updated Questionnaire and review Requirements Update\" — 'Questionnaire' link opens the Questionnaire tab in the same browser window; 'Requirements Update' link opens the Requirements Update pop-up.\n- Release created as clone (Scoping stage), **no** unanswered questions: same text as the first variant above.\n- Release created as clone (Scoping stage), **with** unanswered questions: same text as the second variant above.",
+        {
+          "text": "Upon clicking 'Learn More' or 'Requirements Update' link, a pop-up opens showing all updates applicable to the release and its scoped requirements. (see Figma [Requirements Update - Default|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7193-205128])",
+          "screenshot": "7193-205128"
+        },
+        {
+          "text": "The Requirements Update pop-up contains:\n- A link to Content Changes\n- Sub-header: \"Review the proposed changes to requirements. Please select which changes to apply.\"\n- Warning message \"Certain requirements will be updated automatically on the specified date.\" — shown only when any requirement in the list has a 'Change on date' value AND the release is in Scoping or Scope Approval status\n- Filters:\n  - Search — searches by requirement code, name, or description\n  - Change — dropdown with options: Updated, Replaced, Added, Removed\n  - Reset button — clears all active filters and shows the full unfiltered table",
+          "screenshot": "5870-59214"
+        },
+        "The table groups data by each unique set of replacing requirements. For example: if 10 requirements are replaced by the same 2 requirements, they appear as 1 grouped row; if 1 requirement is replaced by 1 other, that is a separate row. The table columns are:\n- Checkbox for selecting a requirement — shown only for Product Requirements (not Process Requirements)\n- Change — type of change: Updated, Replaced, Added, or Removed\n- Requirement Name — varies by change type:\n  - Added / Removed: exact code and name\n  - Updated: two code+name pairs — Old (current in release) and New (latest version) — each with a stamp\n  - Replaced: multiple Old codes+names (all replaced requirements) and New codes+names (all replacing requirements) — each with a stamp\n- Requirement Description — first 2 lines by default with 'View more' link; same Old/New structure as Requirement Name for Updated/Replaced\n- Details — 'View Details' link opening the change detail pop-up",
+        "In the Requirement Name column: if a 'Change on Date' value is specified for a requirement version, that date is shown at the end of the column in red. Requirements with parent–sub-requirement relationships are indicated with icons: an expanded icon for parent requirements that have sub-requirements in the change list, a sub-requirement arrow icon for sub-requirements, and no icon for standalone parents. Sorting is by Old requirement version order value, with parents above their respective sub-requirements.",
+        {
+          "text": "The Requirements Update pop-up also shows the correct warning banner when automatic updates are pending.",
+          "screenshot": "5870-59214"
+        }
+      ],
+      "screenshots": [
+        "7193-205128",
+        "5870-59214"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Requirements Update - Default",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7193-205128"
+          },
+          {
+            "label": "Requirements Update - Banner about automatic update present",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5870-59214"
+          },
+          {
+            "label": "Requirements Update - Tooltip",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7070-166862"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Update the view and behavior of the Requirements Update pop-up",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-UpdatetheviewandbehavioroftheRequirementsUpdatepop-up"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Frontoffice > Update the view and behavior of the Requirements Update pop-up > Open 'Requirements Update' pop-up"
+    },
+    {
+      "title": "Frontoffice: View details of changes — Added, Removed, Updated, Replaced pop-ups",
+      "as_a": "Product Owner or user with access to manage a release in PICASso",
+      "i_want": "to click 'View Details' on any change row in the Requirements Update pop-up and see a detail pop-up tailored to the type of change (Added, Removed, Updated, or Replaced)",
+      "so_that": "I can understand exactly what changed before deciding whether to apply the change to my release",
+      "acceptance_criteria": [
+        {
+          "text": "Clicking 'View Details' for an 'Added' change opens a pop-up with:\n- Header: the requirement's code and name\n- Stamp: 'Added'\n- Description of the added requirement\n\n(see Figma [Requirements Update - View Details - Added Parent Requirement Pop-up|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5827-204540])",
+          "screenshot": "5827-204540"
+        },
+        {
+          "text": "Clicking 'View Details' for a 'Removed' change opens a pop-up with:\n- Header: the requirement's code and name\n- Stamp: 'Removed'\n- Description of the removed requirement\n- Status: current status of this requirement in the release\n- Evidence Link: link to the evidence added for this requirement in the release (if any)\n- Justification: text of the justification added for this requirement in the release (if any)\n- If Status is 'Delegated' and delegation details (Delegated To) are available: a 'View Details' link is shown under the status. Clicking it opens the Requirements Info pop-up for this requirement in a new browser window.\n\n(see Figma [Requirements Update - View Details - Removed Sub Requirement Pop-up|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6982-96816])",
+          "screenshot": "6982-96816"
+        },
+        {
+          "text": "Clicking 'View Details' for an 'Updated' change opens a pop-up with:\n- Header: new code and name of the requirement\n- Stamp: 'Updated'\n- Two columns:\n  - Left column ('Old' stamp): Requirement name (old code+name), Description (old), Status (current in release), Evidence Link, Justification. If Status is 'Delegated' with delegation details, a 'View Details' link is shown.\n  - Right column ('New' stamp): Requirement name (latest code+name), Description (latest version)\n- The parts of the content that differ between old and new versions are highlighted in green\n\n(see Figma [Requirements Update - View Details - Updated Sub Requirement Pop-up|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6982-96864])",
+          "screenshot": "6982-96864"
+        },
+        {
+          "text": "Clicking 'View Details' for a 'Replaced' change opens a pop-up with:\n- Header: 'Replaced: <N> requirement/s → <M> requirement/s' (where N = number of replaced old requirements, M = number of new replacing requirements)\n- Stamp: 'Replaced'\n- Two columns:\n  - Left column (for each replaced requirement): Requirement name, Description, Status, Evidence Link, Justification. If 'Delegated' with details, 'View Details' link shown.\n  - Right column ('New' stamp, for each replacing requirement): Requirement name, Description\n- When multiple requirements appear in a column, they are scrollable within the column\n\n(see Figma [Requirements Update - View Details - Replaced Pop-up|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7076-170309])",
+          "screenshot": "7076-170309"
+        },
+        "All four detail pop-up variants are view-only — they do not allow editing. They can be closed by clicking the 'Close' button or the X icon. Closing the detail pop-up returns the user to the Requirements Update pop-up without any changes."
+      ],
+      "screenshots": [
+        "5827-204540",
+        "6982-96816",
+        "6982-96864",
+        "7076-170309"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "View Details - Added Parent Requirement Pop-up",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5827-204540"
+          },
+          {
+            "label": "View Details - Added Sub Requirement Pop-up",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6982-96781"
+          },
+          {
+            "label": "View Details - Removed Sub Requirement Pop-up",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6982-96816"
+          },
+          {
+            "label": "View Details - Updated Sub Requirement Pop-up",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6982-96864"
+          },
+          {
+            "label": "View Details - Replaced Pop-up",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7076-170309"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — View details of the update",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Viewdetailsoftheupdate"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Frontoffice > Update the view and behavior of the Requirements Update pop-up > View details of the update"
+    },
+    {
+      "title": "Frontoffice: Actions on Requirements Update pop-up — Product and Process Requirements",
+      "as_a": "Product Owner or user with privilege to manage requirements in a release in PICASso",
+      "i_want": "to select individual Product Requirement changes via checkboxes and benefit from automatic sub-requirement preselection, and to accept all Process Requirement changes at once using 'Yes, change the version' or decline them with 'Keep Current Version'",
+      "so_that": "I have precise control over which Product Requirement updates are applied individually, and can efficiently apply or defer all Process Requirement updates as a set",
+      "acceptance_criteria": [
+        "**Product Requirements:**",
+        "On the Requirements Update pop-up (Product Requirements view), each change row has a checkbox. The user can select or deselect individual changes by clicking the checkboxes.",
+        {
+          "text": "When the user selects a change for a parent requirement that has sub-requirements also present in the change list, or selects a sub-requirement that has sibling sub-requirements under the same parent (for either Old or New requirement versions), the system automatically preselects all related sub-requirements and the parent in the list. An informational message replaces any existing yellow warning: \"Related parent/sub-requirements were auto-selected. Review and deselect if needed.\"\n\n(see Figma [Requirements Update - Requirements are Auto-Selected|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6878-59911])",
+          "screenshot": "6878-59911"
+        },
+        {
+          "text": "When the user clicks 'Apply Selected Changes' and any of the selected changes includes an 'Updated' or 'Replaced' change where the current requirement version in the release is in any status other than 'Planned', OR where any of the fields 'Evidence Link', 'Justification', or 'Delegated From' are non-empty — the system does NOT immediately apply changes. Instead, it navigates to the 'Update Requirements Status' page within the same pop-up.",
+          "screenshot": "7193-205128"
+        },
+        "When the user clicks 'Apply Selected Changes' and none of the above conditions apply (no 'Updated'/'Replaced' changes, or all such requirements are in 'Planned' status with no Evidence/Justification/Delegated From data) — changes are applied immediately:\n- 'Added' requirements are added to the release scope\n- 'Removed' requirements are removed from the release scope\n- 'Updated' requirements: version updated to latest, keeping Delegation details (Delegated From) and Jama/Jira links\n- 'Replaced' requirements: old replaced requirements removed, replacing requirements added to scope, keeping Delegation details (Delegated From). Jama/Jira tickets on old replaced requirements are NOT transferred automatically.\n- For all new sub-requirement versions: their parent requirement is also added to the release (even if that parent change was not selected).",
+        "Clicking 'Keep Current Version' or the X button: the current requirement versions in this release remain unchanged regardless of any subsequent questionnaire updates, Risk Classification changes, or Data Protection & Privacy Risk changes by users. Only mandatory changes scheduled with a specific 'Change on Date' will still be automatically applied to the release.",
+        "**Process Requirements:**",
+        {
+          "text": "On the Requirements Update pop-up, Process Requirements changes are handled as a set — there are no individual checkboxes for Process Requirements changes. The user sees two action buttons: 'Yes, change the version' and 'Keep Current Version'.",
+          "screenshot": "7193-205128"
+        },
+        "When the user clicks 'Yes, change the version' and any selected change includes an 'Updated' or 'Replaced' requirement where the current version in the release is in any status other than 'Planned', OR where 'Evidence Link', 'Justification', or 'Delegated From' are non-empty — changes are NOT applied immediately. The system navigates to the 'Update Requirements Status' page within the same pop-up.",
+        "When the user clicks 'Yes, change the version' and none of the above conditions apply — changes are applied immediately:\n- 'Added' requirements are added to the release scope\n- 'Removed' requirements are removed from the release scope\n- 'Updated' requirements: version updated to latest, keeping Delegation details (Delegated From) and Jira links\n- 'Replaced' requirements: old replaced requirements removed, replacing requirements added to scope, keeping Delegation details (Delegated From). Jira tickets on old replaced requirements are NOT transferred automatically.\n- For all new sub-requirement versions: their parent requirement is also added to the release.",
+        "Clicking 'Keep Current Version' or the X button: the current Process Requirement versions remain unchanged regardless of subsequent questionnaire/risk updates. Only mandatory date-scheduled changes will still be automatically applied."
+      ],
+      "screenshots": [
+        "6878-59911",
+        "7193-205128"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Requirements Update - Default",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7193-205128"
+          },
+          {
+            "label": "Requirements Update - Requirements are Auto-Selected",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6878-59911"
+          },
+          {
+            "label": "Requirements Update - Auto-select Banner disappears once auto-selected requirements are deselected",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7070-160399"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Actions on the Requirements Update pop-up (Product Requirements)",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-ProductRequirements"
+          },
+          {
+            "label": "Requirements replacement — Actions on the Requirements Update pop-up (Process Requirements)",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-ProcessRequirements"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Frontoffice > Actions on the 'Requirements Update' pop-up > Product Requirements & Process Requirements"
+    },
+    {
+      "title": "Frontoffice: 'Update Requirements Status' page — view, table, default status transfer rules",
+      "as_a": "Product Owner or user with privilege to manage a release in PICASso",
+      "i_want": "to see the 'Update Requirements Status' page when applying Updated or Replaced changes that have non-Planned statuses, with a table grouped by New Requirement showing old and new statuses with intelligent defaults",
+      "so_that": "I can review and configure the status of new requirement versions before they are applied to the release",
+      "acceptance_criteria": [
+        {
+          "text": "The 'Update Requirements Status' page opens inside the Requirements Update pop-up when the user clicks 'Apply Selected Changes' (or 'Yes, change the version' for Process Requirements) and at least one 'Updated' or 'Replaced' change has a current requirement version in the release with status other than 'Planned', or has non-empty 'Evidence Link', 'Justification', or 'Delegated From' fields.\n\n(see Figma [Update Requirements Status page|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6113-230121])",
+          "screenshot": "6113-230121"
+        },
+        {
+          "text": "The page shows:\n- Sub-header: \"Review the requirements and set their statuses in the 'New status' column.\"\n- Warning message \"Certain requirements will be updated automatically on the specified date.\" — shown only when any requirement in the list has a 'Change on date' AND the release is in Scoping or Scope Approval status\n- Bulk Actions:\n  - 'Edit' button — activates when requirements are selected via checkboxes; opens the bulk edit pop-up\n  - 'Transfer Requirement Statuses' button — activates when requirements are selected; opens a confirmation pop-up",
+          "screenshot": "6113-230121"
+        },
+        "The table groups data by each unique New Requirement Name. For example: if 10 requirements are replaced by the same 2 requirements, this creates 2 rows (10 vs. requirement 1, and 10 vs. requirement 2); if 1 requirement is replaced by 1 other, that is 1 row. Table columns:\n- Checkbox for selecting requirement\n- Old Requirement Name — all old codes/names of replaced/updated requirements. If 'Change on date' is set, the date is shown in red at the end of this column.\n- Old Status — current status of each old requirement in the release\n- New Requirement Name — the new requirement code and name (always 1 per row, since data is grouped by New Requirement)\n- New Status — defaulted per the transfer rules below\n- Actions — 'Edit' icon/button (3-dot menu) to edit the status for this specific new requirement",
+        "Default status transfer rules for the 'New Status' column:\n- **1-to-1 update or replacement** (1 old → 1 new requirement):\n  - If old status is 'In Progress', 'Partial', or 'Postponed': these statuses ARE transferred to new status, along with Evidence Link, Justification, and Delegation details (Delegated From). For 'Updated' changes: Jama and Jira details are also transferred.\n  - If old status is 'Not Applicable', 'Done', or 'Delegated': status is NOT transferred (New Status = Planned), but Evidence Link, Justification, and Delegation details (both Delegated To and Delegated From) ARE transferred. For 'Updated' changes: Jama and Jira details are also transferred.\n- **Many-to-1 or 1-to-many** (multiple old → 1 new, or 1 old → multiple new): nothing is transferred. New Status = Planned, Evidence Link and Justification are empty."
+      ],
+      "screenshots": [
+        "6113-230121"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Update Requirements Status — page view",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6113-230121"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Update Requirements Status page view and details",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-%22UpdateRequirementsStatus%22pageviewanddetails"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Frontoffice > 'Update Requirements Status' page view and details"
+    },
+    {
+      "title": "Frontoffice: Edit status on 'Update Requirements Status' page — individual and bulk edit pop-ups",
+      "as_a": "Product Owner or user with privilege to manage a release in PICASso",
+      "i_want": "to edit the status of individual or multiple new requirements on the 'Update Requirements Status' page using dedicated pop-ups",
+      "so_that": "I can precisely configure the status, evidence, and justification for each new requirement version before finalizing the update",
+      "acceptance_criteria": [
+        {
+          "text": "The user can open the individual 'Edit Requirement' pop-up by clicking the 3-dot button in the Actions column and selecting a status, or by clicking the 'Edit' icon in the last column. The pop-up shows:\n- Left side (scrollable): change type stamp and old requirement information per each old requirement:\n  - Requirement name\n  - Description\n  - Status (current in release)\n  - Evidence Link\n  - Justification\n  - Source Status (if available)\n  - Backlog Link (if available)\n- Right side ('New' stamp): new requirement editable fields:\n  - Requirement name (read-only display)\n  - Description (read-only display)\n  - Status — editable dropdown\n  - Evidence Link — editable; mandatory when Status is 'Done' or 'Partial'\n  - Justification — editable; mandatory when Status is 'Not Applicable', 'Postponed', 'Partial', or 'Delegated'\n- When 'Delegated' is selected, delegation fields expand\n- For 'Updated' changes: the changed parts are highlighted in green\n- Any data previously transferred from old requirement versions is pre-filled in the corresponding fields\n\n(see Figma [Update Requirements Status - Edit Requirement - Replaced - Default|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5979-73262])",
+          "screenshot": "5979-73262"
+        },
+        "Buttons on the individual Edit Requirement pop-up:\n- 'Cancel' or X: closes the pop-up without saving changes; the 'Update Requirements Status' page remains open\n- 'Save Changes': validates mandatory fields. If a mandatory field is empty or invalid, shows an error under the field and keeps the pop-up open. If all fields are valid, saves the data to the 'Update Requirements Status' page and closes the Edit Requirement pop-up.",
+        {
+          "text": "The user can open the bulk 'Edit Selected Requirements' pop-up by selecting multiple checkboxes on the 'Update Requirements Status' page and clicking the 'Edit' button under Bulk Actions. The pop-up shows:\n- Scrollable top section: collapsible sections per each selected change:\n  - Section header:\n    - For 'Replaced' change: \"Replaced: <N> requirements → <M> requirement\"\n    - For 'Updated' change: current name of the requirement\n  - Left side per section: change type stamp, Requirement name, Description, Status, Evidence Link, Justification, Source Status (if available), Backlog Link (if available)\n  - Right side per section ('New' stamp): Requirement name, Description. For 'Updated': changed parts highlighted in green.\n- Sticky bottom (separate scroll if content doesn't fit): shared editable fields for all selected requirements:\n  - Status — dropdown\n  - Evidence Link — mandatory if Status is 'Done' or 'Partial'\n  - Justification — mandatory if Status is 'Not Applicable', 'Postponed', 'Partial', or 'Delegated'\n  - When 'Delegated' is selected, delegation fields expand\n\n(see Figma [Update Requirements Status - Bulk Edit Requirement pop-up - Default|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5979-80501])",
+          "screenshot": "5979-80501"
+        },
+        "Buttons on the bulk Edit Selected Requirements pop-up:\n- 'Cancel' or X: closes the pop-up without saving; the 'Update Requirements Status' page remains open\n- 'Save Changes': validates mandatory fields. If any are empty/invalid, shows errors under fields and keeps the pop-up open. If all valid, applies data to all selected new requirements on 'Update Requirements Status' page and closes the bulk edit pop-up."
+      ],
+      "screenshots": [
+        "5979-73262",
+        "5979-80501"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Edit Requirement pop-up - individual (Replaced - Default)",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5979-73262"
+          },
+          {
+            "label": "Bulk Edit Requirements pop-up - Default",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5979-80501"
+          },
+          {
+            "label": "Bulk Edit Requirement pop-up - 1 accordion opened",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6943-111992"
+          },
+          {
+            "label": "Bulk Edit Requirement pop-up - Collapsed",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6883-44805"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Edit requirements status on 'Update Requirements Status' page",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Editrequirementsstatuson%22UpdateRequirementsStatus%22page"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Frontoffice > Edit requirements status on 'Update Requirements Status' page"
+    },
+    {
+      "title": "Frontoffice: Actions on 'Update Requirements Status' page — back navigation, transfer statuses, save, cancel",
+      "as_a": "Product Owner or user with privilege to manage a release in PICASso",
+      "i_want": "to navigate back to the change list from the 'Update Requirements Status' page, transfer statuses in bulk, save all changes, or cancel the entire operation",
+      "so_that": "I can iterate on my selections and status assignments before committing the final update to the release",
+      "acceptance_criteria": [
+        "Clicking the back arrow in the pop-up header from the 'Update Requirements Status' page returns the user to the Requirements Update change list page (where changes can be selected/deselected). Previously configured statuses on the 'Update Requirements Status' page are preserved during back-and-forth navigation. To return to 'Update Requirements Status', the user clicks 'Apply Selected Changes' again.",
+        {
+          "text": "Clicking 'Transfer Requirement Statuses' under Bulk Actions (with requirements selected) opens a 'Confirm Status Transfer' pop-up asking the user to confirm or cancel:\n- If 'Cancel' or X is clicked: pop-up is closed, no status is transferred\n- If 'Confirm' is clicked:\n  - For 'Updated' requirements (1-to-1): status, Evidence, Justification, Delegation details (both Delegated From and Delegated To), Jama/Jira links, and all integration-populated fields are transferred from old to new requirement.\n  - For 'Replaced' requirements (1-to-1): status, Evidence, Justification, Delegation details (both Delegated From and Delegated To) are transferred. Jama/Jira links are NOT transferred.\n  - For 'Replaced' requirements (many-to-1): status is NOT transferred; must be set manually.\n- Note: If only many-to-1 replacements are selected, the 'Transfer Requirement Statuses' button is disabled.\n\n(see Figma [Update Requirements Status - Confirmation|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5988-31082])",
+          "screenshot": "5988-31082"
+        },
+        "Clicking 'Save Changes' on the 'Update Requirements Status' page finalizes the update and applies all changes to the release:\n- 'Added' requirements: added to release scope\n- 'Removed' requirements: removed from release scope\n- 'Updated' requirements:\n  - Those NOT shown on the 'Update Requirements Status' page: version updated to latest, keeping Delegation details (Delegated From) and Jama/Jira links\n  - Those shown on 'Update Requirements Status' page: using the data configured or auto-transferred on this page\n- 'Replaced' requirements:\n  - Those NOT shown on 'Update Requirements Status' page: old removed, new added, keeping Delegation details (Delegated From). Jira tickets NOT transferred.\n  - Those shown on 'Update Requirements Status' page: using configured data. Replacement added with old requirement status; Jama/Jira must be relinked manually.\n- For all new sub-requirement versions: their parent is also added to the release.",
+        "Clicking 'Cancel' or the X button on the 'Update Requirements Status' page: no changes are applied to the release. Current requirement versions remain unchanged regardless of questionnaire or risk updates. Only mandatory date-scheduled changes will be automatically applied."
+      ],
+      "screenshots": [
+        "6113-230121",
+        "5988-31082"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Update Requirements Status - Confirmation pop-up",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5988-31082"
+          },
+          {
+            "label": "Update Requirements Status — back navigation",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=6113-230121"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Actions on the 'Update Requirements Status' page and navigations",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Actionsonthe%22UpdateRequirementsStatus%22pageandnavigations"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Frontoffice > Actions on the 'Update Requirements Status' page and navigations"
+    },
+    {
+      "title": "Frontoffice: Latest version of requirements should not be auto-added after risk or questionnaire update",
+      "as_a": "Product Owner or user managing a release in PICASso",
+      "i_want": "the system to re-scope requirements using the current version set already in the release (not the library's latest version) when I update the Questionnaire, Risk Classification, or Data Protection & Privacy Risk — unless I explicitly confirmed the version update via the Requirements Update pop-up",
+      "so_that": "my release remains on the version of requirements I have already reviewed and confirmed, and unexpected version changes do not occur automatically",
+      "acceptance_criteria": [
+        "Without explicit confirmation from the user on the Requirements Update pop-up, the current requirement versions remain in the release even after updating the Questionnaire, Risk Classification, or Data Protection & Privacy Risk. The Requirements Update warning message and pop-up continue to be shown.",
+        "The Requirements Update pop-up is also shown for releases created as a clone of another release. When a new release is created from scratch for an existing product, it contains only the latest requirement versions and no Requirements Update pop-up is shown.",
+        "Behavior by case (defined in the spec's 'Main use cases' table):\n\n| # | Condition | When | Then |\n|---|---|---|---|\n| 1 | New product or release in Scoping, Questionnaire not yet completed, requirements updated in Backoffice | User completes the questionnaire | Latest requirement versions are scoped. No version change pop-up shown. Inactive requirements are not shown. |\n| 2 | Existing product, release in Scoping or Scope Approval, Questionnaire already completed, requirements updated in Backoffice, version change pop-up shown | User updates questionnaire OR updates Risk Classification or Data Protection & Privacy Risk | Requirements are re-scoped using the current version set (not library latest). Version change pop-up remains shown for in-scope or potentially in-scope requirements. |\n| 3 | Existing product, release in Manage, requirements updated in Backoffice, 2nd release created as clone of 1st, version change pop-up shown in both | User updates questionnaire in the 2nd release OR updates risks | Requirements in 2nd release are re-scoped using the version set transferred from the 1st release at clone time. Not using library latest. Version change pop-up shown for affected requirements. |\n| 4 | Existing product, release in Manage, requirements updated in Backoffice, new 2nd release created from scratch | User completes the questionnaire | Latest requirement versions are scoped in the new release. No version change pop-up shown. |",
+        "Not-scoped requirements in the release are updated to the latest version available in the library when the user confirms a version update or when re-scoping is completed. If the user chose to keep the current version, not-scoped requirements also continue showing the previous version (even in a cloned release).",
+        "When a user manually adds a not-scoped requirement to the release, the system shows a requirements version change pop-up for that requirement. The user can confirm switching to the newer version from this pop-up."
+      ],
+      "screenshots": [],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Requirements Update - Default",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7193-205128"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Latest version not added after risk or questionnaire update",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Latestversionofrequirementsshouldnotbeaddedafteriskorquestionnaireupdate"
+          }
+        ],
+        "diagrams": [
+          {
+            "label": "PICASso Diagram — Requirements Replacement Versioning Scenarios",
+            "url": "https://www.figma.com/board/atptB6gbx3tIvzOweQqlr2/PICASso-Diagram?node-id=1052-2466"
+          }
+        ]
+      },
+      "source_requirement": "Frontoffice > Latest version of requirements should not be added after risk or questionnaire update"
+    },
+    {
+      "title": "Frontoffice: Already updated requirements pop-up — view after mandatory auto-update",
+      "as_a": "Product Owner or user managing a release in PICASso (on Creation & Scoping, Review & Confirm, or Manage stage)",
+      "i_want": "to see a blue informational message and a view-only pop-up when mandatory requirement changes have been automatically applied to my release on their scheduled date",
+      "so_that": "I am informed about what was automatically updated and can review the changes without being able to re-apply them",
+      "acceptance_criteria": [
+        "When mandatory requirement changes (those with a 'Change on Date' value) are automatically pushed to a release on their scheduled date, and those changes affect requirements scoped for the release (updating, removing, adding, or replacing them), the system shows a blue informational banner with text: \"The latest version of the requirements has been applied in this release. Learn More\" (where 'Learn More' is a clickable link).\n\n(see Figma [Requirements Update - Banner about automatic update present|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5870-59214])",
+        "Clicking 'Learn More' opens a view-only 'Requirements Update' pop-up showing the list of auto-applied changes. This pop-up shows:\n- A link to Content Changes\n- Sub-header: \"The following requirements scoped for this release were updated.\"\n- Filters:\n  - Search — by code, name, or description\n  - Change — dropdown with options: Updated, Replaced, Added, Removed\n  - Reset button\n- Same table structure as the interactive Requirements Update pop-up, with the same columns (Change, Requirement Name, Requirement Description, Details), same grouping logic, and same 'View Details' links",
+        "This view-only pop-up has NO checkboxes, NO 'Apply Selected Changes' button, and NO 'Keep Current Version' button. The user can only view the already-applied changes and close the pop-up.",
+        "The 'Change' column in the view-only pop-up follows the same definitions as the interactive pop-up:\n- Updated: name/description/selection criteria differs\n- Replaced: old requirement is 'Inactive' and replacing requirements are added\n- Added: newly created or newly applicable requirement added to scope\n- Removed: deactivated (with empty 'Is Replaced By') or no longer applicable requirement removed from scope. Also applies to requirements that are 'Inactive' in Backoffice but whose replacements would not be scoped."
+      ],
+      "screenshots": [
+        "image-2026-3-9_19-3-17.png",
+        "image-2026-3-19_13-45-0.png"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Requirements Update - Banner about automatic update present",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5870-59214"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Already updated requirements pop-up update",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Alreadyupdatedrequirementspop-upupdate"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Frontoffice > Already updated requirements pop-up update"
+    },
+    {
+      "title": "Frontoffice: Impact of requirements update for not-scoped requirements",
+      "as_a": "Product Owner or user managing a release in PICASso",
+      "i_want": "not-scoped requirements to be automatically updated to their latest available version when a version update is confirmed or when re-scoping occurs, and to see a version change pop-up when manually adding a not-scoped requirement with a newer version available",
+      "so_that": "requirements that are out of scope also reflect the latest available versions after changes are confirmed",
+      "acceptance_criteria": [
+        "Not-scoped requirements in the release are updated to the latest version available in the requirements library when: (a) the user confirms accepting the version update via the Requirements Update pop-up ('Apply Selected Changes' / 'Yes, change the version'), or (b) re-scoping is completed (after questionnaire or risk updates).",
+        "If the user chose to 'Keep Current Version' from the Requirements Update pop-up, not-scoped requirements also continue showing the previous version — even in a cloned release.",
+        "When a user manually adds a not-scoped requirement to the release and a newer version of that requirement exists in the library, the system shows a requirements version change pop-up for that specific requirement. The user can confirm switching to the newer version or keep the version currently in the release."
+      ],
+      "screenshots": [],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Requirements Update - Default",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7193-205128"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Impact of requirements update for not scoped requirements",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Impactoftherequirementsupdatefornotscopedrequirements"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Frontoffice > Impact of the requirements update for not scoped requirements"
+    },
+    {
+      "title": "Frontoffice: Questionnaire behavior — warning messages and Key Decision Topics when questionnaire is updated during R&C or Manage stage",
+      "as_a": "User with privilege to edit the Questionnaire in a release in PICASso",
+      "i_want": "to be warned when unanswered questionnaire questions appear on the Questionnaire and Requirements tabs, to be able to edit the questionnaire during Review & Confirm and Manage stages, and to have Key Decision Topics and red flag indicators automatically created when questions are updated",
+      "so_that": "the team is aware of questionnaire changes during late release stages and all impacted decisions are tracked",
+      "acceptance_criteria": [
+        "When unanswered questions appear on the Questionnaire tab (questions added after the Questionnaire was last completed), for releases in 'Scoping', 'Scope Approval', and 'Manage' stages, warning messages are shown on:\n- The Questionnaire tab (a warning indicating unanswered questions exist)\n- The Product Requirements and Process Requirements tabs: the Requirements version warning message (if already shown due to Major changes) is updated to include a questionnaire-related warning\n\nThe exact warning message shown on Requirements tabs depends on whether the release was created from scratch or as a clone:\n- Created from scratch: see the applicable warning format\n- Cloned release: see the applicable warning format\n\n(see Figma [Process Requirements — warning message when unanswered questions exist|https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5827-204547])",
+        "Users with the corresponding privilege to edit the Questionnaire in a release can edit it during the Review & Confirm and Manage stages (as well as during Creation & Scoping).",
+        "When a user edits a questionnaire question during the Review & Confirm or Manage stage, the system automatically creates a new 'Key Decision Topic' on the Review & Confirm tab with:\n- Topic Name: \"Questionnaire is updated at <stage_name>\"\n- Discussion details: \"The questionnaire was updated during <stage_name>\"\n- Date: the date when the Key Decision Topic is created\n- Added by: \"PICASso system\"",
+        "Questions for which answers were edited by the user during this update, or questions that were previously unanswered but are now answered, have a red flag icon shown next to them. Hovering over the red flag icon shows the tooltip: \"Answer for this question was edited after Creation & Scoping stage\"."
+      ],
+      "screenshots": [
+        "image-2026-3-13_21-41-33.png",
+        "image-2026-3-13_21-43-23.png",
+        "image-2026-3-13_21-44-58.png"
+      ],
+      "additional_information": {
+        "mockups": [
+          {
+            "label": "Process Requirements List — warning and banner",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=5827-204547"
+          },
+          {
+            "label": "Requirements Update - Default",
+            "url": "https://www.figma.com/design/MB19XU18rQHSpba8pSsObn/Release?node-id=7193-205128"
+          }
+        ],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Update questionnaire behavior",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Updatequestionnairebehavior"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Frontoffice > Update questionnaire behavior"
+    },
+    {
+      "title": "Tableau: Update Product and Process Requirements 'actual on Date' report filters to use release ID",
+      "as_a": "User accessing Tableau Product/Process Requirements 'actual on Date' reports",
+      "i_want": "the Product/Release filter in these reports to show requirements filtered by release ID rather than by the previous filter behavior",
+      "so_that": "I can accurately view requirements associated with a specific release ID",
+      "acceptance_criteria": [
+        "The 'actual on Date' Tableau reports for both Product Requirements and Process Requirements have their Product/Release filter updated to allow selecting a product and its associated release.",
+        "Using this filter shows requirements related to the selected release, filtered by that release's specific release ID.",
+        "The filter still allows selecting the product and then the release related to it (hierarchical filter behavior is preserved)."
+      ],
+      "screenshots": [],
+      "additional_information": {
+        "mockups": [],
+        "confluence_links": [
+          {
+            "label": "Requirements replacement — Tableau reports update",
+            "url": "https://confluence.se.com/spaces/PIC/pages/679587201/Requirements+replacement#Requirementsreplacement-Tableaureportsupdate"
+          }
+        ],
+        "diagrams": []
+      },
+      "source_requirement": "Tableau reports update > Product Requirements and Process Requirements actual on Date reports should be updated"
+    }
+  ],
+  "questions": [
+    {
+      "title": "PIC-10185 overlap — Backoffice UI fields story duplication",
+      "detail": "Story 1 (Backoffice: Add 'Replacing' and 'Is Replaced By' fields) may duplicate PIC-10185 which is described as covering 'Backoffice UI fields'. The implementation team should check the exact scope of PIC-10185 before starting Story 1 to determine whether PIC-10185 already covers part or all of the Replacing/Is Replaced By UI field work, and adjust accordingly."
+    },
+    {
+      "title": "PIC-10186 'In question' story scope",
+      "detail": "PIC-10186 is flagged 'In question' in the spec header table. Its scope is unclear. The team should clarify what PIC-10186 is intended to cover and whether it should be closed, replaced by one of the new stories, or kept open as a tracking ticket."
+    },
+    {
+      "title": "Version replacement logic when removing all 'Replacing' entries",
+      "detail": "The spec (Questions section) asks: when all replacing requirements are removed from the 'Replacing' field, should the system create a new version or revert to a previous version? The documented answer involves checking the previous version without 'Replacing' data and classifying based on field differences (Major/Minor/new). The implementation team needs to confirm this resolution is final and implement accordingly."
+    },
+    {
+      "title": "Behavior when replacing requirement is updated again after replacement",
+      "detail": "The spec Questions section asks: if a replacing requirement is updated again after a replacement was made, should it still show as a replacement or as a new version? The answer per the spec is that the requirement is frozen from changes (only the 'Replacing' field can be edited). If it still needs to be used, the replacement must be removed first. Implementation must enforce this freeze correctly."
+    },
+    {
+      "title": "Parent requirement sub-requirement replacement cascade",
+      "detail": "When a parent requirement replaces another parent requirement, the spec does not clearly define what happens to the sub-requirements. This is listed as an open question in the spec. The behavior for sub-requirements in parent-to-parent replacement scenarios needs to be clarified before implementing Story 1 and Story 6/7."
+    },
+    {
+      "title": "Questionnaire warning messages on Requirements tabs — exact text",
+      "detail": "The spec describes different warning formats for 'created from scratch' vs 'cloned' releases (with screenshots) but the exact text of the warnings shown on the Product/Process Requirements tabs (when unanswered questions exist) is not fully spelled out in the text. The team should confirm the exact warning message strings from the design before implementing Story 14."
+    },
+    {
+      "title": "Questionnaire editing during R&C and Manage — required privilege",
+      "detail": "Story 14 mentions that editing the questionnaire during R&C and Manage requires a 'corresponding privilege'. The specific privilege name/role is not defined in the spec. This should be clarified so the permission logic can be implemented correctly."
+    },
+    {
+      "title": "'Update Requirements Status' page — story splitting",
+      "detail": "The spec header table notes '(Maybe would be splitted)' for the 'Edit requirements status on Update Requirements Status page' story. The current mapping combines individual and bulk edit into Story 9. If the team decides to split, Story 9 could be divided into: (a) individual Edit Requirement pop-up and (b) bulk Edit Selected Requirements pop-up. Confirm the decision before starting implementation."
+    },
+    {
+      "title": "Impact for not-scoped requirements — potential merge with other story",
+      "detail": "The spec header table notes '(Maybe would be combined with other)' for the 'Impact of requirements update for not-scoped requirements' story. Current Story 13 is standalone. Confirm whether it should be merged with another story (e.g., Story 11 on latest version behavior) or kept separate."
+    },
+    {
+      "title": "Tableau report — exact filter change implementation",
+      "detail": "The spec for the Tableau report update is brief: change the filter from showing requirements by previous logic to showing by release ID. The exact current behavior of the filter and the technical implementation details in Tableau are not documented. The Tableau developer should clarify what changes are needed to switch to release-ID-based filtering."
+    }
+  ]
+}

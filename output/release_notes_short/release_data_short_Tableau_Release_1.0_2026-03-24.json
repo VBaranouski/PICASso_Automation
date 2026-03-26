@@ -1,0 +1,28 @@
+{
+  "version_name": "Tableau Release 1.0",
+  "version_description": "",
+  "release_date": "",
+  "released": false,
+  "project_key": "PIC",
+  "total_issues": 13,
+  "generated_date": "2026-03-24",
+  "issues_by_type": {
+    "Bug": [
+      {"key": "PIC-8981", "summary": "[DOC Reports & Dashboards] Possible to view reports even w/o privileges", "status": "Closed", "priority": "High", "issue_type": "Bug", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-9379", "summary": "[DOC Reports & Dashboards] Action Closure Dates: improper filtering", "status": "Closed", "priority": "Medium", "issue_type": "Bug", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-9386", "summary": "[DOC Reports & Dashboards] Not all data visible on DOC Actions report", "status": "Closed", "priority": "High", "issue_type": "Bug", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-10182", "summary": "[DOC Reports & Dashboards] Improper DOC Start date's range displayed after filtering", "status": "Closed", "priority": "Medium", "issue_type": "Bug", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-10184", "summary": "[DOC Reports & Dashboards] \"DOC by Organization Level\" not all statuses included into reports", "status": "Closed", "priority": "High", "issue_type": "Bug", "assignee": "Ganna Naser Aldeen"}
+    ],
+    "Story": [
+      {"key": "PIC-4195", "summary": "[DOC Reports & Dashboards] Number of Digital Offer Certifications per year", "status": "Ready for Production", "priority": "Medium", "issue_type": "Story", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-4200", "summary": "[DOC Reports & Dashboards] Number of Digital Offers per Organization Level 1 (BU)", "status": "Ready for Production", "priority": "Medium", "issue_type": "Story", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-4203", "summary": "[DOC Reports & Dashboards] Number of Digital Offers per Product State", "status": "Ready for Production", "priority": "Medium", "issue_type": "Story", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-4206", "summary": "[DOC Reports & Dashboards] Number of Digital Offers per DOC Decision", "status": "Ready for Production", "priority": "Medium", "issue_type": "Story", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-4209", "summary": "[DOC Reports & Dashboards] Pie chart - Number of Digital Offers per DOC Status", "status": "Ready for Production", "priority": "Medium", "issue_type": "Story", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-4212", "summary": "[DOC Reports & Dashboards] \"Certification - Progress status\" and other DOC charts", "status": "Ready for Production", "priority": "Medium", "issue_type": "Story", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-4214", "summary": "[DOC Reports & Dashboards] Add DOC Actions' table and respective filters", "status": "Ready for Production", "priority": "Medium", "issue_type": "Story", "assignee": "Ganna Naser Aldeen"},
+      {"key": "PIC-9340", "summary": "[Tableau] [DOC Reports] Changes from stakeholders feedback", "status": "Ready for Production", "priority": "High", "issue_type": "Story", "assignee": "Ganna Naser Aldeen"}
+    ]
+  }
+}

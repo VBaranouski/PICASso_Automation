@@ -9,11 +9,13 @@ from __future__ import annotations
 import base64
 import json
 import re
+from collections import defaultdict
 from dataclasses import dataclass
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Optional
 
+import requests
 from jinja2 import Environment, FileSystemLoader
 
 from src.clients.confluence_client import ConfluenceClient
@@ -82,6 +84,34 @@ def _format_story_for_prompt(story: JiraIssue) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Jinja2 filter: criterion text → HTML
+# ---------------------------------------------------------------------------
+
+def _format_criterion_html(text: str) -> str:
+    """Convert criterion text with bullet lists and Figma inline links to HTML.
+
+    Transformations applied:
+    - ``\\n  - item`` or ``\\n- item`` blocks → ``<ul class="ac-sublist"><li>…</li></ul>``
+    - ``(see Figma [Label|url])`` → clickable ``<a>`` link
+    """
+    # Convert (see Figma [Label|url]) to a clickable link
+    text = re.sub(
+        r"\(see Figma \[([^\]|]+)\|([^\]]+)\]\)",
+        r'(see Figma <a href="\2" target="_blank" class="figma-link">\1</a>)',
+        text,
+    )
+    # Convert \n  - or \n- list blocks to <ul><li>
+    if "\n  - " in text or "\n- " in text:
+        sep = "\n  - " if "\n  - " in text else "\n- "
+        parts = text.split(sep)
+        header = parts[0]
+        items = [p.rstrip() for p in parts[1:] if p.strip()]
+        li_html = "".join(f"<li>{item}</li>" for item in items)
+        return f"{header}<ul class='ac-sublist'>{li_html}</ul>"
+    return text
+
+
+# ---------------------------------------------------------------------------
 # Generator
 # ---------------------------------------------------------------------------
 
@@ -107,6 +137,7 @@ class UserStoriesGenerator:
             loader=FileSystemLoader(settings.paths.templates_dir),
             autoescape=False,
         )
+        self._jinja.filters["format_criterion"] = _format_criterion_html
 
     # ------------------------------------------------------------------
     # Phase 1: Data fetching
@@ -259,12 +290,20 @@ class UserStoriesGenerator:
             questions = stories_input.get("questions", [])
 
         # ------------------------------------------------------------------
-        # Build screenshot lookup: {filename: data_url}
+        # Build screenshot lookup: {key: data_url}
+        # Seeded from confluence_screenshots (legacy), then extended with
+        # Figma mockup screenshots auto-fetched from additional_information.
         # ------------------------------------------------------------------
         screenshot_lookup: dict[str, str] = {
             title: data_url
             for title, data_url in spec_data.get("confluence_screenshots", [])
         }
+
+        if self._figma:
+            figma_shots = self._fetch_figma_mockup_screenshots(raw_stories)
+            screenshot_lookup.update(figma_shots)
+            if figma_shots:
+                print(f"  Fetched {len(figma_shots)} Figma mockup screenshot(s).")
 
         print(f"  Rendering {len(raw_stories)} user story(s)...")
 
@@ -292,6 +331,115 @@ class UserStoriesGenerator:
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------
+
+    def _fetch_figma_mockup_screenshots(self, stories: list[dict]) -> dict[str, str]:
+        """
+        Scan every story's additional_information.mockups for Figma URLs,
+        batch-export screenshots via the Figma REST API (one request per
+        unique file key), and return {node_id_hyphen: data_url}.
+
+        The key format is the node-id with hyphens (e.g. "7193-205128"),
+        matching the node-id query param in Figma URLs.  Stories should
+        use this same format in their `screenshot` fields.
+
+        Screenshots are cached to disk under output/user_stories/.figma_cache/
+        to avoid redundant API calls across repeated renders.
+        """
+        cache_dir = ensure_dir(
+            Path(self._settings.paths.output_user_stories) / ".figma_cache"
+        )
+
+        # Collect only node IDs that are actually referenced in screenshot fields
+        # (story-level screenshots list + criterion-level screenshot dicts).
+        # node_id_colon — Figma API format ("7193:205128")
+        # node_id_hyphen — URL/story key format ("7193-205128")
+        needed_keys: set[str] = set()
+        for story in stories:
+            for key in story.get("screenshots", []):
+                needed_keys.add(key)
+            for ac in story.get("acceptance_criteria", []):
+                if isinstance(ac, dict) and ac.get("screenshot"):
+                    needed_keys.add(ac["screenshot"])
+
+        # Build a url-lookup from mockups so we can resolve node → file_key
+        url_by_node_hyphen: dict[str, str] = {}
+        for story in stories:
+            for mockup in story.get("additional_information", {}).get("mockups", []):
+                url = mockup.get("url", "")
+                if not url or "figma.com" not in url:
+                    continue
+                try:
+                    parsed = FigmaClient.parse_figma_url(url)
+                    if parsed.node_id:
+                        node_hyphen = parsed.node_id.replace(":", "-")
+                        url_by_node_hyphen[node_hyphen] = url
+                except Exception:
+                    continue
+
+        # Only fetch nodes that are both needed and have a known Figma URL
+        file_nodes: dict[str, dict[str, str]] = defaultdict(dict)
+        for node_id_hyphen in needed_keys:
+            url = url_by_node_hyphen.get(node_id_hyphen)
+            if not url:
+                continue
+            try:
+                parsed = FigmaClient.parse_figma_url(url)
+                if parsed.node_id:
+                    file_nodes[parsed.file_key][parsed.node_id] = node_id_hyphen
+            except Exception:
+                continue
+
+        if not file_nodes:
+            return {}
+
+        result: dict[str, str] = {}
+
+        for file_key, node_map in file_nodes.items():
+            # Split into cached vs uncached nodes.
+            to_fetch: dict[str, str] = {}
+            for node_id_colon, node_id_hyphen in node_map.items():
+                cache_file = cache_dir / f"{file_key}_{node_id_hyphen}.png"
+                if cache_file.exists():
+                    b64 = base64.b64encode(cache_file.read_bytes()).decode("utf-8")
+                    result[node_id_hyphen] = f"data:image/png;base64,{b64}"
+                else:
+                    to_fetch[node_id_colon] = node_id_hyphen
+
+            if not to_fetch:
+                continue
+
+            # Fetch export URLs for uncached nodes in one API call.
+            try:
+                image_urls = self._figma.get_image_urls(
+                    file_key, list(to_fetch.keys()), scale=1.5
+                )
+            except requests.HTTPError as exc:
+                retry_after = exc.response.headers.get("Retry-After", "") if exc.response is not None else ""
+                hint = f" (Retry-After: {retry_after}s)" if retry_after else ""
+                print(f"  [WARNING] Figma export failed for {file_key}: {exc}{hint}")
+                print(f"  [WARNING] Screenshots skipped — re-run render once rate limit clears to populate cache.")
+                continue
+            except Exception as exc:
+                print(f"  [WARNING] Figma export failed for {file_key}: {exc}")
+                continue
+
+            for node_id_colon, img_url in image_urls.items():
+                if not img_url:
+                    continue
+                node_id_hyphen = to_fetch.get(node_id_colon, node_id_colon.replace(":", "-"))
+                try:
+                    resp = requests.get(img_url, timeout=60, verify=False)
+                    resp.raise_for_status()
+                    img_bytes = resp.content
+                    # Write to cache.
+                    cache_file = cache_dir / f"{file_key}_{node_id_hyphen}.png"
+                    cache_file.write_bytes(img_bytes)
+                    b64 = base64.b64encode(img_bytes).decode("utf-8")
+                    result[node_id_hyphen] = f"data:image/png;base64,{b64}"
+                except Exception as exc:
+                    print(f"  [WARNING] Could not download Figma image {node_id_colon}: {exc}")
+
+        return result
 
     def _write_output(self, page_title: str, html: str) -> Path:
         date_str = today_str(self._settings.output.date_format)

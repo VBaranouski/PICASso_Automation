@@ -628,7 +628,8 @@ def user_stories_cmd(
             spec = _json.loads(Path(spec_data).read_text(encoding="utf-8"))
             stories = _json.loads(Path(stories_json).read_text(encoding="utf-8"))
             confluence = ConfluenceClient(settings.confluence)
-            generator = UserStoriesGenerator(confluence, None, None, settings)
+            figma = FigmaClient(settings.figma) if settings.figma.api_token else None
+            generator = UserStoriesGenerator(confluence, figma, None, settings)
             html_path = generator.render_from_stories(spec, stories, style=style)
             click.echo(click.style("\n  Done!", fg="green", bold=True))
             click.echo(f"  HTML -> {html_path}")

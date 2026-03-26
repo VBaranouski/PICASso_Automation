@@ -223,76 +223,43 @@
       gap: 10px;
     }
 
-    /* ---- Inline criterion screenshot ---- */
-    .criterion-screenshot {
-      margin-top: 8px;
-      border: 1px solid var(--se-border);
-      border-radius: 5px;
-      overflow: hidden;
-      background: #fafafa;
+    /* ---- Criterion sub-list (bullet list within an AC item) ---- */
+    .ac-sublist {
+      list-style: disc;
+      margin: 6px 0 2px 18px;
+      padding: 0;
     }
-    .criterion-screenshot-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: #888;
-      padding: 4px 10px;
-      background: #f0f0f0;
-      border-bottom: 1px solid var(--se-border);
-      letter-spacing: 0.4px;
-    }
-    .criterion-screenshot img {
-      display: block;
-      max-width: 100%;
-      max-height: 420px;
-      object-fit: contain;
-      padding: 8px;
+    .ac-sublist li {
+      display: list-item;
+      border-bottom: none;
+      padding: 2px 0;
+      margin-bottom: 3px;
+      font-size: 13px;
+      line-height: 1.6;
     }
 
-    /* ---- Story-level screenshot gallery ---- */
-    .story-screenshots {
-      margin-top: 4px;
-      margin-bottom: 4px;
+    /* ---- Inline Figma links inside criterion text ---- */
+    .figma-link {
+      color: var(--se-green);
+      text-decoration: none;
+      font-weight: 500;
     }
-    .story-screenshots-label {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.7px;
-      color: var(--se-dark);
-      margin-bottom: 10px;
+    .figma-link:hover { text-decoration: underline; }
+
+    /* ---- Additional Information section ---- */
+    .additional-info {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: #f0f7ff;
+      border: 1px solid #c5dbf5;
+      border-radius: 4px;
+      font-size: 12px;
     }
-    .screenshot-gallery {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-    }
-    .screenshot-thumb {
-      flex: 1 1 280px;
-      max-width: 480px;
-      border: 1px solid var(--se-border);
-      border-radius: 5px;
-      overflow: hidden;
-      background: #fafafa;
-    }
-    .screenshot-thumb-label {
-      font-size: 10px;
-      font-weight: 600;
-      color: #888;
-      padding: 4px 10px;
-      background: #f0f0f0;
-      border-bottom: 1px solid var(--se-border);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      letter-spacing: 0.4px;
-    }
-    .screenshot-thumb img {
-      display: block;
-      max-width: 100%;
-      max-height: 360px;
-      object-fit: contain;
-      padding: 8px;
-    }
+    .ai-group { margin-bottom: 6px; }
+    .ai-group:last-child { margin-bottom: 0; }
+    .ai-group-label { font-weight: 700; color: var(--se-dark); margin-right: 4px; }
+    .ai-link { color: var(--se-green); text-decoration: none; font-weight: 500; }
+    .ai-link:hover { text-decoration: underline; }
 
     /* ---- Story footer ---- */
     .story-footer {
@@ -467,16 +434,10 @@
             <div class="ac-content">
               {% if criterion is mapping %}
                 {# Dict criterion: {text, screenshot} #}
-                <span>{{ criterion.text }}</span>
-                {% if criterion.screenshot and criterion.screenshot in screenshot_lookup %}
-                <div class="criterion-screenshot">
-                  <div class="criterion-screenshot-label">{{ criterion.screenshot }}</div>
-                  <img src="{{ screenshot_lookup[criterion.screenshot] }}" alt="{{ criterion.screenshot }}" />
-                </div>
-                {% endif %}
+                <span>{{ criterion.text | format_criterion }}</span>
               {% else %}
                 {# Plain string criterion #}
-                <span>{{ criterion }}</span>
+                <span>{{ criterion | format_criterion }}</span>
               {% endif %}
             </div>
           </li>
@@ -484,25 +445,33 @@
         </ul>
         {% endif %}
 
-        <!-- Story-level screenshot gallery -->
-        {% if s_screenshots %}
-        {% set visible_shots = [] %}
-        {% for fname in s_screenshots %}
-          {% if fname in screenshot_lookup %}
-            {% set _ = visible_shots.append(fname) %}
-          {% endif %}
-        {% endfor %}
-        {% if visible_shots %}
-        <div class="story-screenshots">
-          <div class="story-screenshots-label">Design References ({{ visible_shots | length }})</div>
-          <div class="screenshot-gallery">
-            {% for fname in visible_shots %}
-            <div class="screenshot-thumb">
-              <div class="screenshot-thumb-label">{{ fname }}</div>
-              <img src="{{ screenshot_lookup[fname] }}" alt="{{ fname }}" />
-            </div>
-            {% endfor %}
+        <!-- Additional Information -->
+        {% set s_info = story.additional_information if story.additional_information is defined else story.get('additional_information', {}) if story is mapping else {} %}
+        {% if s_info %}
+        {% set ai_mockups = s_info.mockups if s_info.mockups is defined else s_info.get('mockups', []) %}
+        {% set ai_conf = s_info.confluence_links if s_info.confluence_links is defined else s_info.get('confluence_links', []) %}
+        {% set ai_diagrams = s_info.diagrams if s_info.diagrams is defined else s_info.get('diagrams', []) %}
+        {% if ai_mockups or ai_conf or ai_diagrams %}
+        <div class="additional-info">
+          <div class="section-label">Additional Information</div>
+          {% if ai_conf %}
+          <div class="ai-group">
+            <span class="ai-group-label">Functional Specification:</span>
+            {% for link in ai_conf %}<a href="{{ link.url }}" target="_blank" class="ai-link">{{ link.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
           </div>
+          {% endif %}
+          {% if ai_mockups %}
+          <div class="ai-group">
+            <span class="ai-group-label">Mockups:</span>
+            {% for m in ai_mockups %}<a href="{{ m.url }}" target="_blank" class="ai-link">{{ m.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+          </div>
+          {% endif %}
+          {% if ai_diagrams %}
+          <div class="ai-group">
+            <span class="ai-group-label">Diagrams:</span>
+            {% for d in ai_diagrams %}<a href="{{ d.url }}" target="_blank" class="ai-link">{{ d.label }}</a>{% if not loop.last %}, {% endif %}{% endfor %}
+          </div>
+          {% endif %}
         </div>
         {% endif %}
         {% endif %}

@@ -35,6 +35,11 @@ example_story_ids: <comma-separated list or omit>
 figma_url: <value or omit>
 ```
 
+**Confluence attachments rule:**
+
+- If the user provided a Figma URL in Step 1 → add `Note: Do NOT fetch Confluence attachments. Return confluence_screenshots as empty array [].` to the Atlas prompt.
+- If no Figma URL was provided by the user → let Atlas fetch attachments normally (they may be needed as fallback in Step 2b).
+
 Atlas returns a JSON object. Parse it to extract:
 
 - `page_title`, `spec_text`, `figma_url`, `image_names`, `confluence_screenshots`
