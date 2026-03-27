@@ -2,7 +2,11 @@
   "mcpServers": {
     "atlassian": {
       "command": "uvx",
-      "args": ["mcp-atlassian", "--env-file", "/Users/Uladzislau_Baranouski/Claude Code/PICASso/.env"]
+      "args": [
+        "mcp-atlassian",
+        "--env-file", "/Users/Uladzislau_Baranouski/Claude Code/PICASso/.env",
+        "--enabled-tools", "jira_get_issue,jira_search,jira_create_issue,jira_update_issue,jira_batch_create_issues,jira_link_to_epic,jira_get_project_versions,jira_download_attachments,confluence_get_page,confluence_get_attachments,confluence_download_attachment"
+      ]
     },
     "playwright": {
       "command": "npx",

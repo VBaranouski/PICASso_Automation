@@ -1,6 +1,6 @@
 # PICASso Platform
 
-Monorepo for the PICASso QA & documentation platform, combining automated documentation generation with AI-assisted test automation.
+Monorepo for the PICASso QA & documentation platform, combining automated documentation generation with AI-assisted Playwright test automation for the Schneider Electric PICASso web application.
 
 ## Packages
 
@@ -16,6 +16,7 @@ Monorepo for the PICASso QA & documentation platform, combining automated docume
 | Python | 3.11+ |
 | Node.js | 18+ |
 | npm | 9+ |
+| Claude Code | latest |
 
 ## Quick Start
 
@@ -25,7 +26,7 @@ Monorepo for the PICASso QA & documentation platform, combining automated docume
 cd projects/docs-generator
 pip install -r requirements.txt
 cp ../../.env.example ../../.env   # Edit .env with your Jira, Confluence, Figma API keys
-python main.py --help
+python3 main.py --help
 ```
 
 > **API Keys required:** `JIRA_*`, `CONFLUENCE_*`, and optionally `FIGMA_API_TOKEN`. See [`.env.example`](.env.example) for all variables and descriptions.
@@ -56,16 +57,62 @@ npm test           # Runs all tests + generates Allure report
 | `npm run typecheck` | Type-check without emitting |
 | `npm run clean` | Remove all test artefacts |
 
+## AI Tooling (Claude Code)
+
+The platform is deeply integrated with Claude Code. All data fetching from Jira and Confluence is done via MCP tools — Python is invoked only for rendering HTML/PPTX output.
+
+### MCP Servers
+
+Configured in [`.claude/settings.json`](.claude/settings.json):
+
+| Server | Tools | Purpose |
+| ------ | ----- | ------- |
+| `mcp-atlassian` | `jira_*`, `confluence_*` | Fetch issues, versions, stories, pages |
+| `figma` | `figma_*` | Access designs, variables, screenshots |
+| `playwright` | `browser_*` | Live browser automation for test generation |
+| `sequential-thinking` | — | Extended reasoning for complex tasks |
+
+### Claude Code Skills
+
+Invoke these in Claude Code with `/skill-name`:
+
+| Skill | Purpose |
+| ----- | ------- |
+| `/create-user-stories` | Generate JIRA-ready user stories from a Confluence spec page |
+| `/create-test-cases` | Generate manual test cases from a Jira story |
+| `/create-test-cases-for-automation` | Generate structured test cases for Playwright automation |
+| `/create-automation-scripts` | Generate Playwright TypeScript tests via live browser exploration |
+| `/create-release-notes-short` | Generate Yammer-format release notes from a Jira version |
+| `/create-release-note-detailed` | Generate full HTML + PPTX release notes |
+| `/create-meeting-notes` | Generate meeting notes from a transcript file |
+| `/push-stories-to-jira` | Push generated user stories to Jira as Story issues |
+| `/push` | Stage, commit, and push all changes |
+
+### AI Agents
+
+Specialized subagents in [`.claude/agents/`](.claude/agents/):
+
+| Agent | Purpose |
+| ----- | ------- |
+| `automation-tester` | Generates Playwright test scripts from scenarios |
+| `business-analyst` | Creates user stories and acceptance criteria |
+| `manual-tester` | Creates manual test cases from specs |
+| `atlas` | Fetches and summarizes data from Jira and Confluence |
+
 ## Repository Structure
 
 ```text
 PICASso/
 ├── projects/
 │   ├── docs-generator/    # Python CLI — SE-DevTools
-│   └── pw-autotest/       # TypeScript — Playwright + Allure + Claude MCP
+│   └── pw-autotest/       # TypeScript — Playwright + Allure 3
 ├── input/                 # Shared input (transcripts, spec files)
 ├── output/                # Shared output (generated docs & reports)
-├── .claude/               # Root MCP config
+├── .claude/
+│   ├── agents/            # Specialized AI subagent definitions
+│   ├── rules/             # Project coding standards & patterns
+│   ├── skills/            # Claude Code slash-command skills
+│   └── settings.json      # MCP server configuration
 ├── .github/
 │   ├── workflows/         # CI pipelines
 │   ├── prompts/           # GitHub Copilot prompt files
