@@ -46,15 +46,14 @@ test.describe.serial('DOC - Initiate DOC Process (PIC-3927) @regression', () => 
           await landingPage.goto();
           await landingPage.clickTab('My Products');
 
+          // Wait for at least one data row to be present after headers load
+          const firstDataRow = landingPage.grid.getByRole('row').nth(1);
+          await firstDataRow.waitFor({ state: 'visible', timeout: 30_000 });
+
           const rows = landingPage.grid.getByRole('row');
           if (i + 1 >= await rows.count()) break;
 
-          const row = rows.nth(i + 1);
-          const hasVestaId = await row.getByRole('cell')
-            .filter({ hasText: /^\d{5,}$/ }).count() > 0;
-          if (!hasVestaId) continue;
-
-          await row.getByRole('link').first().click();
+          await rows.nth(i + 1).getByRole('link').first().click();
           await page.getByRole('button', { name: 'Edit Product' })
             .waitFor({ state: 'visible', timeout: 60_000 });
 
@@ -67,7 +66,7 @@ test.describe.serial('DOC - Initiate DOC Process (PIC-3927) @regression', () => 
         }
 
         if (!found) {
-          test.skip(true, 'No products ready for DOC initiation. Please create a new product with Digital Offer enabled.');
+          throw new Error('No products ready for DOC initiation — please create a new product with Digital Offer enabled first.');
         }
       });
 

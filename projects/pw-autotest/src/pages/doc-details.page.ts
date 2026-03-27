@@ -191,10 +191,12 @@ export class DocDetailsPage extends BasePage {
 
     const yearInput = this.l.calendarYearSpinbutton;
     await yearInput.fill(year.toString());
-    await yearInput.press('Tab');
+    await yearInput.press('Enter'); // Enter triggers calendar update; Tab does not
 
-    // Day cells have aria-label "Month D, YYYY" — use getByLabel for precise targeting
+    // Day cells are generic elements with aria-label "Month D, YYYY" — use CSS attribute selector
     const dateLabel = `${monthName} ${day}, ${year}`;
-    await this.page.getByLabel(dateLabel).click();
+    const dayCell = this.page.locator(`[aria-label="${dateLabel}"]`).first();
+    await dayCell.waitFor({ state: 'visible', timeout: 10_000 });
+    await dayCell.click();
   }
 }

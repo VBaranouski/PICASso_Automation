@@ -10,7 +10,8 @@ export const docDetailsLocators = (page: Page) => ({
   targetReleaseDateHeader:  page.getByText(/Target Release Date/).locator('..'),
 
   // --- DOC status badge and current stage ---
-  docStatusBadge:  page.getByText('Controls Scoping'),
+  // Use span[data-expression] to exclude vscomp dropdown options that share the same text
+  docStatusBadge:  page.locator('span[data-expression]').filter({ hasText: /^Controls Scoping$/ }).first(),
   docStageLabel:   page.getByText('Scope ITS Controls').first(),
 
   // --- Initiate DOC action (on Digital Offer Certification tab) ---

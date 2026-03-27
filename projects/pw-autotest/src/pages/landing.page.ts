@@ -75,6 +75,8 @@ export class LandingPage extends BasePage {
 
   async clickTab(tabName: LandingTab): Promise<void> {
     const tab = this.getTab(tabName);
+    // OutSystems renders tabs after AJAX hydration — wait before clicking
+    await tab.waitFor({ state: 'visible', timeout: 60_000 });
     await tab.click();
     await this.l.grid.getByRole('columnheader').first().waitFor({ timeout: 30_000 });
   }
