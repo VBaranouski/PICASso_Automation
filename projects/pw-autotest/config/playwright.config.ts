@@ -46,9 +46,23 @@ export default defineConfig({
       testMatch: /.*\.setup\.ts/,
     },
 
+    // --- DOC flow: product creation must run before DOC initiation ---
+    {
+      name: 'doc-product-setup',
+      testMatch: /new-product-creation-digital-offer\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+      dependencies: ['setup'],
+    },
+    {
+      name: 'doc-initiation',
+      testMatch: /initiate-doc\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+
     // --- Desktop Browsers ---
     {
       name: 'chromium',
+      testIgnore: [/new-product-creation-digital-offer\.spec\.ts/, /initiate-doc\.spec\.ts/],
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
     },
@@ -57,6 +71,7 @@ export default defineConfig({
     {
       name: 'smoke',
       grep: /@smoke/,
+      testIgnore: [/new-product-creation-digital-offer\.spec\.ts/, /initiate-doc\.spec\.ts/],
       use: { ...devices['Desktop Chrome'] },
       dependencies: ['setup'],
     },

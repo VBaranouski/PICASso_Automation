@@ -1,7 +1,7 @@
-import { test as base, expect } from '@playwright/test';
+import { test as base } from '@playwright/test';
 import { getUser, getDefaultUser } from '../../config/users';
 import type { UserCredentials, UserRole } from '../../config/users/user.types';
-import { LoginPage, LandingPage, NewProductPage } from '../pages';
+import { LoginPage, LandingPage, NewProductPage, DocDetailsPage } from '../pages';
 
 type CustomFixtures = {
   /** Credentials for the current test role (from TEST_ROLE env var, defaults to 'admin') */
@@ -14,6 +14,8 @@ type CustomFixtures = {
   landingPage: LandingPage;
   /** NewProductPage instance */
   newProductPage: NewProductPage;
+  /** DocDetailsPage instance */
+  docDetailsPage: DocDetailsPage;
 };
 
 export const test = base.extend<CustomFixtures>({
@@ -36,6 +38,10 @@ export const test = base.extend<CustomFixtures>({
 
   newProductPage: async ({ page }, use) => {
     await use(new NewProductPage(page));
+  },
+
+  docDetailsPage: async ({ page }, use) => {
+    await use(new DocDetailsPage(page));
   },
 });
 

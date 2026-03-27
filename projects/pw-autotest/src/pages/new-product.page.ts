@@ -159,16 +159,20 @@ export class NewProductPage extends BasePage {
   }): Promise<void> {
     await this.l.vestaIdInput.fill(data.vestaId);
 
+    // Scope results to their gridcell so the same person's name in adjacent cells doesn't cause
+    // .first() to match the wrong element (e.g. IT Owner display after selection).
+    const itOwnerCell = this.page.getByRole('gridcell', { name: /IT Owner/ });
     await this.l.docItOwnerSearchBox.pressSequentially(data.searchQuery, { delay: 150 });
-    const itOwnerResult = this.page.getByText(data.itOwnerFullName, { exact: true }).first();
+    const itOwnerResult = itOwnerCell.getByText(data.itOwnerFullName, { exact: true }).first();
     await itOwnerResult.waitFor({ state: 'visible', timeout: 30_000 });
     await itOwnerResult.click();
 
     // Wait for IT Owner selection to settle before typing in Project Manager field.
     // OutSystems updates the DOC section after each selection, replacing DOM elements.
     await this.l.docProjectManagerSearchBox.waitFor({ state: 'visible', timeout: 30_000 });
+    const pmCell = this.page.getByRole('gridcell', { name: /Project Manager/ });
     await this.l.docProjectManagerSearchBox.pressSequentially(data.searchQuery, { delay: 150 });
-    const pmResult = this.page.getByText(data.projectManagerFullName, { exact: true }).first();
+    const pmResult = pmCell.getByText(data.projectManagerFullName, { exact: true }).first();
     await pmResult.waitFor({ state: 'visible', timeout: 30_000 });
     await pmResult.click();
   }
@@ -240,6 +244,9 @@ export class NewProductPage extends BasePage {
     const resultItem = roleContainer.getByText(fullName, { exact: true }).first();
     await resultItem.waitFor({ state: 'visible', timeout: 30_000 });
     await resultItem.click();
+
+    // Wait for OutSystems to process the selection — searchbox disappears when committed
+    await searchBox.waitFor({ state: 'hidden', timeout: 30_000 });
   }
 
   /**

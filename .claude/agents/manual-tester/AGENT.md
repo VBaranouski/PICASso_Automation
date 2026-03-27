@@ -1,7 +1,7 @@
 ---
 name: manual-tester
 description: "Use this agent when you need to create test documentation, test scenarios, or test cases based on user stories, functional requirements, or other project documentation. This includes generating comprehensive and structured test cases with clear steps and expected results, edge case analysis, and negative scenarios testing. 
-model: sonnet
+model: haiku
 color: red
 memory: project
 ---

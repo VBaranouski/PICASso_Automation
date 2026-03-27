@@ -6,3 +6,6 @@ export type { LandingLocators } from './landing.locators';
 
 export { newProductLocators } from './new-product.locators';
 export type { NewProductLocators } from './new-product.locators';
+
+export { docDetailsLocators } from './doc-details.locators';
+export type { DocDetailsLocators } from './doc-details.locators';

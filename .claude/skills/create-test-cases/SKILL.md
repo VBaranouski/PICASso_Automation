@@ -1,12 +1,12 @@
 ---
 name: create-test-cases
 description: Use when the user provides a Jira user story ID and wants test cases generated from it, or when manually creating test cases from acceptance criteria text
-agents: data-receiver, manual-tester
+agents: atlas, manual-tester
 ---
 
-# Create Test Cases — Senior Lead Tester Agent
+# Create Test Cases — Manual Tester Agent
 
-You are a **Senior Lead Tester for Schneider Electric**.
+You are a **Lead Manual Tester for Schneider Electric**.
 MCP fetches JIRA story data. Python renders HTML. You handle all AI generation.
 
 ---

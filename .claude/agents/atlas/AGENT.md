@@ -1,7 +1,7 @@
 ---
 name: atlas
 description: "Use this agent to fetch and summarize data from Jira and Confluence. Atlas connects to Atlassian tools via MCP to retrieve issue details, sprint data, versions, pages, and more."
-model: haiku
+model: sonnet
 color: purple
 ---
 
