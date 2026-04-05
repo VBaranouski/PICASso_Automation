@@ -1,169 +1,104 @@
-# PICASso Platform
+# PICASso Automation
 
-Monorepo for the PICASso QA & documentation platform, combining automated documentation generation with AI-assisted Playwright test automation for the Schneider Electric PICASso web application.
-
-## Packages
-
-| Package | Language | Purpose |
-| ------- | -------- | ------- |
-| [`projects/docs-generator`](projects/docs-generator/) | Python 3.11+ | CLI for generating release notes, meeting notes, test cases, bug reports from Jira/Confluence/Figma |
-| [`projects/pw-autotest`](projects/pw-autotest/) | TypeScript | AI-assisted Playwright test automation with Allure 3 reporting |
-
-## Prerequisites
-
-| Tool | Minimum Version |
-| ---- | --------------- |
-| Python | 3.11+ |
-| Node.js | 18+ |
-| npm | 9+ |
-| Claude Code | latest |
+Playwright + TypeScript E2E test automation suite for the **PICASso** OutSystems application.
 
 ## Quick Start
 
-### Docs Generator (Python)
-
 ```bash
-cd projects/docs-generator
-pip install -r requirements.txt
-cp ../../.env.example ../../.env   # Edit .env with your Jira, Confluence, Figma API keys
-python3 main.py --help
-```
+# 1. Install dependencies
+npm install
 
-> **API Keys required:** `JIRA_*`, `CONFLUENCE_*`, and optionally `FIGMA_API_TOKEN`. See [`.env.example`](.env.example) for all variables and descriptions.
-
-### PW AutoTest (TypeScript)
-
-```bash
-cd projects/pw-autotest
-npm ci
+# 2. Install Playwright browsers
 npx playwright install --with-deps
-npm test           # Runs all tests + generates Allure report
+
+# 3. Create your environment file
+cp .env.example .env
+# Edit .env with your target environment settings
+
+# 4. Add user credentials
+# Create config/users/qa.users.ts (see config/users/user.types.ts for the shape)
+
+# 5. Run tests
+npm test                        # all projects
+npm run test:chromium           # chromium only
+npm run test:smoke              # smoke suite
 ```
 
-#### Additional test commands
+## Project Structure
+
+```
+├── src/
+│   ├── fixtures/               # Playwright test fixtures (extended test object)
+│   ├── helpers/                # Utility helpers (wait, data, doc, API)
+│   ├── locators/               # Locator factory functions per feature area
+│   ├── pages/                  # Page Object Models (extend BasePage)
+│   ├── reporters/              # Custom Playwright reporters
+│   └── types/                  # TypeScript type definitions
+├── tests/
+│   ├── auth/                   # Authentication tests
+│   ├── doc/                    # DOC lifecycle, details, history, actions, risk, certification
+│   ├── landing/                # Landing page and My DOCs tab
+│   ├── products/               # Product CRUD, details, history, releases
+│   └── releases/               # Release management
+├── config/
+│   ├── environments/           # Environment configs (qa, dev, ppr)
+│   └── users/                  # User credential files (gitignored)
+├── specs/                      # Human-readable test specifications (Markdown)
+├── docs/ai/                    # Automation testing plans, coverage matrices, app maps
+├── .github/
+│   ├── instructions/           # Copilot coding instructions
+│   ├── prompts/                # Copilot prompt templates
+│   └── workflows/              # CI — Playwright on GitHub Actions
+├── playwright.config.ts        # Playwright configuration (15+ projects)
+├── tsconfig.json               # TypeScript config with path aliases
+└── package.json
+```
+
+## Available Scripts
 
 | Command | Description |
-| ------- | ----------- |
-| `npm run test:chromium` | Chromium only |
-| `npm run test:firefox` | Firefox only |
-| `npm run test:webkit` | WebKit only |
-| `npm run test:mobile` | Mobile Chrome + Safari |
-| `npm run test:smoke` | Smoke suite |
-| `npm run test:headed` | Headed mode |
-| `npm run test:debug` | Debug mode |
-| `npm run test:ui` | Playwright UI mode |
-| `npm run report:allure` | Re-generate & open Allure report |
-| `npm run lint` | Lint TypeScript sources |
-| `npm run typecheck` | Type-check without emitting |
-| `npm run clean` | Remove all test artefacts |
+|---------|-------------|
+| `npm test` | Run all Playwright tests |
+| `npm run test:chromium` | Run chromium project only |
+| `npm run test:smoke` | Run smoke-tagged tests |
+| `npm run test:headed` | Run tests in headed mode |
+| `npm run test:debug` | Run tests with Playwright Inspector |
+| `npm run test:ui` | Open Playwright UI mode |
+| `npm run report:html` | Open HTML report |
+| `npm run report:allure` | Generate and open Allure report |
+| `npm run typecheck` | TypeScript type checking |
+| `npm run lint` | ESLint check |
+| `npm run format` | Prettier formatting |
 
-## AI Tooling
+## Test Projects (Playwright Config)
 
-The platform includes two AI-oriented instruction surfaces:
+The Playwright config defines **15+ projects** with dependency chains for the DOC lifecycle:
 
-- Claude assets in `.claude/` for Claude Code workflows
-- GitHub Copilot assets in `.github/` for prompt-driven workflows in VS Code
-
-Both approaches are MCP-first. Jira and Confluence data should come from MCP tools when available; Python is reserved for rendering and document generation.
-
-### MCP Servers
-
-Configured in [`.claude/settings.json`](.claude/settings.json):
-
-| Server | Tools | Purpose |
-| ------ | ----- | ------- |
-| `mcp-atlassian` | `jira_*`, `confluence_*` | Fetch issues, versions, stories, pages |
-| `figma` | `figma_*` | Access designs, variables, screenshots |
-| `playwright` | `browser_*` | Live browser automation for test generation |
-| `sequential-thinking` | — | Extended reasoning for complex tasks |
-
-### Claude Code Skills
-
-Invoke these in Claude Code with `/skill-name`:
-
-| Skill | Purpose |
-| ----- | ------- |
-| `/create-user-stories` | Generate JIRA-ready user stories from a Confluence spec page |
-| `/create-test-cases` | Generate manual test cases from a Jira story |
-| `/create-test-cases-for-automation` | Generate structured test cases for Playwright automation |
-| `/create-automation-scripts` | Generate Playwright TypeScript tests via live browser exploration |
-| `/create-release-notes-short` | Generate Yammer-format release notes from a Jira version |
-| `/create-release-note-detailed` | Generate full HTML + PPTX release notes |
-| `/create-meeting-notes` | Generate meeting notes from a transcript file |
-| `/push-stories-to-jira` | Push generated user stories to Jira as Story issues |
-| `/push` | Stage, commit, and push all changes |
-
-### GitHub Copilot workflow
-
-GitHub Copilot instructions and prompts live in `.github/`:
-
-- `.github/copilot-instructions.md` — entry router
-- `.github/instructions/` — split instruction files for intake, normalization, test cases, browser validation, and Playwright generation
-- `.github/prompts/` — task prompts for full-pipeline or stage-by-stage execution
-
-Recommended QA automation flow with Copilot:
-
-1. Normalize Jira, Confluence, or free-text requirements into `output/requirements/`
-2. Generate automation-ready test cases in `output/test_cases/`
-3. Validate locators and flows with Playwright MCP
-4. Generate or update tests in `projects/pw-autotest/`
-5. Save generation metadata in `output/automation_scripts/`
-
-See `docs/ai/pipeline.md` for the full split workflow.
-
-### AI Agents
-
-Specialized subagents in [`.claude/agents/`](.claude/agents/):
-
-| Agent | Purpose |
-| ----- | ------- |
-| `automation-tester` | Generates Playwright test scripts from scenarios |
-| `business-analyst` | Creates user stories and acceptance criteria |
-| `manual-tester` | Creates manual test cases from specs |
-| `atlas` | Fetches and summarizes data from Jira and Confluence |
-
-## Repository Structure
-
-```text
-PICASso/
-├── projects/
-│   ├── docs-generator/    # Python CLI — SE-DevTools
-│   └── pw-autotest/       # TypeScript — Playwright + Allure 3
-├── input/                 # Shared input (transcripts, spec files)
-├── output/                # Shared output (generated docs & reports)
-├── .claude/
-│   ├── agents/            # Specialized AI subagent definitions
-│   ├── rules/             # Project coding standards & patterns
-│   ├── skills/            # Claude Code slash-command skills
-│   └── settings.json      # MCP server configuration
-├── .github/
-│   ├── workflows/         # CI pipelines
-│   ├── instructions/      # GitHub Copilot split instruction files
-│   ├── prompts/           # GitHub Copilot prompt files
-│   └── copilot-instructions.md
-├── docs/
-│   └── ai/                # Workflow docs for Copilot / AI pipelines
-├── .env.example           # Environment variable template
-├── CLAUDE.md              # AI agent instructions
-└── README.md              # This file
+```
+setup → doc-product-setup → doc-initiation → doc-state-setup → doc-detail-*
 ```
 
-## Shared I/O
+Standalone projects: `chromium`, `smoke`, `doc-detail-actions`, `doc-lifecycle`, etc.
 
-The `input/` and `output/` directories at the repo root are used for generated artifacts across both tracks. Notable QA automation folders include `output/requirements/`, `output/test_cases/`, and `output/automation_scripts/`. Path configuration for rendered document generation is in `projects/docs-generator/config.yaml`.
+## Environment Configuration
+
+| Environment | Config File |
+|-------------|-------------|
+| QA | `config/environments/qa.ts` |
+| Dev | `config/environments/dev.ts` |
+| PPR | `config/environments/ppr.ts` |
+
+Set `TEST_ENV=qa` (or `dev`/`ppr`) in `.env` or as an environment variable.
+
+## Documentation
+
+- [Automation Testing Plan](docs/ai/automation-testing-plan.html) — interactive test plan with coverage status
+- [Coverage Matrix](docs/ai/current-automation-coverage-matrix.md) — current automation coverage
+- [Application Map](docs/ai/application-map.html) — PICASso application structure
+- [Pipeline](docs/ai/pipeline.md) — automation pipeline description
 
 ## CI/CD
 
-| Workflow | Trigger | Purpose |
-| -------- | ------- | ------- |
-| `playwright.yml` | Changes in `projects/pw-autotest/` | Run Playwright tests |
-| `docs.yml` | Changes in `projects/docs-generator/` | Validate Python CLI |
-| `claude.yml` | `@claude` mentions in issues/PRs | Claude GitHub Action |
-| `claude-code-review.yml` | PR opened/updated | Automated code review |
-
-## Contributing
-
-1. Fork the repository and create a feature branch
-2. Follow the coding conventions enforced by ESLint / Prettier (pw-autotest) or PEP 8 (docs-generator)
-3. Ensure all tests pass before opening a PR — PRs trigger automated Playwright runs and Claude code review
-4. Reference relevant Jira tickets in your PR description
+GitHub Actions workflow (`.github/workflows/playwright.yml`) runs on:
+- Push/PR to `main` or `develop` branches
+- Manual dispatch with environment, role, and test filter selection

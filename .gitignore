@@ -1,15 +1,12 @@
-# Python
+# Environment & secrets
 .env
-__pycache__/
-*.py[cod]
-*.egg-info/
-dist/
-build/
-.venv/
-venv/
-*.log
+.env.*
+!.env.example
+config/users/qa.users.ts
+config/users/dev.users.ts
+config/users/ppr.users.ts
 
-# Node.js
+# Dependencies
 node_modules/
 
 # Test artifacts
@@ -17,43 +14,20 @@ test-results/
 allure-results/
 allure-report/
 playwright-report/
+blob-report/
 traces/
 storage/
-blob-report/
 
-# Generated output (keep .gitkeep and template/ subdirs, ignore generated files)
-output/release_notes_short/*.txt
-output/release_notes_short/*.html
-output/release_notes_detailed/*.html
-output/release_notes_detailed/*.pptx
-output/meeting_notes/*.txt
-output/meeting_notes/*.html
-output/test_cases/*.html
-output/bug_reports/*.html
-output/user_stories/*.html
+# Build output
+dist/
 
-# Input files (keep .gitkeep, ignore uploaded content)
-input/transcripts/*.txt
-input/transcripts/*.docx
-input/transcripts/*.pdf
-input/release_notes_detailed/*.txt
-input/release_notes_detailed/*.md
-input/release_notes_detailed/*.json
-
-# Environment & secrets
-projects/.env
-projects/.env.*
-projects/pw-autotest/config/.env.*
-projects/docs-generator/src/config/.env.*
-*.env.local
-projects/pw-autotest/config/users/qa.users.ts
-projects/pw-autotest/config/users/dev.users.ts
-projects/pw-autotest/config/users/ppr.users.ts
-projects/docs-generator/src/config/users/qa.users.ts
-projects/docs-generator/src/config/users/dev.users.ts
-projects/docs-generator/src/config/users/ppr.users.ts
+# Persisted state (generated at runtime)
+.doc-state.json
 
 # IDE & OS
 .DS_Store
-.playwright-mcp/
 .vscode/
+.playwright-mcp/
+
+# Lock file (optional — uncomment to track)
+# package-lock.json

@@ -1,34 +1,22 @@
-# `pw-autotest` Framework Instructions
-
-Target codebase: `projects/pw-autotest`.
+# Automation Framework Instructions
 
 ## Framework shape
 
-The current repository already contains:
+The repository contains:
 
 - fixtures in `src/fixtures/`
 - locator factories in `src/locators/`
 - page objects in `src/pages/`
 - helper utilities in `src/helpers/`
 - tests in `tests/`
+- environment config in `config/environments/`
+- user credentials in `config/users/` (gitignored)
 
 Prefer the existing shape over idealized examples.
 
-## Required rule sources
-
-Before changing Playwright code in this package, align with:
-
-- `.claude/rules/automation-testing/reference/golden-rules.md`
-- `.claude/rules/automation-testing/reference/locators.md`
-- `.claude/rules/automation-testing/reference/assertions.md`
-- `.claude/rules/automation-testing/reference/flaky-tests.md`
-- `.claude/rules/automation-testing/reference/fixtures.md`
-- `.claude/rules/automation-testing/reference/outsystems-picasso.md`
-- `.claude/rules/automation-testing/reference/common-pitfalls.md`
-
 ## Real repo conventions
 
-- Tests currently import `test` from `../../src/fixtures` or `@fixtures/index`; preserve the style already used in the target area.
+- Tests import `test` from `../../src/fixtures` or `@fixtures/index`; preserve the style already used in the target area.
 - Page objects extend `BasePage`.
 - New page objects must be exported from `src/pages/index.ts`.
 - Existing code uses path aliases inside `src/` files: `@pages/*`, `@locators/*`, `@helpers/*`, `@fixtures/*`.
@@ -78,12 +66,11 @@ After generating or updating test code:
 
 - ensure imports compile against the current repo structure
 - update page exports when a new POM is added
-- keep tests runnable from `projects/pw-autotest`
 - prefer `npm run typecheck` as the first validation step
 - validate changed locators and full scenario paths in-browser when runtime issues are involved
 - prefer targeted test reruns before broader suite reruns
 - record whether each failure is an automation issue, a test-data blocker, or a likely product defect
-- after meaningful DOC coverage changes, update `docs/ai/automation-testing-plan.md` and `docs/ai/automation-testing-plan.html`
+- after meaningful coverage changes, update `docs/ai/automation-testing-plan.md` and `docs/ai/automation-testing-plan.html`
 
 ## Manual execution target
 

@@ -36,12 +36,12 @@ Follow the existing `pw-autotest` style:
 - Page objects: `kebab-case.page.ts`
 - Locator factories: `kebab-case.locators.ts`
 - Tests: `*.spec.ts`
-- Export new page objects from `projects/pw-autotest/src/pages/index.ts`
+- Export new page objects from `src/pages/index.ts`
 
 When adding a new feature area, prefer:
 
-- `projects/pw-autotest/tests/<feature>/...`
-- `projects/pw-autotest/src/pages/<feature>.page.ts`
-- `projects/pw-autotest/src/locators/<feature>.locators.ts`
+- `tests/<feature>/...`
+- `src/pages/<feature>.page.ts`
+- `src/locators/<feature>.locators.ts`
 
 Keep names aligned across artifacts, POMs, and test suites so reviewers can trace one story through the whole pipeline.

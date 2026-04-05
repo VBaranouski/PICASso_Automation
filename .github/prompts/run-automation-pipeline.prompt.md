@@ -21,7 +21,7 @@ Take a Jira story, Confluence page, or free-text user story and produce:
 
 1. normalized requirements JSON + HTML
 2. automation-ready test cases JSON + HTML
-3. browser-validated Playwright TypeScript code in `projects/pw-autotest`
+3. browser-validated Playwright TypeScript code in the repo root
 4. automation manifest JSON + HTML
 
 ## Operating rules

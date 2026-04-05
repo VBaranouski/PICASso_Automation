@@ -8,19 +8,19 @@ Before generating code, read in this order:
 
 1. normalized requirements JSON
 2. automation test cases JSON
-3. `projects/pw-autotest` architecture instructions
+3. the repo root architecture instructions
 4. browser MCP instructions
 
 ## Output goal
 
 Produce or update:
 
-- locator factory files in `projects/pw-autotest/src/locators/`
-- page object files in `projects/pw-autotest/src/pages/`
-- tests in `projects/pw-autotest/tests/`
-- page barrel exports in `projects/pw-autotest/src/pages/index.ts` when needed
-- metadata manifest in `output/automation_scripts/automation_manifest_<source_ref>_<date>.json`
-- HTML summary in `output/automation_scripts/automation_summary_<source_ref>_<date>.html`
+- locator factory files in `src/locators/`
+- page object files in `src/pages/`
+- tests in `tests/`
+- page barrel exports in `src/pages/index.ts` when needed
+- metadata manifest in `docs/ai/automation_manifest_<source_ref>_<date>.json`
+- HTML summary in `docs/ai/automation_summary_<source_ref>_<date>.html`
 
 ## Generation rules
 

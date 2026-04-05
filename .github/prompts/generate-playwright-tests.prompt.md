@@ -1,6 +1,6 @@
 # Generate Playwright Tests
 
-Use this prompt when normalized requirements and automation-ready test cases already exist and you need runnable TypeScript code in `projects/pw-autotest`.
+Use this prompt when normalized requirements and automation-ready test cases already exist and you need runnable TypeScript code in the repo root.
 
 ## Read first
 
@@ -11,18 +11,18 @@ Use this prompt when normalized requirements and automation-ready test cases alr
 
 ## Inputs
 
-- requirements JSON from `output/requirements/`
-- test cases JSON from `output/test_cases/`
+- requirements JSON from `docs/ai/`
+- test cases JSON from `docs/ai/`
 
 ## Output
 
 Generate or update:
 
-- locator factories in `projects/pw-autotest/src/locators/`
-- page objects in `projects/pw-autotest/src/pages/`
-- tests in `projects/pw-autotest/tests/`
+- locator factories in `src/locators/`
+- page objects in `src/pages/`
+- tests in `tests/`
 - page exports if needed
-- automation manifest JSON + HTML in `output/automation_scripts/`
+- automation manifest JSON + HTML in `docs/ai/`
 
 ## Rules
 

@@ -12,14 +12,14 @@ Use this prompt after a normalized requirements bundle already exists.
 
 ## Input
 
-- normalized requirements JSON from `output/requirements/`
+- normalized requirements JSON from `docs/ai/`
 
 ## Output
 
 Generate:
 
-- `output/test_cases/test_cases_auto_<source_ref>_<date>.json`
-- `output/test_cases/test_cases_auto_<source_ref>_<date>.html`
+- `docs/ai/test_cases_auto_<source_ref>_<date>.json`
+- `docs/ai/test_cases_auto_<source_ref>_<date>.html`
 
 ## Rules
 

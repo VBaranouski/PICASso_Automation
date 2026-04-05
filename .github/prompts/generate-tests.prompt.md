@@ -15,11 +15,11 @@ Legacy entry prompt for test generation. Prefer the split prompts for new work.
 Perform the full pipeline:
 
 1. Read the split instruction files in `.github/instructions/`.
-2. Normalize the source input into `output/requirements/` as JSON + HTML.
-3. Generate automation-ready test cases into `output/test_cases/` as JSON + HTML.
+2. Normalize the source input into `docs/ai/` as JSON + HTML.
+3. Generate automation-ready test cases into `docs/ai/` as JSON + HTML.
 4. Validate the flow in the browser with Playwright MCP.
-5. Generate or update Playwright TypeScript code in `projects/pw-autotest/`.
-6. Write automation manifest JSON + HTML to `output/automation_scripts/`.
+5. Generate or update Playwright TypeScript code in ``.
+6. Write automation manifest JSON + HTML to `docs/ai/`.
 
 ## Core rules
 
